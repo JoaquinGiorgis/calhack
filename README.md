@@ -25,7 +25,8 @@ For where the project stands, why it is built this way, and what's next, see
 | Path | What it is |
 |---|---|
 | `live_demo/mac_listener.py` | Mac program: microphone → YAMNet → Bluetooth/USB → wristband |
-| `live_demo/soundsense_display/` | Wristband firmware (Arduino sketch) |
+| `live_demo/soundsense_display/` | Wristband firmware (Arduino sketch). Screens are the Figma designs in `screens.h` |
+| `live_demo/screen_preview/` | Slideshow firmware to preview every designed screen on the real display |
 | `live_demo/requirements.txt` | Python packages for the Mac program |
 | `pretrained/yamnet/` | Google's YAMNet model (Apache 2.0), loaded by the Mac program |
 | `hardware/enclosure/` | 3D-printable wristband case (OpenSCAD source, STLs, 3D viewer) |
@@ -130,8 +131,9 @@ Power the wristband. It shows *Waiting for Mac... Bluetooth: SoundSense*. Then:
 
 Within a few seconds the terminal says `Connected to SoundSense over Bluetooth` and
 the wristband switches to **LISTENING...** with a live level bar. Detected sounds
-fill the screen with a coloured alert; press **BOOT** to dismiss, or it clears after
-6 seconds. On first run, allow Terminal to use the **microphone** and **Bluetooth**
+fill the screen with the designed alert (icon, priority, live confidence bar) and
+vibrate with the alert's priority pattern; **tap the screen** or press **BOOT** to
+dismiss, or it clears after 6 seconds. On first run, allow Terminal to use the **microphone** and **Bluetooth**
 (System Settings → Privacy & Security).
 
 ### Options

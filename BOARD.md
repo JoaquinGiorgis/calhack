@@ -50,9 +50,9 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | S3 | DONE | Vibración por prioridad en el firmware (seguridad 3 largas · atención 2 cortas · baja 1 corta · autotest al encender) | Joaquin | — | Compila; falta probar con el motor (H6) |
 | S4 | DOING | Probar en vivo cada alerta con sonidos reales y ajustar con `--set`. ✅ Mic iPhone + USB: CAR_HORN 0.57–0.87, SPEECH 0.90–0.98 llegan a la pulsera. ❌ Golpes en la mesa → "Basketball bounce", no KNOCK (probar con una puerta) | Joaquin | S1 | Tabla alerta → score típico |
 | S5 | TODO | Modo ensayo: pasar una grabación fija por el mismo pipeline (demo reproducible) | | S1 | Demo idéntica cada vez |
-| S6 | TODO | Descartar alerta tocando la pantalla (touch CST816 en I2C SDA 48 / SCL 47) — dentro de la carcasa el BOOT queda en la ranura del USB | | S2 | Toque descarta |
+| S6 | DOING | (Implementado, falta probar) Descartar alerta tocando la pantalla (touch CST816 en I2C SDA 48 / SCL 47) — dentro de la carcasa el BOOT queda en la ranura del USB | | S2 | Toque descarta |
 | S7 | DONE | Diseño Figma de las 13 pantallas + escenarios + prototipo ([docs/design](docs/design/README.md)) y **slider** en la pulsera (`live_demo/screen_preview`) para verlas en el display real | Joaquin | — | Slider corriendo en la placa |
-| S8 | TODO | Llevar las pantallas de Figma al firmware real (`soundsense_display`): mostrar la imagen de cada alerta en vez del texto plano | | S7 | Alertas en vivo con el diseño nuevo |
+| S8 | DONE | Pantallas de Figma en el firmware real (`soundsense_display`): imagen de cada alerta + barra de confianza real, ecualizador en vivo, nº de alertas | Joaquin | S7 | Alertas en vivo con el diseño nuevo |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |

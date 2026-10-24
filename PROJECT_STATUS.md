@@ -20,7 +20,7 @@ replace smoke alarms or other alerting systems.
 | Part | Status |
 |---|---|
 | Sound classification on the Mac (YAMNet) | Working |
-| Wristband firmware: alerts, level bar, dismiss button | Working |
+| Wristband firmware: Figma-designed alert screens, live level meter, dismiss | Working; touch-to-dismiss added, needs a test on the board |
 | Bluetooth LE link, Mac → wristband (wristband on a power bank) | Working |
 | USB link (fallback) | Working |
 | 10 alert types with priorities and thresholds | Working, thresholds partly validated (see below) |
@@ -115,7 +115,7 @@ only "Bark" because the broader "Dog" class fired on pigs and toothbrushes.
   said the user's name.
 - Some car horns are labelled ALARM. Both still raise an alert.
 - Vibration uses a small DC motor with a printed eccentric weight, not a coin vibration motor, and has not been tested on the wrist yet.
-- Dismissing an alert uses the small BOOT button, not the touchscreen.
+- Touch-to-dismiss reads the CST816 controller directly over I2C; if it doesn't respond, the BOOT button still works.
 
 ## Next steps
 
@@ -131,7 +131,7 @@ only "Bark" because the broader "Dog" class fired on pigs and toothbrushes.
 2. **Vibration:** patterns per priority are in the firmware (safety: 3 long, attention:
    2 short, low: 1 short). Next: test them on the wrist and swap the DC motor for a
    coin vibration motor. For deaf users, feeling an alert matters more than seeing it.
-3. **Touch-to-dismiss** and an alert history screen.
+3. An alert history screen (touch-to-dismiss is in the firmware).
 4. **Fully on-device:** add an INMP441 microphone and run an INT8 YAMNet on the
    ESP32-S3, so no phone or laptop is needed. This needs latency and memory checks on
    the board.

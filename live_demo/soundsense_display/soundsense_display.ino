@@ -8,7 +8,12 @@
 // Over BLE, each write to the RX characteristic is one message; over USB,
 // messages are newline-terminated. Both paths feed the same handler.
 //
-// The alert stays up for ALERT_MS or until the BOOT button is pressed.
+// Screens are the Figma designs (docs/design, exported to screens.h as RGB565):
+// the firmware draws the background image and only the live parts on top
+// (confidence bar, level meter, alert count, link name). Unknown alert names fall
+// back to the plain text screen.
+//
+// The alert stays up for ALERT_MS or until the screen is tapped / BOOT is pressed.
 // Each alert also vibrates (130 motor on GPIO17 through a PN2222 + 1N4007,
 // see hardware/README wiring): the pattern depends on the alert's priority, so the
 // user can tell a safety alert from a low-priority one without looking.
@@ -23,6 +28,8 @@
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
+#include <Wire.h>
+#include "screens.h"  // generated: python ../screen_preview/png_to_rgb565.py ../../docs/design/firmware_screens screens.h
 
 #define PIN_LCD_SCLK 39
 #define PIN_LCD_MOSI 38
@@ -32,6 +39,9 @@
 #define PIN_LCD_CS 45
 #define PIN_LCD_BL 1
 #define PIN_BOOT_BUTTON 0
+#define PIN_TOUCH_SDA 48  // CST816 touch controller (I2C 0x15) — header pins 47/48 are taken
+#define PIN_TOUCH_SCL 47
+#define TOUCH_ADDR 0x15
 #define PIN_MOTOR 17  // header pin 24 (printed "17", left column) -> 1 kOhm -> PN2222 base (never drive the motor directly)
 
 const uint32_t ALERT_MS = 6000;      // how long an alert stays on screen
@@ -115,20 +125,21 @@ struct EventStyle {
   const char *hint;
   uint16_t colour;
   const uint16_t *vibration;
+  const char *image;  // screen name in screens.h
 };
 
 // Names the Mac doesn't send yet still show up, using the fallback style below.
 const EventStyle EVENT_STYLES[] = {
-    {"ALARM", "ALARM!", "Alarm or siren nearby", C_RED, VIB_SAFETY},
-    {"CAR_HORN", "CAR HORN", "Vehicle honking nearby", C_ORANGE, VIB_SAFETY},
-    {"GLASS", "GLASS", "Something broke", C_CRIMSON, VIB_SAFETY},
-    {"SHOUT", "SHOUT!", "Someone is shouting", C_MAGENTA, VIB_SAFETY},
-    {"BABY", "BABY", "Baby crying", C_TEAL, VIB_ATTENTION},
-    {"KNOCK", "KNOCK", "Someone at the door", C_BLUE, VIB_ATTENTION},
-    {"DOORBELL", "DOORBELL", "Someone at the door", C_PURPLE, VIB_ATTENTION},
-    {"PHONE", "PHONE", "Phone ringing", C_SLATE, VIB_ATTENTION},
-    {"DOG", "DOG", "Dog barking", C_BROWN, VIB_LOW},
-    {"SPEECH", "SPEECH", "Someone is talking nearby", C_DARKGREEN, VIB_LOW},
+    {"ALARM", "ALARM!", "Alarm or siren nearby", C_RED, VIB_SAFETY, "alarm"},
+    {"CAR_HORN", "CAR HORN", "Vehicle honking nearby", C_ORANGE, VIB_SAFETY, "car_horn"},
+    {"GLASS", "GLASS", "Something broke", C_CRIMSON, VIB_SAFETY, "glass"},
+    {"SHOUT", "SHOUT!", "Someone is shouting", C_MAGENTA, VIB_SAFETY, "shout"},
+    {"BABY", "BABY", "Baby crying", C_TEAL, VIB_ATTENTION, "baby"},
+    {"KNOCK", "KNOCK", "Someone at the door", C_BLUE, VIB_ATTENTION, "knock"},
+    {"DOORBELL", "DOORBELL", "Someone at the door", C_PURPLE, VIB_ATTENTION, "doorbell"},
+    {"PHONE", "PHONE", "Phone ringing", C_SLATE, VIB_ATTENTION, "phone"},
+    {"DOG", "DOG", "Dog barking", C_BROWN, VIB_LOW, "dog"},
+    {"SPEECH", "SPEECH", "Someone is talking nearby", C_DARKGREEN, VIB_LOW, "speech"},
 };
 
 // Non-blocking vibration player, stepped from loop().
@@ -166,17 +177,89 @@ void drawCentered(const char *text, int y, uint8_t size, uint16_t colour) {
   gfx->print(text);
 }
 
-void drawLevelBar(int level) {
-  const int x = 20, y = 150, w = gfx->width() - 40, h = 28;
-  int filled = w * level / 100;
-  uint16_t colour = level > 75 ? C_RED : level > 50 ? C_ORANGE : C_GREEN;
-  gfx->fillRect(x, y, filled, h, colour);
-  gfx->fillRect(x + filled, y, w - filled, h, C_DARK);
-  gfx->drawRect(x - 1, y - 1, w + 2, h + 2, C_GREY);
+// ---- Figma screens ----
+const uint16_t *screenImage(const char *name) {
+  for (int i = 0; i < SCREEN_COUNT; i++) {
+    if (strcmp(SCREENS[i].name, name) == 0) return SCREENS[i].pixels;
+  }
+  return nullptr;
+}
+
+// Redraw a rectangle of a full-screen image (used to erase live elements).
+uint16_t blitBuffer[320 * 16];
+void restoreRegion(const uint16_t *img, int x, int y, int w, int h) {
+  for (int row = 0; row < h; row += 16) {
+    int rows = min(16, h - row);
+    for (int r = 0; r < rows; r++) memcpy(&blitBuffer[r * w], &img[(y + row + r) * 320 + x], w * 2);
+    gfx->draw16bitRGBBitmap(x, y + row, blitBuffer, w, rows);
+  }
+}
+
+// Live level meter on the Listening screen (region from Figma: x16 y69 288x96).
+const int METER_BARS = 36, METER_X = 17, METER_BOTTOM = 165, METER_H = 96, BAR_W = 5, BAR_STEP = 8;
+const uint16_t C_METER_GREEN = 0x262B;  // #22C55E
+const uint16_t C_METER_AMBER = 0xF4E1;  // #F59E0B
+uint8_t barHeight[METER_BARS];
+int meterLevel = 0;
+uint32_t lastMeterMs = 0;
+uint16_t columnBuffer[BAR_W * METER_H];
+
+void drawBar(const uint16_t *bg, int i, int h) {
+  int x = METER_X + i * BAR_STEP, top = METER_BOTTOM - METER_H;
+  uint16_t colour = h > 60 ? C_METER_AMBER : C_METER_GREEN;
+  for (int r = 0; r < METER_H; r++) {
+    bool on = r >= METER_H - h;
+    for (int c = 0; c < BAR_W; c++) {
+      columnBuffer[r * BAR_W + c] = on ? colour : bg[(top + r) * 320 + x + c];
+    }
+  }
+  gfx->draw16bitRGBBitmap(x, top, columnBuffer, BAR_W, METER_H);
+}
+
+void updateMeter() {
+  const uint16_t *bg = screenImage("listening");
+  if (screen != Screen::Listening || bg == nullptr || millis() - lastMeterMs < 50) return;
+  lastMeterMs = millis();
+  float t = millis() * 0.004f;
+  for (int i = 0; i < METER_BARS; i++) {
+    float x = i / float(METER_BARS - 1);
+    float env = expf(-powf((x - 0.5f) / 0.3f, 2));
+    float wob = 0.55f + 0.45f * fabsf(sinf(t + i * 1.7f));
+    int target = 4 + int(88 * (meterLevel / 100.0f) * env * wob);
+    int h = barHeight[i] + (target - barHeight[i]) / 2;  // ease towards the target
+    if (h != barHeight[i]) {
+      barHeight[i] = h;
+      drawBar(bg, i, h);
+    }
+  }
+}
+
+void drawLevelBar(int level) { meterLevel = level; }
+
+void drawListeningFooter() {
+  const uint16_t *bg = screenImage("listening");
+  if (bg == nullptr) return;
+  restoreRegion(bg, 16, 197, 288, 31);  // caption region from Figma
+  restoreRegion(bg, 228, 19, 76, 13);   // link label region
+  gfx->setTextSize(1);
+  gfx->setTextColor(0x9D15);  // muted grey
+  gfx->setCursor(240, 22);
+  gfx->print(linkName);
+  gfx->setTextColor(C_WHITE);
+  gfx->setCursor(16, 202);
+  gfx->print(meterLevel > 60 ? "Hearing sound - below alert" : "Quiet room");
+  gfx->setTextColor(0x9D15);
+  gfx->setCursor(16, 216);
+  gfx->printf("Alerts: %lu", (unsigned long)alertCount);
 }
 
 void showWaiting() {
   screen = Screen::Waiting;
+  const uint16_t *img = screenImage("waiting");
+  if (img) {
+    gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
+    return;
+  }
   gfx->fillScreen(C_BLACK);
   drawCentered("SoundSense", 50, 4, C_WHITE);
   drawCentered("Waiting for Mac...", 120, 2, C_GREY);
@@ -187,9 +270,15 @@ void showWaiting() {
 void showListening() {
   screen = Screen::Listening;
   lastLevel = -1;
+  const uint16_t *img = screenImage("listening");
+  if (img) {
+    gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
+    memset(barHeight, 0, sizeof(barHeight));
+    drawListeningFooter();
+    return;
+  }
   gfx->fillScreen(C_BLACK);
   drawCentered("LISTENING...", 40, 3, C_GREEN);
-  drawCentered("Sound level", 120, 2, C_GREY);
   char footer[32];
   snprintf(footer, sizeof(footer), "Alerts: %lu  |  %s", (unsigned long)alertCount, linkName);
   drawCentered(footer, 205, 2, C_GREY);
@@ -216,6 +305,15 @@ void showAlert(const char *eventName, float score) {
   screen = Screen::Alert;
   alertStartedMs = millis();
   alertCount++;
+  const uint16_t *img = style->image ? screenImage(style->image) : nullptr;
+  if (img) {
+    gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
+    // live confidence bar over the empty track from Figma (x85 y196, 219x6)
+    int w = constrain(int(219 * score), 6, 219);
+    gfx->fillRoundRect(85, 196, w, 6, 3, C_WHITE);
+    vibrate(style->vibration);
+    return;
+  }
   gfx->fillScreen(style->colour);
   drawCentered(style->title, 60, 6, C_WHITE);
   drawCentered(style->hint, 140, 2, C_WHITE);
@@ -232,8 +330,10 @@ void handleLine(char *text) {
     int level = constrain(atoi(text + 2), 0, 100);
     if (screen == Screen::Waiting) showListening();
     if (screen == Screen::Listening && level != lastLevel) {
+      bool crossed = (level > 60) != (lastLevel > 60);
       drawLevelBar(level);
       lastLevel = level;
+      if (crossed && screenImage("listening")) drawListeningFooter();
     }
   } else if (text[0] == 'E' && text[1] == ',') {
     char *eventName = text + 2;
@@ -296,6 +396,17 @@ void startBluetooth() {
   Serial.printf("BLE advertising as %s (%s)\n", BLE_NAME, BLEDevice::getAddress().toString().c_str());
 }
 
+// CST816 touch: register 0x02 = number of fingers on the screen.
+bool touchReady = false;
+bool screenTouched() {
+  if (!touchReady) return false;
+  Wire.beginTransmission(TOUCH_ADDR);
+  Wire.write(0x02);
+  if (Wire.endTransmission(false) != 0) return false;
+  if (Wire.requestFrom(TOUCH_ADDR, 1) != 1) return false;
+  return (Wire.read() & 0x0F) > 0;
+}
+
 void setup() {
   Serial.begin(115200);
   pinMode(PIN_BOOT_BUTTON, INPUT_PULLUP);
@@ -307,6 +418,7 @@ void setup() {
   }
   pinMode(PIN_LCD_BL, OUTPUT);
   digitalWrite(PIN_LCD_BL, HIGH);
+  touchReady = Wire.begin(PIN_TOUCH_SDA, PIN_TOUCH_SCL, 400000);
   startBluetooth();
   showWaiting();
   vibrate(VIB_SELFTEST);
@@ -316,10 +428,16 @@ void loop() {
   readSerial();
   readBluetooth();
   updateVibration();
+  updateMeter();
   uint32_t now = millis();
 
+  static bool wasTouched = false;
+  bool touched = screenTouched();
+  bool tap = touched && !wasTouched;
+  wasTouched = touched;
+
   if (screen == Screen::Alert) {
-    bool dismissed = digitalRead(PIN_BOOT_BUTTON) == LOW;
+    bool dismissed = digitalRead(PIN_BOOT_BUTTON) == LOW || (tap && now - alertStartedMs > 300);
     if (dismissed || now - alertStartedMs >= ALERT_MS) showListening();
   } else if (screen == Screen::Listening && now - lastMessageMs > LINK_TIMEOUT_MS) {
     showWaiting();
