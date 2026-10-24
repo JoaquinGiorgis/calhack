@@ -7,7 +7,7 @@
 //
 // Layout (everything inside, only the USB-C cable goes out):
 //   [ display section ]  board + glass, captured behind the bezel lip
-//   [ bay ]              transistor + wiring zone and the vibration motor in a cradle
+//   [ bay ]              vibration motor in a cradle (transistor/resistor/diode live under the PCB)
 //   [ dock ]             open USB-C end + shelf for the side-plugged power bank (no cable)
 //
 // Parts:
@@ -62,7 +62,7 @@ skirt_t   = 1.2;     // locating skirt wall on the back plate
 skirt_h   = 5.0;
 tab_t     = 1.35;    // flexible tab thickness (3 extrusion lines @ 0.45)
 tab_h     = 15.5;    // flexible tab height above the plate
-tab_len   = 12.0;    // tab length (along the wall)
+tab_len   = 11.0;    // tab length (along the wall)
 tab_slit  = 0.8;     // slits that free the tab from the skirt
 tab_fillet = 1.0;    // root fillet on the inner side
 snap_r    = 0.8;     // ridge radius; ridge protrudes snap_r, engages snap_r - clr = 0.4 mm
@@ -79,8 +79,9 @@ ear     = 8.0;
 with_motor = true;
 rib_t    = 1.5;      // rib that stops the glass sliding into the bay
 roof_t   = 1.6;      // bay roof thickness (top face)
-// Wiring zone next to the display: PN2222 + 1 kOhm + Dupont jumpers (snap tabs sit here).
-wire_zone = 16;
+// No separate wiring zone: the PN2222, 1 kOhm and 1N4007 fit in the 18 mm under the PCB,
+// between the two header rows. The bay only holds the motor.
+wire_zone = 0;
 // Motor: 130 motor from the hardware desk (measured: body ~25 mm incl. white cap). Cut the zip tie off.
 motor_w  = 20.4;     // body width lying on its flat side
 motor_h  = 15.0;     // height lying on its flat side
@@ -125,7 +126,6 @@ win_w = glass_w - 2*lip_overlap;
 win_l = glass_l - 2*lip_overlap;
 
 bay_y0  = in_l/2 + rib_t;                // bay starts here
-wire_yc = bay_y0 + wire_zone/2;
 motor_yc = bay_y0 + wire_zone + (bay_l - wire_zone)/2;
 skirt_in_w = in_w - 2*clr - 2*skirt_t;   // usable inner width at the floor
 motor_x0 = -in_w/2 + clr + motor_nub + 0.3; // motor body start (-X side, nub behind it); shaft towards +X
@@ -135,7 +135,10 @@ dock_top = z_usb - pb_t_max/2;           // shelf top: power bank centred on the
 holes = [for (sx=[-1,1], sy=[-1,1]) [sx*hole_dx/2, pcb_y_offset + sy*hole_dy/2]];
 // tabs: [x, y, angle] — long sides at the mic zone, short ends at the centre.
 // All clear of the header Dupont rows (|y| < 17.8), the pillars and the motor.
-tabs = [ [ (in_w/2 - clr), wire_yc, 0], [-(in_w/2 - clr), wire_yc, 180],
+// long-side tabs sit beside the motor, offset from the shaft/nub axis so the motor and the
+// spinning weight never touch them while they flex
+tab_motor_dy = -9;   // towards the display: clear of the end wall, the motor nub and the weight
+tabs = [ [ (in_w/2 - clr), motor_yc + tab_motor_dy, 0], [-(in_w/2 - clr), motor_yc + tab_motor_dy, 180],
          [0, in_l/2 + bay_total - clr, 90] ];   // no tab at the USB end: it is open for the power bank
 
 // ---------- Helpers ----------

@@ -61,7 +61,7 @@ report("assembly", v < 1.0, f"overlap volume {v:.3f} mm³")
 print("\ncomponent fit (jumpers, USB plug, power bank, motor, spinning weight)")
 in_w, in_l, back_t = 37.9, 59.6, 2.5
 bay_y0 = in_l / 2 + 1.5
-motor_yc = bay_y0 + 16 + (45.6 - 16) / 2
+motor_yc = bay_y0 + 29.6 / 2
 mx0 = -in_w / 2 + 0.4 + 3 + 0.3
 zc = back_t + 15 / 2
 z_usb = Z_TOP - 1.2 - 7.2 - 1.6
@@ -90,6 +90,8 @@ comps = {
     "Dupont jumpers R": box(17.5 - 2.8, 17.5 - 0.2, -17.8, 17.8, Z_TOP - 1.2 - 9.7 - 14, Z_TOP - 1.2 - 9.7 - 0.05),
     # USB-C cable plugged in: overmold ~12 x 6.5 mm entering through the slot up to the receptacle mouth
     "USB-C plug overmold 12x6.5": box(-6, 6, -45, -25.6 - 6.5, (Z_TOP - 1.2 - 7.2 - 1.6) - 3.25, (Z_TOP - 1.2 - 7.2 - 1.6) + 3.25),
+    # driver parts under the PCB, between the header rows: PN2222 + 1 kOhm + 1N4007 + their jumpers
+    "driver parts under PCB (16x24x16)": box(-8, 8, -12, 12, back_t + 2, back_t + 18),
     "motor body 25x20.4x15": box(mx0, mx0 + 25, motor_yc - 10.2, motor_yc + 10.2, back_t + 0.05, back_t + 15),
     "motor rear nub": cyl_x(3, mx0 - 3, mx0, motor_yc, zc),
     "motor shaft 8 mm": cyl_x(1, mx0 + 25, mx0 + 33, motor_yc, zc),

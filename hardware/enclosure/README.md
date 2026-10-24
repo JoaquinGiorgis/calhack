@@ -6,15 +6,14 @@ Modelo paramétrico en OpenSCAD: [soundsense_case.scad](soundsense_case.scad). M
 **Sin cables:** el power bank USB-C (tipo ARMADIN mini) se enchufa **de costado** directo en la placa, como en el banco de pruebas, y apoya sobre una **repisa** en la punta de la tapa.
 **Sin tornillos:** la tapa trasera cierra por encastre (clic) con 4 lengüetas flexibles diseñadas con las reglas de PLA de [wilsonwaters/3d-printing](https://github.com/wilsonwaters/3d-printing): deformación 0,4 % (máx. 1–1,5 %), largo/espesor 10,4:1 (mín. 10:1), enganche 0,4 mm, redondeo en la raíz.
 
-Tamaño: **41,9 × 108 × 33 mm** de cuerpo + repisa del power bank (78 mm de ancho × 40 mm). Los **jumpers hembra se enchufan directo** en los pines de la placa, sin cortar ni soldar.
+Tamaño: **41,9 × 92 × 33 mm** de cuerpo + repisa del power bank (78 mm de ancho × 40 mm). Los **jumpers hembra se enchufan directo** en los pines de la placa, sin cortar ni soldar.
 
 ```
  vista superior            (+Y = hacia el codo)
       ┌─────────────┐
       │ [  motor  ]=o│  ← motor en la cuna + contrapeso
-      │  transistor  │  ← zona de cables (PN2222, 1 kΩ, jumpers)
       ├─────────────┤  ← nervio que frena el vidrio (los cables pasan por debajo)
-      │  PANTALLA   │
+      │  PANTALLA   │  ← debajo de la placa: transistor, 1 kΩ y diodo (entre las filas de pines)
       └──── USB ────┘  ← punta abierta: termina en el borde del vidrio
  ┌──────────────────────────┐
  │   POWER BANK (de costado)│  ← apoya en la repisa; velcro/gomita por las 2 ranuras
@@ -43,7 +42,7 @@ Si rechazan el archivo por tiempo, mandar `shell.stl` y `back.stl` por separado.
 ## Armado
 1. Enchufar los cables jumper hembra en los pines que usamos (3V3, GND, GPIO4, GPIO17). **No hace falta cortar ni soldar.**
 2. El vidrio entra por atrás en el `shell` y apoya contra el marco.
-3. El transistor, la resistencia y los jumpers van en la zona de cables, envueltos en cinta aislante.
+3. El transistor, la resistencia y el diodo van **debajo de la placa**, entre las dos filas de pines (hay 18 mm de alto libres), envueltos en cinta aislante.
 4. Motor acostado sobre su lado plano en la cuna, con el eje hacia el costado libre. Calzar el `weight` en el eje y verificar que gire sin tocar nada.
 5. Enchufar el power bank de costado en el USB-C, apoyado en la repisa. Si queda flojo (power bank más fino que 28 mm), una tira de cinta en la repisa; asegurarlo con velcro o una gomita por las 2 ranuras.
 6. Cerrar la tapa: entra derecha y hace **clic**. Los 4 pilares aprietan la placa contra el marco.
@@ -55,7 +54,7 @@ Si rechazan el archivo por tiempo, mandar `shell.stl` y `back.stl` por separado.
 - Apoyan en la cama y entran en camas de 180 mm.
 - Ninguna necesita soportes.
 - Shell y tapa armadas no se pisan.
-- Grove Sound Sensor, 2 filas de jumpers Dupont, conector USB-C enchufado, motor, eje y contrapeso girando entran sin chocar (simulación con sus medidas).
+- Power bank enchufado de costado (25 y 28 mm), 2 filas de jumpers Dupont, transistor/resistencia/diodo bajo la placa, motor, eje y contrapeso girando entran sin chocar (simulación con sus medidas).
 - Lengüetas del encastre dentro de los límites de PLA (deformación y proporción largo/espesor).
 
 ## ⚠️ Riesgos conocidos (no verificables sin imprimir ni medir)
