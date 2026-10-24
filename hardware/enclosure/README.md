@@ -2,23 +2,23 @@
 
 Modelo paramétrico en OpenSCAD: [soundsense_case.scad](soundsense_case.scad). Medidas de la placa del dibujo oficial de Waveshare (`docs/hardware/waveshare-size.jpg`).
 
-**Todo va adentro:** placa + pantalla, motor vibrador y driver. Solo sale el cable USB-C al power bank del bolsillo.
-
-> **Arquitectura actual:** el micrófono es el de la Mac/iPhone (ver PROJECT_STATUS), así que el compartimento del micrófono queda libre: ahí van el transistor y los cables. La rejilla y los 4 postes no molestan.
+**Todo va adentro:** placa + pantalla, motor vibrador y driver (transistor, diodo, resistencia y jumpers).
+**Sin cables:** el power bank USB-C (tipo ARMADIN mini) se enchufa **de costado** directo en la placa, como en el banco de pruebas, y apoya sobre una **repisa** en la punta de la tapa.
 **Sin tornillos:** la tapa trasera cierra por encastre (clic) con 4 lengüetas flexibles diseñadas con las reglas de PLA de [wilsonwaters/3d-printing](https://github.com/wilsonwaters/3d-printing): deformación 0,4 % (máx. 1–1,5 %), largo/espesor 10,4:1 (mín. 10:1), enganche 0,4 mm, redondeo en la raíz.
 
-Tamaño: **41,9 × 116 × 33 mm** (57,9 mm de ancho con las orejas del velcro). Es gruesa a propósito: los **cables jumper hembra se enchufan directo en los pines de la placa**, sin cortar ni soldar nada.
+Tamaño: **41,9 × 108 × 33 mm** de cuerpo + repisa del power bank (78 mm de ancho × 40 mm). Los **jumpers hembra se enchufan directo** en los pines de la placa, sin cortar ni soldar.
 
 ```
  vista superior            (+Y = hacia el codo)
- ┌─────────────┐
- │ ░░ rejilla ░│  ← Grove Sound Sensor sobre 4 postes, micrófono pegado a la rejilla, conector hacia la pantalla
- │ [  motor  ]=o│  ← motor en la cuna + contrapeso
- ├─────────────┤  ← nervio que frena el vidrio (los cables pasan por debajo)
- │             │
- │  PANTALLA   │
- │             │
- └────[USB]────┘  ← ranura USB-C + botones RST/BOOT
+      ┌─────────────┐
+      │ [  motor  ]=o│  ← motor en la cuna + contrapeso
+      │  transistor  │  ← zona de cables (PN2222, 1 kΩ, jumpers)
+      ├─────────────┤  ← nervio que frena el vidrio (los cables pasan por debajo)
+      │  PANTALLA   │
+      └──── USB ────┘  ← punta abierta: termina en el borde del vidrio
+ ┌──────────────────────────┐
+ │   POWER BANK (de costado)│  ← apoya en la repisa; velcro/gomita por las 2 ranuras
+ └──────────────────────────┘
 ```
 
 ## 🖨️ Para la cola de impresión de Cal Hacks
@@ -26,7 +26,8 @@ Tamaño: **41,9 × 116 × 33 mm** (57,9 mm de ancho con las orejas del velcro). 
 |---|---|
 | STL | **`stl/plate.stl`** (shell + back + 2 contrapesos en un solo archivo) |
 | Settings | `PLA, 0.2 mm layer, 3 walls, 20% infill, NO supports. Parts are already oriented flat on the bed — please don't rotate them. Brim optional.` |
-| Duración estimada | **2 h** (en la venue hay Bambu P1S y Flashforge Adventurer 5M: ~1,5 h reales + preparación) |
+| Duración estimada | **2 h** (Bambu P1S o Flashforge Adventurer 5M: ~1,5 h reales + preparación) |
+| Nota | Los STL son **binarios y sin triángulos degenerados** (`clean_stl.py`): la versión ASCII anterior daba "file error" en la Adventurer 5M |
 
 Si rechazan el archivo por tiempo, mandar `shell.stl` y `back.stl` por separado.
 
@@ -42,9 +43,9 @@ Si rechazan el archivo por tiempo, mandar `shell.stl` y `back.stl` por separado.
 ## Armado
 1. Enchufar los cables jumper hembra en los pines que usamos (3V3, GND, GPIO4, GPIO17). **No hace falta cortar ni soldar.**
 2. El vidrio entra por atrás en el `shell` y apoya contra el marco.
-3. ~~Grove Sound Sensor~~ (ya no se usa): el transistor con sus jumpers va en ese espacio, envuelto en cinta aislante.
+3. El transistor, la resistencia y los jumpers van en la zona de cables, envueltos en cinta aislante.
 4. Motor acostado sobre su lado plano en la cuna, con el eje hacia el costado libre. Calzar el `weight` en el eje y verificar que gire sin tocar nada.
-5. Transistor y diodo soldados en los cables, con cinta o termocontraíble.
+5. Enchufar el power bank de costado en el USB-C, apoyado en la repisa. Si queda flojo (power bank más fino que 28 mm), una tira de cinta en la repisa; asegurarlo con velcro o una gomita por las 2 ranuras.
 6. Cerrar la tapa: entra derecha y hace **clic**. Los 4 pilares aprietan la placa contra el marco.
 7. Para abrirla, meter una uña o moneda en la muesca del extremo y hacer palanca.
 8. El velcro de 20 mm pasa por las ranuras de las orejas.

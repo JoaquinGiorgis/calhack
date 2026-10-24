@@ -57,15 +57,14 @@ v = 0 if inter.is_empty else inter.volume
 report("assembly", v < 1.0, f"overlap volume {v:.3f} mm³")
 
 # ---- component fit: do the real parts fit inside the assembled case? ----
-# Values mirror soundsense_case.scad (clr 0.4, Grove 1x1 sensor on posts, 130 motor).
-print("\ncomponent fit (Grove sensor, motor, spinning weight)")
+# Values mirror soundsense_case.scad (clr 0.4, side-plugged power bank, 130 motor).
+print("\ncomponent fit (jumpers, USB plug, power bank, motor, spinning weight)")
 in_w, in_l, back_t = 37.9, 59.6, 2.5
 bay_y0 = in_l / 2 + 1.5
-mic_yc = bay_y0 + 21 / 2
-motor_yc = bay_y0 + 21 + (50.6 - 21) / 2
+motor_yc = bay_y0 + 16 + (45.6 - 16) / 2
 mx0 = -in_w / 2 + 0.4 + 3 + 0.3
 zc = back_t + 15 / 2
-post_h = Z_TOP - 1.6 - 1.5 - 8.6 - back_t
+z_usb = Z_TOP - 1.2 - 7.2 - 1.6
 case = trimesh.boolean.union([shell, back], engine="manifold")
 
 
@@ -83,7 +82,9 @@ def cyl_x(r, x0, x1, y, z):
 
 
 comps = {
-    "Grove sensor 22x20x8.6 on posts": box(-11, 11, mic_yc - 10, mic_yc + 10, back_t + post_h + 0.05, back_t + post_h + 8.6),
+    # side-plugged power bank resting against the glass edge (approx. 74 x 38 x 25, and the 28 mm worst case)
+    "power bank 74x38x25": box(-37, 37, -29.4 - 38, -29.4 - 0.05, z_usb - 12.5, z_usb + 12.5),
+    "power bank 74x38x28 (max)": box(-37, 37, -29.4 - 38, -29.4 - 0.05, z_usb - 14 + 0.05, z_usb + 14),
     # 2 rows of 14 female Dupont jumpers on the header pins (housing 14 mm below the standoffs)
     "Dupont jumpers L": box(-17.5 + 0.2, -17.5 + 2.8, -17.8, 17.8, Z_TOP - 1.2 - 9.7 - 14, Z_TOP - 1.2 - 9.7 - 0.05),
     "Dupont jumpers R": box(17.5 - 2.8, 17.5 - 0.2, -17.8, 17.8, Z_TOP - 1.2 - 9.7 - 14, Z_TOP - 1.2 - 9.7 - 0.05),

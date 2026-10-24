@@ -7,10 +7,11 @@
 //
 // Layout (everything inside, only the USB-C cable goes out):
 //   [ display section ]  board + glass, captured behind the bezel lip
-//   [ bay ]              microphone module under a grille + vibration motor in a cradle
+//   [ bay ]              transistor + wiring zone and the vibration motor in a cradle
+//   [ dock ]             open USB-C end + shelf for the side-plugged power bank (no cable)
 //
 // Parts:
-//   shell       — front frame, walls and bay roof with acoustic grille.
+//   shell       — front frame, walls and bay roof; the USB-C end is open for the power bank.
 //   back        — back plate: strap ears, snap-fit skirt, 4 pillars pressing the
 //                 board's brass standoffs, motor cradle.
 //   weight      — eccentric weight that presses on the motor shaft (makes it vibrate).
@@ -68,22 +69,18 @@ snap_r    = 0.8;     // ridge radius; ridge protrudes snap_r, engages snap_r - c
 snap_z_on_tab = 14.0; // ridge height above the plate
 edge_ch   = 0.6;     // chamfer on bed-facing outer edges (elephant foot + skin comfort)
 
-// USB-C + RST/BOOT access slot (short wall at -Y)
-usb_slot_w = 24.0;
-usb_slot_h = 7.5;
 
 // Strap (velcro)
 strap_w = 20.0;
 strap_t = 3.2;
 ear     = 8.0;
 
-// ---------- Bay: mic + motor ----------
+// ---------- Bay: wiring + motor ----------
 with_motor = true;
 rib_t    = 1.5;      // rib that stops the glass sliding into the bay
 roof_t   = 1.6;      // bay roof thickness (top face)
-// Mic: Grove Sound Sensor (1x1 Grove: 20 x 20 mm board, ~22 mm with mounting ears, ~8.5 mm tall).
-// Lies on the floor, mic facing up under the grille, Grove connector towards the display.
-mic_zone = 21;       // length (Y) of the mic area, next to the display
+// Wiring zone next to the display: PN2222 + 1 kOhm + Dupont jumpers (snap tabs sit here).
+wire_zone = 16;
 // Motor: 130 motor from the hardware desk (measured: body ~25 mm incl. white cap). Cut the zip tie off.
 motor_w  = 20.4;     // body width lying on its flat side
 motor_h  = 15.0;     // height lying on its flat side
@@ -93,10 +90,17 @@ motor_shaft = 8.0;   // shaft sticking out the front
 shaft_d  = 2.0;
 rail_h   = 6.0;
 rail_t   = 1.6;
-bay_l    = with_motor ? mic_zone + motor_w + 2*rail_t + 6 : mic_zone + 2; // inner length of the bay (Y); +6 keeps the end snap tab free to flex
-sens_h   = 8.6;      // Grove sensor height (PCB + mic capsule)
-mic_gap  = 1.5;      // air gap between mic capsule and the grille
-post_d   = 5.0;      // posts that lift the Grove sensor up to the grille
+bay_l    = with_motor ? wire_zone + motor_w + 2*rail_t + 6 : wire_zone + 2; // inner length of the bay (Y); +6 keeps the end snap tab free to flex
+
+// ---------- Power bank dock (side-plugged USB-C power bank, e.g. ARMADIN mini) ----------
+// The power bank plugs straight into the board and lies flat across the arm (T shape).
+// The shelf only supports it from below, so any length/height fits; secure it with a
+// velcro strip or rubber band through the two slots.
+pb_t_max  = 28;      // thickest power bank supported; thinner ones: shim with tape
+dock_len  = 40;      // shelf depth along the arm (Y)
+dock_base_w = 60;    // width at the skin
+dock_gap  = 0.6;     // gap between shell end and shelf
+dock_slot = [3.4, 22]; // velcro/rubber-band slots (X, Y)
 
 // ---------- Derived ----------
 in_w  = glass_w + 2*clr;
@@ -121,18 +125,18 @@ win_w = glass_w - 2*lip_overlap;
 win_l = glass_l - 2*lip_overlap;
 
 bay_y0  = in_l/2 + rib_t;                // bay starts here
-mic_yc  = bay_y0 + mic_zone/2;
-motor_yc = bay_y0 + mic_zone + (bay_l - mic_zone)/2;
+wire_yc = bay_y0 + wire_zone/2;
+motor_yc = bay_y0 + wire_zone + (bay_l - wire_zone)/2;
 skirt_in_w = in_w - 2*clr - 2*skirt_t;   // usable inner width at the floor
 motor_x0 = -in_w/2 + clr + motor_nub + 0.3; // motor body start (-X side, nub behind it); shaft towards +X
 motor_notch_l = motor_w + 2*rail_t + 2;     // skirt is cut away here so motor + shaft fit the full width
-post_h   = z_top - roof_t - mic_gap - sens_h - back_t; // sensor sits on top of the posts
+dock_top = z_usb - pb_t_max/2;           // shelf top: power bank centred on the USB-C plug
 
 holes = [for (sx=[-1,1], sy=[-1,1]) [sx*hole_dx/2, pcb_y_offset + sy*hole_dy/2]];
 // tabs: [x, y, angle] — long sides at the mic zone, short ends at the centre.
 // All clear of the header Dupont rows (|y| < 17.8), the pillars and the motor.
-tabs = [ [ (in_w/2 - clr), mic_yc, 0], [-(in_w/2 - clr), mic_yc, 180],
-         [0, -(in_l/2 - clr), 270], [0, in_l/2 + bay_total - clr, 90] ];
+tabs = [ [ (in_w/2 - clr), wire_yc, 0], [-(in_w/2 - clr), wire_yc, 180],
+         [0, in_l/2 + bay_total - clr, 90] ];   // no tab at the USB end: it is open for the power bank
 
 // ---------- Helpers ----------
 module rrect2(w, l, r) { offset(r) square([w-2*r, l-2*r], center=true); }
@@ -154,10 +158,6 @@ module shell() {
             // wire passage under the rib
             translate([0, in_l/2 + rib_t/2, (z_flange + z_glass - 3)/2])
                 cube([in_w, rib_t + 4, z_glass - 3 - z_flange + 2], center=true); // full width: skirt passes under the rib
-            // acoustic grille over the mic zone
-            for (x=[-14:3:14], y=[-mic_zone/2+3:3:mic_zone/2-3])
-                translate([x + ((round(y/3)%2==0)?0:1.5), mic_yc + y, z_top - roof_t - 1])
-                    cylinder(d=1.8, h=roof_t + 2, $fn=16);
         }
 
         // display window, chamfered for finger access
@@ -167,8 +167,9 @@ module shell() {
         }
         translate([0,0,z_top-0.01]) rrect(win_w + 2*0.8*lip, win_l + 2*0.8*lip, 1.5 + 0.8*lip, 1);
 
-        // USB-C + RST/BOOT slot
-        translate([0, -(in_l/2 + wall/2), z_usb]) slot_y(usb_slot_w, usb_slot_h, 2, wall*3);
+        // open USB-C end: the shell stops at the glass edge, so the side-plugged power bank
+        // sits against the board exactly like on the bare board
+        translate([-out_w, -(in_l/2 + wall + 5), z_flange - 1]) cube([2*out_w, (in_l/2 + wall + 5) - glass_l/2, z_top - z_flange + 2]);
 
         // snap grooves (match the ridges on the back plate tabs)
         for (t = tabs) translate([t[0], t[1], z_snap]) rotate([0,0,t[2]]) rod_y(snap_r + 0.15, tab_len + 1);
@@ -231,8 +232,20 @@ module back() {
     }
     // pillars pressing on the brass standoffs
     for (p = holes) translate([p[0], p[1], back_t - 0.01]) cylinder(d=pillar_d, h=plug_h + gap_below + pillar_extra + 0.01);
-    // posts lifting the Grove sensor (20 x 20) close to the grille
-    for (sx=[-1,1], sy=[-1,1]) translate([sx*7.5, mic_yc + sy*7.5, back_t - 0.01]) cylinder(d=post_d, h=post_h + 0.01);
+    // power bank shelf at the USB end (45° flared sides: prints without supports)
+    dock_y = -(in_l/2 + wall) - dock_gap;
+    difference() {
+        union() {
+            translate([0, dock_y - dock_len/2, 0]) hull() {
+                rrect(dock_base_w, dock_len, 4, 0.01);
+                translate([0,0,dock_top - 0.01]) rrect(dock_base_w + 2*dock_top, dock_len, 4, 0.01);
+            }
+            // tie the shelf into the back plate
+            translate([-dock_base_w/2, dock_y - 0.01, 0]) cube([dock_base_w, dock_gap + 4, back_t]);
+        }
+        for (sx=[-1,1]) translate([sx*(dock_base_w/2 + dock_top - dock_slot[0]/2 - 3), dock_y - dock_len/2, -1])
+            rrect(dock_slot[0], dock_slot[1], dock_slot[0]/2 - 0.01, dock_top + 2);
+    }
     // motor cradle: two rails along X + end stop
     if (with_motor) translate([0, motor_yc, back_t - 0.01]) {
         for (sy=[-1,1]) translate([motor_x0 + motor_l/2, sy*(motor_w/2 + clr/2 + rail_t/2), rail_h/2])
@@ -265,8 +278,7 @@ module ghosts() {
         translate([-motor_nub, 0, motor_h/2]) rotate([0,90,0]) cylinder(d=6, h=motor_nub);
         translate([motor_l + 3, 0, motor_h/2]) rotate([0,90,0]) color("orange") weight();
     }
-    color("royalblue", 0.8) translate([0, mic_yc, back_t + post_h + 0.8]) cube([22, 20, 1.6], center=true);
-    color("silver") translate([4, mic_yc + 2, back_t + post_h + 1.6]) cylinder(d=9.7, h=sens_h - 1.6);
+    color("#111111") translate([0, -glass_l/2 - 38/2, z_usb]) cube([74, 38, 25], center=true); // power bank (approx.)
 }
 
 // ---------- Layouts ----------

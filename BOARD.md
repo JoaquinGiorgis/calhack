@@ -58,7 +58,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
 |---|---|---|---|---|---|
 | C1 | DONE | Carcasa paramétrica, encastre sin tornillos (reglas PLA), todo adentro, verificada con `check_stl.py` | Joaquin | — | `hardware/enclosure/stl/plate.stl` |
-| C2 | TODO | **Enviar `plate.stl` a la cola de impresión** (form Cal Hacks, 2 h, settings en [README](hardware/enclosure/README.md)) | | — | Aparece en el spreadsheet de la cola |
+| C2 | DOING | **Reenviar `plate.stl` (v3: sin Grove, repisa del power bank, STL binario limpio)** a la cola de impresión. v1/v2 dieron "file error" en la Adventurer 5M (form Cal Hacks, 2 h, settings en [README](hardware/enclosure/README.md)) | | — | Aparece en el spreadsheet de la cola |
 | C3 | DONE | Motor medido (130: 25 mm + eje) | Joaquin | — | — |
 | C5 | TODO | Montaje: vidrio → shell, motor + contrapeso en la cuna, transistor/cables en el compartimento, tapa a presión, velcro | | C2, H7 | Se usa en la muñeca 10 min sin moverse |
 
