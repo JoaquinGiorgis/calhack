@@ -17,6 +17,9 @@ text messages (like `E,KNOCK,0.62`) to the wristband. **Audio never leaves the M
 > wristband. SoundSense is a complementary aid and **does not replace certified smoke
 > alarms or other safety devices.**
 
+For where the project stands, why it is built this way, and what's next, see
+[PROJECT_STATUS.md](PROJECT_STATUS.md).
+
 ## What's in this repo
 
 | Path | What it is |
