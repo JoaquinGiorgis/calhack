@@ -67,7 +67,7 @@ Si rechazan el archivo por tiempo, mandar `shell.stl` y `back.stl` por separado.
 
 ## Regenerar y verificar
 ```bash
-cd hardware/tools && npm install && node export-stl.mjs
+cd hardware/tools && npm install && node export-stl.mjs && python clean_stl.py   # clean_stl: binary STL sin triángulos degenerados
 python3 -m venv .venv && .venv/bin/pip install trimesh manifold3d numpy scipy && .venv/bin/python check_stl.py
 ```
 Ver en 3D: `python3 -m http.server 8765 --directory hardware/enclosure` y abrir http://localhost:8765/viewer.html
