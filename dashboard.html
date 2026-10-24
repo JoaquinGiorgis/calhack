@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SoundSense Dashboard</title>
+<style>
+  :root {
+    --bg:#f5f4f0; --panel:#ffffff; --fg:#1b1b1d; --muted:#6c6b70; --line:#e3e1db;
+    --todo:#8a8a90; --doing:#d97a06; --done:#1f9d55; --cut:#b0475a; --accent:#3a5bd9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#121214; --panel:#1c1c1f; --fg:#ececee; --muted:#9a9aa1; --line:#2c2c31;
+            --todo:#8d8d95; --doing:#f0a030; --done:#38c172; --cut:#e06a80; --accent:#7d97ff; }
+  }
+  * { box-sizing:border-box; }
+  html,body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 ui-sans-serif, system-ui, -apple-system, sans-serif; }
+  header { display:flex; align-items:center; gap:16px; padding:14px 20px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:5; flex-wrap:wrap; }
+  header h1 { font-size:17px; margin:0; letter-spacing:-.01em; }
+  header h1 span { color:var(--muted); font-weight:500; }
+  nav { display:flex; gap:4px; }
+  nav button { border:1px solid var(--line); background:transparent; color:var(--fg); padding:6px 12px; border-radius:8px; cursor:pointer; font:inherit; }
+  nav button.on { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+  .grow { flex:1; }
+  .meta { color:var(--muted); font-size:12px; }
+  main { padding:18px 20px 40px; }
+  .summary { display:grid; grid-template-columns: minmax(240px, 1fr) 2fr; gap:16px; margin-bottom:18px; }
+  @media (max-width: 860px) { .summary { grid-template-columns: 1fr; } }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
+  .card h2 { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 10px; font-weight:600; }
+  .big { font-size:34px; font-weight:700; letter-spacing:-.02em; }
+  .bar { height:8px; background:var(--line); border-radius:99px; overflow:hidden; display:flex; margin:10px 0 8px; }
+  .bar i { display:block; height:100%; }
+  .legend { display:flex; gap:12px; flex-wrap:wrap; font-size:12px; color:var(--muted); }
+  .legend b { display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:5px; vertical-align:middle; }
+  table.ms { width:100%; border-collapse:collapse; font-size:13px; }
+  table.ms td { padding:5px 6px; border-top:1px solid var(--line); vertical-align:top; }
+  table.ms td:first-child { font-weight:700; white-space:nowrap; }
+  table.ms td:nth-child(2) { color:var(--muted); white-space:nowrap; }
+  .filters { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .chip { border:1px solid var(--line); background:var(--panel); color:var(--fg); border-radius:99px; padding:4px 10px; cursor:pointer; font:inherit; font-size:12px; }
+  .chip.on { border-color:var(--accent); color:var(--accent); font-weight:600; }
+  .board { display:grid; grid-template-columns:repeat(4, minmax(220px, 1fr)); gap:12px; }
+  @media (max-width: 1000px) { .board { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+  @media (max-width: 560px) { .board { grid-template-columns:1fr; } }
+  .col { background:transparent; }
+  .col h3 { font-size:13px; margin:0 0 8px; display:flex; align-items:center; gap:8px; }
+  .col h3 .dot { width:9px; height:9px; border-radius:50%; }
+  .col h3 .n { color:var(--muted); font-weight:500; }
+  .task { background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--c); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+  .task .top { display:flex; gap:6px; align-items:center; margin-bottom:4px; font-size:11px; color:var(--muted); }
+  .task .id { font-weight:700; color:var(--fg); font-family:ui-monospace, monospace; }
+  .task .title { font-size:13px; }
+  .task .done-when { margin-top:6px; font-size:12px; color:var(--muted); }
+  .task .done-when::before { content:"✓ "; }
+  .task .owner { margin-left:auto; background:var(--line); border-radius:99px; padding:1px 7px; color:var(--fg); }
+  .task .dep { font-size:11px; color:var(--muted); margin-top:4px; }
+  code { font-family:ui-monospace, monospace; font-size:.92em; background:var(--line); padding:0 4px; border-radius:4px; }
+  a { color:var(--accent); }
+  .notes { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  @media (max-width: 860px) { .notes { grid-template-columns:1fr; } }
+  .notes ol, .notes ul { margin:0; padding-left:18px; }
+  #design { display:none; height:calc(100vh - 62px); }
+  #design iframe { width:100%; height:100%; border:0; background:var(--bg); }
+  .err { color:var(--cut); }
+</style>
+</head>
+<body>
+<header>
+  <h1>SoundSense <span>· Cal Hacks 13.0</span></h1>
+  <nav>
+    <button id="tab-board" class="on">Tablero</button>
+    <button id="tab-design">Diseño 3D</button>
+  </nav>
+  <div class="grow"></div>
+  <div class="meta" id="meta">cargando…</div>
+</header>
+
+<main id="board-view">
+  <section class="summary">
+    <div class="card">
+      <h2>Progreso</h2>
+      <div class="big" id="pct">–</div>
+      <div class="bar" id="bar"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="card">
+      <h2>Hitos</h2>
+      <table class="ms" id="milestones"></table>
+    </div>
+  </section>
+  <div class="filters" id="filters"></div>
+  <section class="board" id="board"></section>
+  <section class="notes">
+    <div class="card"><h2>Plan de recorte</h2><div id="cut"></div></div>
+    <div class="card"><h2>Reglas de honestidad</h2><div id="rules"></div></div>
+  </section>
+</main>
+<section id="design"><iframe id="viewer" title="Carcasa 3D"></iframe></section>
+
+<script>
+const STATUSES = [
+  { key: "TODO",  label: "Por hacer", color: "var(--todo)" },
+  { key: "DOING", label: "En curso",  color: "var(--doing)" },
+  { key: "DONE",  label: "Hecho",     color: "var(--done)" },
+  { key: "CUT",   label: "Recortado", color: "var(--cut)" },
+];
+const TRACK_COLORS = ["#3a5bd9", "#d97a06", "#1f9d55", "#8b5cf6", "#0ea5b7", "#e11d74"];
+let tasks = [], tracks = [], activeTrack = "Todos", lastText = "";
+
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+const inline = s => esc(s)
+  .replace(/`([^`]+)`/g, "<code>$1</code>")
+  .replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>")
+  .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, t, u) => `<a href="${u}" target="_blank">${t}</a>`);
+
+function cells(line) { return line.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim()); }
+
+function parse(md) {
+  const lines = md.split("\n");
+  const out = { tasks: [], tracks: [], milestones: [], cut: [], rules: [] };
+  let section = "", header = null;
+  for (const line of lines) {
+    const h = line.match(/^##\s+(.*)$/);
+    if (h) { section = h[1].trim(); header = null; continue; }
+    if (line.trim().startsWith("|")) {
+      const c = cells(line);
+      if (c.every(x => /^-+$/.test(x))) continue;
+      if (!header) { header = c.map(x => x.toLowerCase()); continue; }
+      const row = Object.fromEntries(header.map((k, i) => [k, c[i] ?? ""]));
+      if (header.includes("hito")) out.milestones.push(row);
+      else if (header.includes("estado")) {
+        const track = section.replace(/^[^\p{L}\d]*\d*\.?\s*/u, "").replace(/\s*\(.*\)$/, "");
+        if (!out.tracks.includes(track)) out.tracks.push(track);
+        const st = (row.estado || "TODO").toUpperCase();
+        out.tasks.push({
+          id: row.id, status: STATUSES.some(s => s.key === st) ? st : "TODO", title: row.tarea || "",
+          owner: row.owner || "", dep: row.depende || "", doneWhen: row["done cuando"] || "", track,
+        });
+      }
+      continue;
+    }
+    header = null;
+    if (/recorte/i.test(section) && /^\s*\d+\./.test(line)) out.cut.push(line.replace(/^\s*\d+\.\s*/, ""));
+    if (/honestidad/i.test(section) && /^\s*-\s/.test(line)) out.rules.push(line.replace(/^\s*-\s*/, ""));
+  }
+  return out;
+}
+
+function render(data) {
+  tasks = data.tasks; tracks = data.tracks;
+  const total = tasks.filter(t => t.status !== "CUT").length;
+  const done = tasks.filter(t => t.status === "DONE").length;
+  document.getElementById("pct").textContent = total ? `${Math.round(100 * done / total)}%` : "–";
+  const counts = Object.fromEntries(STATUSES.map(s => [s.key, tasks.filter(t => t.status === s.key).length]));
+  document.getElementById("bar").innerHTML = STATUSES.map(s => counts[s.key] ? `<i style="width:${100*counts[s.key]/tasks.length}%;background:${s.color}"></i>` : "").join("");
+  document.getElementById("legend").innerHTML = STATUSES.map(s => `<span><b style="background:${s.color}"></b>${s.label} ${counts[s.key]}</span>`).join("");
+  document.getElementById("milestones").innerHTML = data.milestones.map(m => `<tr><td>${inline(m.hito)}</td><td>${inline(m["cuándo"] || m.cuando || "")}</td><td>${inline(m["qué tiene que existir"] || "")}</td></tr>`).join("");
+  document.getElementById("cut").innerHTML = `<ol>${data.cut.map(c => `<li>${inline(c)}</li>`).join("")}</ol>`;
+  document.getElementById("rules").innerHTML = `<ul>${data.rules.map(c => `<li>${inline(c)}</li>`).join("")}</ul>`;
+  if (!["Todos", ...tracks].includes(activeTrack)) activeTrack = "Todos";
+  document.getElementById("filters").innerHTML = ["Todos", ...tracks].map(t =>
+    `<button class="chip ${t === activeTrack ? "on" : ""}" data-t="${esc(t)}">${esc(t)}</button>`).join("");
+  document.querySelectorAll(".chip").forEach(b => b.onclick = () => { activeTrack = b.dataset.t; render(data); });
+  const visible = tasks.filter(t => activeTrack === "Todos" || t.track === activeTrack);
+  document.getElementById("board").innerHTML = STATUSES.map(s => {
+    const list = visible.filter(t => t.status === s.key);
+    return `<div class="col"><h3><span class="dot" style="background:${s.color}"></span>${s.label}<span class="n">${list.length}</span></h3>
+      ${list.map(t => `<div class="task" style="--c:${TRACK_COLORS[tracks.indexOf(t.track) % TRACK_COLORS.length]}">
+        <div class="top"><span class="id">${esc(t.id)}</span><span>${esc(t.track)}</span>${t.owner ? `<span class="owner">${esc(t.owner)}</span>` : ""}</div>
+        <div class="title">${inline(t.title)}</div>
+        ${t.dep && t.dep !== "—" ? `<div class="dep">depende de ${inline(t.dep)}</div>` : ""}
+        ${t.doneWhen ? `<div class="done-when">${inline(t.doneWhen)}</div>` : ""}
+      </div>`).join("")}</div>`;
+  }).join("");
+}
+
+async function load() {
+  try {
+    const r = await fetch(`BOARD.md?t=${Date.now()}`, { cache: "no-store" });
+    const text = await r.text();
+    if (text !== lastText) { lastText = text; render(parse(text)); }
+    document.getElementById("meta").textContent = `BOARD.md · actualizado ${new Date().toLocaleTimeString()}`;
+  } catch (e) {
+    document.getElementById("meta").innerHTML = `<span class="err">No se pudo leer BOARD.md (¿servidor apagado?)</span>`;
+  }
+}
+load(); setInterval(load, 4000);
+
+const tabB = document.getElementById("tab-board"), tabD = document.getElementById("tab-design");
+function show(design) {
+  document.getElementById("board-view").style.display = design ? "none" : "";
+  document.getElementById("design").style.display = design ? "block" : "none";
+  tabB.classList.toggle("on", !design); tabD.classList.toggle("on", design);
+  if (location.hash !== (design ? "#diseno" : "#tablero")) history.replaceState(null, "", design ? "#diseno" : "#tablero");
+}
+document.getElementById("viewer").src = `hardware/enclosure/viewer.html?v=${Date.now()}`; // always fresh
+tabB.onclick = () => show(false); tabD.onclick = () => show(true);
+show(location.hash === "#diseno");
+</script>
+</body>
+</html>

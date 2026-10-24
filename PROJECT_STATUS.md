@@ -25,8 +25,8 @@ replace smoke alarms or other alerting systems.
 | USB link (fallback) | Working |
 | 10 alert types with priorities and thresholds | Working, thresholds partly validated (see below) |
 | Live test with real sounds, end to end | Partially done; needs a full pass per alert |
-| 3D-printed case and strap | Not started in this repo |
-| Vibration | Not started (needs a motor and driver circuit) |
+| 3D-printed case and strap | Designed and verified (`hardware/enclosure/`, `plate.stl`); not printed yet |
+| Vibration | Firmware done (pattern per alert priority, compiles); motor + PN2222 driver working on a breadboard |
 | Classification on the wristband itself | Not started (needs an I2S microphone) |
 
 ### What has been verified
@@ -66,6 +66,12 @@ Mac microphone ─► YAMNet (on the Mac) ─► Bluetooth LE ─► ESP32-S3 wr
 - **Wristband:** Waveshare ESP32-S3-Touch-LCD-2 (ESP32-S3R8, 8 MB PSRAM, 16 MB flash,
   2" 240×320 touchscreen), powered by a USB-C power bank.
 - **Listener:** a Mac. Its built-in mic or an iPhone (via Continuity) works.
+- **Vibration:** 130 DC motor with a printed eccentric weight, switched by a PN2222
+  from GPIO17 (1 kΩ to the base, motor on 5 V, 1N4007 across the motor).
+- **Case:** parametric OpenSCAD model with a snap-fit back (no screws), sized for the
+  board, female Dupont jumpers on the header pins, and the motor. Checked with
+  `hardware/tools/check_stl.py` (watertight parts, no collisions, PLA snap-fit
+  strain 0.4 %). See `hardware/enclosure/README.md`.
 
 ## Key decisions and why
 
@@ -108,7 +114,7 @@ only "Bark" because the broader "Dog" class fired on pigs and toothbrushes.
 - YAMNet can tell that speech is happening, not who is speaking or whether someone
   said the user's name.
 - Some car horns are labelled ALARM. Both still raise an alert.
-- Alerts are visual only (no vibration yet).
+- Vibration uses a small DC motor with a printed eccentric weight, not a coin vibration motor, and has not been tested on the wrist yet.
 - Dismissing an alert uses the small BOOT button, not the touchscreen.
 
 ## Next steps
@@ -122,8 +128,9 @@ only "Bark" because the broader "Dog" class fired on pigs and toothbrushes.
 **Product:**
 1. **iPhone app as the listener**, using Apple's on-device sound classifier and
    sending the same Bluetooth messages, so the phone stays in a pocket.
-2. **Vibration** with a distinct pattern per alert. For deaf users, feeling an alert
-   matters more than seeing it.
+2. **Vibration:** patterns per priority are in the firmware (safety: 3 long, attention:
+   2 short, low: 1 short). Next: test them on the wrist and swap the DC motor for a
+   coin vibration motor. For deaf users, feeling an alert matters more than seeing it.
 3. **Touch-to-dismiss** and an alert history screen.
 4. **Fully on-device:** add an INMP441 microphone and run an INT8 YAMNet on the
    ESP32-S3, so no phone or laptop is needed. This needs latency and memory checks on

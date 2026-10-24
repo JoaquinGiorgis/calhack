@@ -28,6 +28,10 @@ For where the project stands, why it is built this way, and what's next, see
 | `live_demo/soundsense_display/` | Wristband firmware (Arduino sketch) |
 | `live_demo/requirements.txt` | Python packages for the Mac program |
 | `pretrained/yamnet/` | Google's YAMNet model (Apache 2.0), loaded by the Mac program |
+| `hardware/enclosure/` | 3D-printable wristband case (OpenSCAD source, STLs, 3D viewer) |
+| `hardware/tools/` | STL export and pre-print checks for the case |
+| `docs/hardware/` | Hardware inventory and parts photos |
+| `BOARD.md` · `dashboard.html` | Team task board and a local dashboard for it (Spanish) |
 
 ## What it detects
 
@@ -98,6 +102,12 @@ library **GFX Library for Arduino** (by Moon On Our Nation). Open
 | PSRAM | OPI PSRAM |
 
 Then click Upload.
+
+**Or with PlatformIO** (no Arduino IDE needed):
+
+```bash
+cd live_demo/soundsense_display && pio run -t upload
+```
 
 **Or with `arduino-cli`:**
 
@@ -175,7 +185,7 @@ any new name automatically. For a custom colour and hint text, add it to
 - Run classification on the wristband with an I2S MEMS microphone (INMP441), so no
   Mac or phone is needed
 - iPhone app as the listener, so the phone stays in a pocket
-- Vibration alerts with distinct patterns, touch-to-dismiss, alert history
+- Touch-to-dismiss and alert history (vibration patterns per priority are already in the firmware)
 
 ## Credits
 

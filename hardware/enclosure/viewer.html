@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SoundSense Case Viewer</title>
+<style>
+  :root { --bg:#f4f3f0; --fg:#1d1d1f; --muted:#6b6b70; --card:#fff; --line:#e2e0db; --accent:#3a5bd9; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#151517; --fg:#ececee; --muted:#9a9aa0; --card:#1f1f22; --line:#2e2e33; --accent:#7d97ff; } }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--fg); font:14px/1.4 system-ui, sans-serif; overflow:hidden; }
+  #ui { position:absolute; top:12px; left:12px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 12px; max-width:260px; z-index:2; }
+  #ui h1 { font-size:15px; margin:0 0 8px; }
+  .row { display:flex; gap:6px; flex-wrap:wrap; }
+  button { padding:5px 10px; border-radius:7px; border:1px solid var(--line); background:var(--bg); color:var(--fg); cursor:pointer; font:inherit; font-size:13px; }
+  button.on { border-color:var(--accent); color:var(--accent); font-weight:600; }
+  #ui p { color:var(--muted); margin:8px 0 0; font-size:12px; }
+  #step { position:absolute; left:50%; bottom:22px; transform:translateX(-50%); background:var(--card); border:1px solid var(--line); border-radius:99px; padding:8px 16px; font-weight:600; font-size:14px; white-space:nowrap; z-index:2; transition:opacity .3s; }
+  @media (max-width:520px) { #step { font-size:12px; white-space:normal; width:80%; text-align:center; } }
+  canvas { display:block; }
+</style>
+<script>
+  // show load errors instead of hanging on "Cargando…"
+  addEventListener("error", e => { const s = document.getElementById("step"); if (s) s.textContent = "Error: " + (e.message || "no se pudo cargar el visor"); });
+  addEventListener("unhandledrejection", e => { const s = document.getElementById("step"); if (s) s.textContent = "Error: " + (e.reason?.message || e.reason); });
+</script>
+</head>
+<body>
+<div id="ui">
+  <h1>SoundSense — carcasa</h1>
+  <div class="row">
+    <button id="play" class="on">⏸ Pausar</button>
+    <button id="xray">Ver por dentro</button>
+  </div>
+  <p>Arrastrar para rotar · rueda para zoom.<br>Medidas reales: 42 × 116 × 33 mm.</p>
+</div>
+<div id="step">Cargando…</div>
+<script type="module">
+import * as THREE from "https://esm.sh/three@0.160.0";
+import { OrbitControls } from "https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+import { STLLoader } from "https://esm.sh/three@0.160.0/examples/jsm/loaders/STLLoader.js";
+
+// ---- dimensions mirrored from soundsense_case.scad ----
+const D = { backT: 2.5, zTop: 32.9, zGlass: 31.7, zPcb: 24.5, micYc: 41.8, postH: 18.7, motorYc: 67.1, mx0: -15.25 };
+const yMid = 24; // body centre along Y
+
+const scene = new THREE.Scene();
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(devicePixelRatio);
+document.body.appendChild(renderer.domElement);
+const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 3000);
+camera.up.set(0, 0, 1);
+camera.position.set(170, -150, 150);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, yMid, 22);
+controls.autoRotate = true; controls.autoRotateSpeed = 0.6;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x555555, 1.5));
+const sun = new THREE.DirectionalLight(0xffffff, 1.8); sun.position.set(80, -60, 160); scene.add(sun);
+
+const mat = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.05, ...o });
+const boxAt = (x0, x1, y0, y1, z0, z1, m) => {
+  const b = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), m);
+  b.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); return b;
+};
+const cylX = (r, x0, x1, y, z, m) => {
+  const c = new THREE.Mesh(new THREE.CylinderGeometry(r, r, x1 - x0, 32), m);
+  c.rotation.z = Math.PI / 2; c.position.set((x0 + x1) / 2, y, z); return c;
+};
+
+// ---- groups that move during the animation ----
+const gBack = new THREE.Group();   // back plate + sensor + motor
+const gBoard = new THREE.Group();  // glass + LCD + PCB + jumpers
+const gShell = new THREE.Group();
+scene.add(gBack, gBoard, gShell);
+
+// board
+gBoard.add(boxAt(-18.55, 18.55, -29.4, 29.4, D.zGlass - 1.1, D.zGlass, mat(0x0b0b0d, { roughness: 0.15 })));
+const lcd = new THREE.Mesh(new THREE.PlaneGeometry(31, 41.2), new THREE.MeshBasicMaterial({ color: 0x3a6fd8 }));
+lcd.position.set(0, -29.4 + 10.29 + 20.6, D.zGlass + 0.06); gBoard.add(lcd);
+{
+  const c = document.createElement("canvas"); c.width = 310; c.height = 412;
+  const x = c.getContext("2d"); x.fillStyle = "#c62828"; x.fillRect(0, 0, 310, 412);
+  x.fillStyle = "#fff"; x.font = "bold 46px system-ui"; x.textAlign = "center";
+  x.fillText("LOUD", 155, 230); x.fillText("SOUND", 155, 285);
+  lcd.userData.alert = new THREE.CanvasTexture(c);
+}
+gBoard.add(boxAt(-17.5, 17.5, -24.1, 24.1, D.zPcb, D.zPcb + 1.6, mat(0x1f6f3f)));
+for (const sx of [-1, 1]) for (const sy of [-1, 1]) {
+  const s = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.75, 2.5, 20), mat(0xd4a017, { metalness: 0.6 }));
+  s.rotation.x = Math.PI / 2; s.position.set(sx * 14.5, sy * 21.1, D.zPcb - 1.25); gBoard.add(s);
+}
+// Dupont jumpers (black housings) on both header rows
+for (const sx of [-1, 1]) gBoard.add(boxAt(sx * 16 - 1.3, sx * 16 + 1.3, -17.8, 17.8, D.zPcb - 2.5 - 14, D.zPcb - 2.5, mat(0x111111)));
+
+// sensor + motor on the back plate
+gBack.add(boxAt(-11, 11, D.micYc - 10, D.micYc + 10, D.backT + D.postH, D.backT + D.postH + 1.6, mat(0x1e4fa8)));
+const micCap = new THREE.Mesh(new THREE.CylinderGeometry(4.85, 4.85, 7, 32), mat(0x2a2a2a));
+micCap.rotation.x = Math.PI / 2; micCap.position.set(4, D.micYc + 2, D.backT + D.postH + 1.6 + 3.5); gBack.add(micCap);
+const motor = new THREE.Group(); gBack.add(motor);
+motor.add(boxAt(D.mx0 + 8, D.mx0 + 25, D.motorYc - 10.2, D.motorYc + 10.2, D.backT, D.backT + 15, mat(0xb8bcc2, { metalness: 0.7, roughness: 0.3 })));
+motor.add(boxAt(D.mx0, D.mx0 + 8, D.motorYc - 10.2, D.motorYc + 10.2, D.backT, D.backT + 15, mat(0xf2f0ea)));
+motor.add(cylX(1, D.mx0 + 25, D.mx0 + 33, D.motorYc, D.backT + 7.5, mat(0xcccccc, { metalness: 0.8 })));
+const weight = new THREE.Group(); weight.position.set(D.mx0 + 29.5, D.motorYc, D.backT + 7.5); motor.add(weight);
+{
+  const w = new THREE.Mesh(new THREE.CylinderGeometry(5.5, 5.5, 5, 32, 1, false, 0, Math.PI), mat(0xf28c28));
+  w.rotation.z = Math.PI / 2; weight.add(w);
+}
+
+// ---- STL parts ----
+const loader = new STLLoader();
+const shellMat = mat(0xe8e6e1, { transparent: true, opacity: 1 });
+const load = url => new Promise((res, rej) => loader.load(`${url}?v=${Date.now()}`, g => { g.computeVertexNormals(); res(g); }, undefined, rej));
+let backGeo, shellGeo;
+try {
+  [backGeo, shellGeo] = await Promise.all([load("stl/back.stl"), load("stl/shell.stl")]);
+} catch (e) {
+  document.getElementById("step").textContent = location.protocol === "file:"
+    ? "Abrir con el servidor: http://localhost:8765/dashboard.html#diseno"
+    : "No se pudieron cargar los STL (¿servidor apagado?)";
+  throw e;
+}
+gBack.add(new THREE.Mesh(backGeo, mat(0x2b2d31)));
+const shellMesh = new THREE.Mesh(shellGeo, shellMat);
+shellMesh.scale.z = -1; shellMesh.position.z = D.zTop; // undo print flip (mirror Z only, like the .scad)
+gShell.add(shellMesh);
+
+// ---- animation timeline (seconds) ----
+const steps = [
+  { t: 0,    label: "1 · Las piezas separadas" },
+  { t: 2.5,  label: "2 · La placa entra en el cuerpo (vidrio contra el marco)" },
+  { t: 4.5,  label: "3 · Sensor y motor van montados en la tapa" },
+  { t: 6.5,  label: "4 · La tapa entra derecha… ¡clic!" },
+  { t: 9.0,  label: "5 · Cerrada: solo sale el cable USB-C" },
+  { t: 11.5, label: "6 · Por dentro: sensor bajo la rejilla, motor vibrando" },
+  { t: 15.5, label: "" },
+];
+const LOOP = 16;
+const ease = x => x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x);
+const seg = (t, a, b) => ease((t - a) / (b - a));
+
+let playing = true, xray = false, clock = 0, last = performance.now();
+const stepEl = document.getElementById("step");
+function pose(t) {
+  // shell + board float above; board drops into the shell; then they close onto the back plate
+  const boardIn = seg(t, 2.5, 4.2);
+  const close = seg(t, 6.5, 8.6);
+  const shellZ = 70 * (1 - close);
+  gShell.position.z = shellZ;
+  gBoard.position.z = shellZ + 35 * (1 - boardIn);
+  const inside = xray ? 1 : seg(t, 11.5, 12.3) * (1 - seg(t, 15.0, 15.8));
+  shellMat.opacity = 1 - 0.78 * inside;
+  shellMat.depthWrite = inside < 0.1;
+  const vib = t > 12 && t < 15;
+  if (vib) weight.rotation.x += 0.9;
+  motor.position.set(vib ? (Math.random() - 0.5) * 0.35 : 0, vib ? (Math.random() - 0.5) * 0.35 : 0, 0);
+  lcd.material.map = vib ? lcd.userData.alert : null;
+  lcd.material.color.set(vib ? 0xffffff : 0x3a6fd8); lcd.material.needsUpdate = true;
+  const clickT = t - 8.6;
+  shellMat.emissive.set(clickT > 0 && clickT < 0.25 ? 0x335533 : 0x000000);
+  const s = [...steps].reverse().find(s => t >= s.t);
+  stepEl.style.opacity = s.label ? 1 : 0;
+  if (s.label) stepEl.textContent = s.label;
+}
+
+document.getElementById("play").onclick = e => {
+  playing = !playing; e.target.textContent = playing ? "⏸ Pausar" : "▶ Animar armado";
+  e.target.classList.toggle("on", playing); controls.autoRotate = playing;
+};
+document.getElementById("xray").onclick = e => { xray = !xray; e.target.classList.toggle("on", xray); };
+
+function resize() { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
+addEventListener("resize", resize); resize();
+renderer.setAnimationLoop(now => {
+  const dt = Math.min((now - last) / 1000, 0.1); last = now;
+  if (playing) clock = (clock + dt) % LOOP;
+  pose(playing ? clock : 10);
+  controls.update(); renderer.render(scene, camera);
+});
+</script>
+</body>
+</html>

@@ -1,15 +1,26 @@
-# Only the live demo is versioned. Everything else in this folder (research
-# scripts, datasets, training artifacts, the virtualenv) stays local.
+# Only the project deliverables are versioned. Everything else in this folder
+# (research scripts, datasets, training artifacts, the virtualenv) stays local.
 /*
 !/.gitignore
 !/README.md
 !/PROJECT_STATUS.md
+!/BOARD.md
+!/CLAUDE.md
+!/dashboard.html
 !/live_demo/
 !/pretrained/
+!/hardware/
+!/docs/
 
 # Inside the versioned folders
 __pycache__/
 *.pyc
 .DS_Store
-# Waveshare's schematic is their copyrighted document; the README links to it.
+.pio/
+node_modules/
+.venv/
+# Waveshare's schematic and drawings are their copyrighted documents; the README links to them.
 live_demo/docs/
+docs/hardware/waveshare-*.jpg
+# The old Grove-based spec is kept locally; PROJECT_STATUS.md is the source of truth.
+docs/SPEC.md

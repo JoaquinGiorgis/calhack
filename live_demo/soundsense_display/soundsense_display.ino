@@ -9,6 +9,9 @@
 // messages are newline-terminated. Both paths feed the same handler.
 //
 // The alert stays up for ALERT_MS or until the BOOT button is pressed.
+// Each alert also vibrates (coin/130 motor on GPIO17 through a PN2222 + 1N4007,
+// see hardware/README wiring): the pattern depends on the alert's priority, so the
+// user can tell a safety alert from a low-priority one without looking.
 // Display pins and setup are taken from Waveshare's 02_gfx_helloworld example.
 //
 // Arduino IDE settings (Tools menu):
@@ -29,6 +32,7 @@
 #define PIN_LCD_CS 45
 #define PIN_LCD_BL 1
 #define PIN_BOOT_BUTTON 0
+#define PIN_MOTOR 17  // header pin 24 -> 1 kOhm -> PN2222 base (never drive the motor directly)
 
 const uint32_t ALERT_MS = 6000;      // how long an alert stays on screen
 const uint32_t LINK_TIMEOUT_MS = 3000;  // no data for this long -> "waiting for Mac"
@@ -99,26 +103,58 @@ class ServerCallbacks : public BLEServerCallbacks {
   }
 };
 
+// Vibration patterns: alternating on/off durations in ms, 0-terminated.
+const uint16_t VIB_SAFETY[] = {400, 150, 400, 150, 400, 0};  // 3 long
+const uint16_t VIB_ATTENTION[] = {150, 120, 150, 0};        // 2 short
+const uint16_t VIB_LOW[] = {150, 0};                        // 1 short
+const uint16_t VIB_SELFTEST[] = {80, 0};                    // boot: motor wiring OK
+
 struct EventStyle {
   const char *name;   // as sent by the Mac
   const char *title;  // shown on screen
   const char *hint;
   uint16_t colour;
+  const uint16_t *vibration;
 };
 
 // Names the Mac doesn't send yet still show up, using the fallback style below.
 const EventStyle EVENT_STYLES[] = {
-    {"ALARM", "ALARM!", "Alarm or siren nearby", C_RED},
-    {"CAR_HORN", "CAR HORN", "Vehicle honking nearby", C_ORANGE},
-    {"GLASS", "GLASS", "Something broke", C_CRIMSON},
-    {"SHOUT", "SHOUT!", "Someone is shouting", C_MAGENTA},
-    {"BABY", "BABY", "Baby crying", C_TEAL},
-    {"KNOCK", "KNOCK", "Someone at the door", C_BLUE},
-    {"DOORBELL", "DOORBELL", "Someone at the door", C_PURPLE},
-    {"PHONE", "PHONE", "Phone ringing", C_SLATE},
-    {"DOG", "DOG", "Dog barking", C_BROWN},
-    {"SPEECH", "SPEECH", "Someone is talking nearby", C_DARKGREEN},
+    {"ALARM", "ALARM!", "Alarm or siren nearby", C_RED, VIB_SAFETY},
+    {"CAR_HORN", "CAR HORN", "Vehicle honking nearby", C_ORANGE, VIB_SAFETY},
+    {"GLASS", "GLASS", "Something broke", C_CRIMSON, VIB_SAFETY},
+    {"SHOUT", "SHOUT!", "Someone is shouting", C_MAGENTA, VIB_SAFETY},
+    {"BABY", "BABY", "Baby crying", C_TEAL, VIB_ATTENTION},
+    {"KNOCK", "KNOCK", "Someone at the door", C_BLUE, VIB_ATTENTION},
+    {"DOORBELL", "DOORBELL", "Someone at the door", C_PURPLE, VIB_ATTENTION},
+    {"PHONE", "PHONE", "Phone ringing", C_SLATE, VIB_ATTENTION},
+    {"DOG", "DOG", "Dog barking", C_BROWN, VIB_LOW},
+    {"SPEECH", "SPEECH", "Someone is talking nearby", C_DARKGREEN, VIB_LOW},
 };
+
+// Non-blocking vibration player, stepped from loop().
+const uint16_t *vibPattern = nullptr;
+uint8_t vibStep = 0;
+uint32_t vibStepStartedMs = 0;
+
+void vibrate(const uint16_t *pattern) {
+  vibPattern = pattern;
+  vibStep = 0;
+  vibStepStartedMs = millis();
+  digitalWrite(PIN_MOTOR, HIGH);  // even steps are "on"
+}
+
+void updateVibration() {
+  if (vibPattern == nullptr) return;
+  if (millis() - vibStepStartedMs < vibPattern[vibStep]) return;
+  vibStep++;
+  vibStepStartedMs = millis();
+  if (vibPattern[vibStep] == 0) {
+    vibPattern = nullptr;
+    digitalWrite(PIN_MOTOR, LOW);
+  } else {
+    digitalWrite(PIN_MOTOR, vibStep % 2 == 0 ? HIGH : LOW);
+  }
+}
 
 void drawCentered(const char *text, int y, uint8_t size, uint16_t colour) {
   // Shrink until the text fits; the built-in font is 6x8 pixels per size step.
@@ -173,7 +209,7 @@ void showAlert(const char *eventName, float score) {
     for (char *c = fallbackTitle; *c; c++) {
       if (*c == '_') *c = ' ';
     }
-    fallback = {eventName, fallbackTitle, "Sound detected", C_UNKNOWN};
+    fallback = {eventName, fallbackTitle, "Sound detected", C_UNKNOWN, VIB_LOW};
     style = &fallback;
   }
 
@@ -187,6 +223,7 @@ void showAlert(const char *eventName, float score) {
   snprintf(detail, sizeof(detail), "confidence %d%%", (int)(score * 100));
   drawCentered(detail, 175, 2, C_WHITE);
   drawCentered("Press BOOT to dismiss", 215, 1, C_WHITE);
+  vibrate(style->vibration);
 }
 
 void handleLine(char *text) {
@@ -262,6 +299,8 @@ void startBluetooth() {
 void setup() {
   Serial.begin(115200);
   pinMode(PIN_BOOT_BUTTON, INPUT_PULLUP);
+  pinMode(PIN_MOTOR, OUTPUT);
+  digitalWrite(PIN_MOTOR, LOW);
 
   if (!gfx->begin()) {
     Serial.println("gfx->begin() failed!");
@@ -270,11 +309,13 @@ void setup() {
   digitalWrite(PIN_LCD_BL, HIGH);
   startBluetooth();
   showWaiting();
+  vibrate(VIB_SELFTEST);
 }
 
 void loop() {
   readSerial();
   readBluetooth();
+  updateVibration();
   uint32_t now = millis();
 
   if (screen == Screen::Alert) {
