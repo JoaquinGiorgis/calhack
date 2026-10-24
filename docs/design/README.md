@@ -4,13 +4,13 @@ Archivo Figma: https://www.figma.com/design/cH0vUVYbWNC08hdZPzTIaw
 
 | Sección en Figma | Qué tiene |
 |---|---|
-| **Cover** | Portada con la foto de la pulsera en la muñeca |
+| **Cover** | Portada con nuestra pulsera real: la carcasa diseñada para imprimir + la pantalla KNOCK que corre en el firmware |
 | **Scenarios** | 5 escenas (puerta, alarma, bocina, bebé, vidrio): foto + texto "oye → muestra → vibra" + pulsera con la alerta correcta |
 | **Prototype** | Flujo navegable (▶ Present): Waiting → Listening → Hearing → KNOCK → ALARM, toque para descartar |
 | **Components** | `Alert screen` (10 variantes, 320×240), `System screen` (Waiting/Listening/Hearing), `Vibration pattern` (Safety/Attention/Low), `Wristband device` (mockup), íconos |
 | Variables `SoundSense` | Colores por alerta (contraste AA con texto blanco) |
 
-Fotos de referencia en esta carpeta: generadas con la IA de Figma (no son fotos reales del prototipo).
+Fotos de referencia en esta carpeta: generadas con la IA de Figma (no son fotos reales del prototipo). `hero-wrist-knock.png` ya no se usa en la portada porque muestra una pantalla que no es la nuestra.
 
 ## Probarlas en la pulsera (slider)
 Las 13 pantallas exportadas están en `screens/` (320×240). Para verlas en el display real:
