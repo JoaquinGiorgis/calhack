@@ -4,13 +4,13 @@ Archivo Figma: https://www.figma.com/design/cH0vUVYbWNC08hdZPzTIaw
 
 | Sección en Figma | Qué tiene |
 |---|---|
-| **Cover** | Foto (IA) de **nuestra carcasa** en la muñeca con el **power bank enchufado de costado** (sin cable) y **la pantalla KNOCK real del firmware** superpuesta en el display |
+| **Cover** | Foto (IA) de la **carcasa v3.1** (4,2 × 9,2 cm) con el **power bank atravesado en la muñeca y pegado a la punta**, y la **pantalla KNOCK real** en el área activa 4:3 del display |
 | **Scenarios** | 5 escenas (puerta, alarma, bocina, bebé, vidrio): foto + texto "oye → muestra → vibra" + pulsera con la alerta correcta |
 | **Prototype** | Flujo navegable (▶ Present): Waiting → Listening → Hearing → KNOCK → ALARM, toque para descartar |
 | **Components** | `Alert screen` (10 variantes, 320×240), `System screen` (Waiting/Listening/Hearing), `Vibration pattern` (Safety/Attention/Low), `Wristband device` (mockup), íconos |
 | Variables `SoundSense` | Colores por alerta (contraste AA con texto blanco) |
 
-Fotos de referencia en esta carpeta: generadas con la IA de Figma (no son fotos reales del prototipo). `hero-wrist-real-case-knock.png` es la portada final: la foto base `hero-wrist-real-case.png` con la pantalla KNOCK real deformada en perspectiva para llenar el display. `hero-wrist-knock.png` es una versión anterior que no se usa.
+Fotos de referencia en esta carpeta: generadas con la IA de Figma (no son fotos reales del prototipo). `hero-v3-knock.png` es la portada actual (base: `hero-v3.png`). Las demás `hero-*` son versiones anteriores.
 
 ## Probarlas en la pulsera (slider)
 Las 13 pantallas exportadas están en `screens/` (320×240). Para verlas en el display real:
