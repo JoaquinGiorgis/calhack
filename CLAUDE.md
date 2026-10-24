@@ -22,7 +22,7 @@ Pulsera de accesibilidad para personas sordas/hipoacúsicas. **Arquitectura actu
 ## Pines usados (header de 28 pines)
 | Señal | Pin placa | Notas |
 |---|---|---|
-| Motor (vía 1 kΩ → base PN2222) | **GPIO17** (impreso "17") | Motor entre 5V y colector, 1N4007 en paralelo |
+| Motor (vía 1 kΩ → base PN2222) | **GPIO17** (impreso "17", columna izquierda, 5° desde la punta opuesta al USB) | Motor entre 5V y colector, 1N4007 en paralelo |
 | 5V / GND del motor | "5V" / "G" (columna izquierda, abajo) | |
 | Botón BOOT (descartar alerta) | GPIO0 | Accesible por la ranura del USB en la carcasa |
 | **No usar** | GPIO47 / GPIO48 | Son el I2C del touch (CST816, addr 0x15) |

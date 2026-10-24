@@ -9,7 +9,7 @@
 // messages are newline-terminated. Both paths feed the same handler.
 //
 // The alert stays up for ALERT_MS or until the BOOT button is pressed.
-// Each alert also vibrates (coin/130 motor on GPIO17 through a PN2222 + 1N4007,
+// Each alert also vibrates (130 motor on GPIO17 through a PN2222 + 1N4007,
 // see hardware/README wiring): the pattern depends on the alert's priority, so the
 // user can tell a safety alert from a low-priority one without looking.
 // Display pins and setup are taken from Waveshare's 02_gfx_helloworld example.
@@ -32,7 +32,7 @@
 #define PIN_LCD_CS 45
 #define PIN_LCD_BL 1
 #define PIN_BOOT_BUTTON 0
-#define PIN_MOTOR 17  // header pin 24 -> 1 kOhm -> PN2222 base (never drive the motor directly)
+#define PIN_MOTOR 17  // header pin 24 (printed "17", left column) -> 1 kOhm -> PN2222 base (never drive the motor directly)
 
 const uint32_t ALERT_MS = 6000;      // how long an alert stays on screen
 const uint32_t LINK_TIMEOUT_MS = 3000;  // no data for this long -> "waiting for Mac"
