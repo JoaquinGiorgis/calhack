@@ -49,10 +49,11 @@ renderer.setPixelRatio(devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 3000);
 camera.up.set(0, 0, 1);
-camera.position.set(170, -150, 150);
+camera.position.set(210, -230, 190);
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, yMid, 22);
+controls.target.set(0, 0, 30);
 controls.autoRotate = true; controls.autoRotateSpeed = 0.6;
+window.__viewer = { camera, controls }; // handy for debugging camera angles from the console
 scene.add(new THREE.HemisphereLight(0xffffff, 0x555555, 1.5));
 const sun = new THREE.DirectionalLight(0xffffff, 1.8); sun.position.set(80, -60, 160); scene.add(sun);
 
@@ -74,15 +75,11 @@ scene.add(gBack, gBoard, gShell);
 
 // board
 gBoard.add(boxAt(-18.55, 18.55, -29.4, 29.4, D.zGlass - 1.1, D.zGlass, mat(0x0b0b0d, { roughness: 0.15 })));
-const lcd = new THREE.Mesh(new THREE.PlaneGeometry(31, 41.2), new THREE.MeshBasicMaterial({ color: 0x3a6fd8 }));
+const texLoader = new THREE.TextureLoader();
+const screenTex = (file) => { const t = texLoader.load(`../../docs/design/screens/${file}`); t.colorSpace = THREE.SRGBColorSpace; t.center.set(0.5, 0.5); t.rotation = -Math.PI / 2; return t; };
+const TEX = { listening: screenTex('01_listening.png'), knock: screenTex('15_knock.png') };
+const lcd = new THREE.Mesh(new THREE.PlaneGeometry(31, 41.2), new THREE.MeshBasicMaterial({ map: TEX.listening }));
 lcd.position.set(0, -29.4 + 10.29 + 20.6, D.zGlass + 0.06); gBoard.add(lcd);
-{
-  const c = document.createElement("canvas"); c.width = 310; c.height = 412;
-  const x = c.getContext("2d"); x.fillStyle = "#c62828"; x.fillRect(0, 0, 310, 412);
-  x.fillStyle = "#fff"; x.font = "bold 46px system-ui"; x.textAlign = "center";
-  x.fillText("LOUD", 155, 230); x.fillText("SOUND", 155, 285);
-  lcd.userData.alert = new THREE.CanvasTexture(c);
-}
 gBoard.add(boxAt(-17.5, 17.5, -24.1, 24.1, D.zPcb, D.zPcb + 1.6, mat(0x1f6f3f)));
 for (const sx of [-1, 1]) for (const sy of [-1, 1]) {
   const s = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.75, 2.5, 20), mat(0xd4a017, { metalness: 0.6 }));
@@ -93,7 +90,7 @@ for (const sx of [-1, 1]) gBoard.add(boxAt(sx * 16 - 1.3, sx * 16 + 1.3, -17.8, 
 
 // side-plugged power bank resting on the shelf (approx. 74 x 38 x 25 mm)
 const bank = boxAt(-37, 37, -29.4 - 38, -29.4, D.zPcb - 1.6 - 12.5, D.zPcb - 1.6 + 12.5, mat(0x16171a, { roughness: 0.35 }));
-gBoard.add(bank);
+const gBank = new THREE.Group(); gBank.add(bank); scene.add(gBank);
 const motor = new THREE.Group(); gBack.add(motor);
 motor.add(boxAt(D.mx0 + 8, D.mx0 + 25, D.motorYc - 10.2, D.motorYc + 10.2, D.backT, D.backT + 15, mat(0xb8bcc2, { metalness: 0.7, roughness: 0.3 })));
 motor.add(boxAt(D.mx0, D.mx0 + 8, D.motorYc - 10.2, D.motorYc + 10.2, D.backT, D.backT + 15, mat(0xf2f0ea)));
@@ -128,8 +125,9 @@ const steps = [
   { t: 2.5,  label: "2 · La placa entra en el cuerpo (vidrio contra el marco)" },
   { t: 4.5,  label: "3 · Motor en su cuna; la tapa trae la repisa del power bank" },
   { t: 6.5,  label: "4 · La tapa entra derecha… ¡clic!" },
-  { t: 9.0,  label: "5 · Cerrada, con el power bank enchufado de costado" },
-  { t: 11.5, label: "6 · Por dentro: motor vibrando, alerta en pantalla" },
+  { t: 8.8,  label: "5 · Se enchufa el power bank de costado — sin cables" },
+  { t: 9.8,  label: "6 · Llega una alerta: KNOCK + 2 vibraciones" },
+  { t: 11.5, label: "7 · Por dentro: motor vibrando" },
   { t: 15.5, label: "" },
 ];
 const LOOP = 16;
@@ -142,17 +140,22 @@ function pose(t) {
   // shell + board float above; board drops into the shell; then they close onto the back plate
   const boardIn = seg(t, 2.5, 4.2);
   const close = seg(t, 6.5, 8.6);
-  const shellZ = 70 * (1 - close);
+  const shellZ = 48 * (1 - close);
   gShell.position.z = shellZ;
-  gBoard.position.z = shellZ + 35 * (1 - boardIn);
+  gBoard.position.z = shellZ + 24 * (1 - boardIn);
   const inside = xray ? 1 : seg(t, 11.5, 12.3) * (1 - seg(t, 15.0, 15.8));
   shellMat.opacity = 1 - 0.78 * inside;
   shellMat.depthWrite = inside < 0.1;
   const vib = t > 12 && t < 15;
   if (vib) weight.rotation.x += 0.9;
   motor.position.set(vib ? (Math.random() - 0.5) * 0.35 : 0, vib ? (Math.random() - 0.5) * 0.35 : 0, 0);
-  lcd.material.map = vib ? lcd.userData.alert : null;
-  lcd.material.color.set(vib ? 0xffffff : 0x3a6fd8); lcd.material.needsUpdate = true;
+  const showAlert = t >= 9.6 && t < 15.5;
+  const map = showAlert ? TEX.knock : TEX.listening;
+  if (lcd.material.map !== map) { lcd.material.map = map; lcd.material.needsUpdate = true; }
+  // power bank slides in and plugs into the USB-C after the case is closed
+  const plug = seg(t, 8.8, 9.6);
+  gBank.visible = t >= 8.6;
+  gBank.position.y = -60 * (1 - plug);
   const clickT = t - 8.6;
   shellMat.emissive.set(clickT > 0 && clickT < 0.25 ? 0x335533 : 0x000000);
   const s = [...steps].reverse().find(s => t >= s.t);
