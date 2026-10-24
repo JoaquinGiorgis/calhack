@@ -1,0 +1,14 @@
+# Only the live demo is versioned. Everything else in this folder (research
+# scripts, datasets, training artifacts, the virtualenv) stays local.
+/*
+!/.gitignore
+!/README.md
+!/live_demo/
+!/pretrained/
+
+# Inside the versioned folders
+__pycache__/
+*.pyc
+.DS_Store
+# Waveshare's schematic is their copyrighted document; the README links to it.
+live_demo/docs/
