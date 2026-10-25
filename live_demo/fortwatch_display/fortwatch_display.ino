@@ -31,6 +31,7 @@
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
+#include <Preferences.h>
 #include <Wire.h>
 #include "screens.h"
 #include "fonts.h"
@@ -306,8 +307,32 @@ void drawStatus() {
   drawText(F_TINY, bg, 24, 218, status, 0.7f);
 }
 
+// SPEECH alerts can be turned off on the wristband itself (they fire with any conversation
+// nearby): hold the home screen, or BOOT, for 1 s. Saved in flash, so it survives a restart.
+Preferences prefs;
+bool speechEnabled = true;
+
+void drawIcon(const uint16_t *bg, const char *name, int x, int y, float opacity = 1.0f);
+
+// Top-right of the home screen, beside the clock: speaking-person icon + On/Off.
+void drawSpeechToggle() {
+  const uint16_t *bg = homeBg();
+  if (!bg) return;
+  restoreRegion(bg, 240, 40, 70, 28);
+  drawIcon(bg, "speech", 246, 44, speechEnabled ? 1.0f : 0.35f);
+  drawText(F_SMALL, bg, 270, 59, speechEnabled ? "On" : "Off", speechEnabled ? 0.9f : 0.5f);
+}
+
+void toggleSpeech() {
+  speechEnabled = !speechEnabled;
+  prefs.putBool("speech", speechEnabled);
+  Serial.printf("SPEECH alerts %s\n", speechEnabled ? "on" : "off");
+  vibrate(VIB_LOW);
+  if (screen == Screen::Listening) drawSpeechToggle();
+}
+
 // Alert icon (alpha mask from icons.h) blended over the background.
-void drawIcon(const uint16_t *bg, const char *name, int x, int y, float opacity = 1.0f) {
+void drawIcon(const uint16_t *bg, const char *name, int x, int y, float opacity) {
   const uint8_t *mask = nullptr;
   for (int i = 0; i < ICON_COUNT; i++) if (strcmp(ICONS[i].name, name) == 0) mask = ICONS[i].alpha;
   if (!mask) return;
@@ -365,6 +390,7 @@ void showListening() {
     drawClock();
     drawStatus();
     drawLastAlert();
+    drawSpeechToggle();
     return;
   }
   gfx->fillScreen(C_BLACK);
@@ -448,6 +474,7 @@ void handleLine(char *text) {
       *comma = '\0';
       score = atof(comma + 1);
     }
+    if (!speechEnabled && strcmp(eventName, "SPEECH") == 0) return;  // turned off on the home screen
     showAlert(eventName, score);
   }
 }
@@ -524,6 +551,8 @@ void setup() {
   pinMode(PIN_LCD_BL, OUTPUT);
   digitalWrite(PIN_LCD_BL, HIGH);
   touchReady = Wire.begin(PIN_TOUCH_SDA, PIN_TOUCH_SCL, 400000);
+  prefs.begin("fortwatch", false);
+  speechEnabled = prefs.getBool("speech", true);
   startBluetooth();
   startAnalytics();
   showWaiting();
@@ -542,6 +571,22 @@ void loop() {
   bool touched = screenTouched();
   bool tap = touched && !wasTouched;
   wasTouched = touched;
+
+  // Hold the home screen (or BOOT) for 1 s to turn SPEECH alerts on/off. Only presses that
+  // start on the home screen count, so the tap that dismisses an alert can't toggle it.
+  static uint32_t holdStartMs = 0;
+  static bool holdUsed = false;
+  bool pressed = touched || digitalRead(PIN_BOOT_BUTTON) == LOW;
+  if (!pressed) {
+    holdStartMs = 0;
+    holdUsed = false;
+  } else if (holdStartMs == 0) {
+    holdStartMs = now;
+    holdUsed = screen != Screen::Listening;
+  } else if (!holdUsed && screen == Screen::Listening && now - holdStartMs >= 1000) {
+    holdUsed = true;
+    toggleSpeech();
+  }
 
   if (screen == Screen::Alert) {
     bool dismissed = digitalRead(PIN_BOOT_BUTTON) == LOW || (tap && now - alertStartedMs > 300);
