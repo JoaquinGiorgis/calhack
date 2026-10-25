@@ -1,5 +1,8 @@
 # FortWatch — actualización de diseño y dispositivos
 
+**Última revisión:** [ritmos por sonido y dirección más visible](HAPTICS-DIRECTION-UPDATE.md).
+Este documento conserva el historial anterior.
+
 25 de octubre de 2026. Rama `codex/iphone-spatial-direction`, sobre el merge
 `1ae20eb` con `main` hasta `88aebcb`. No se publicó la rama.
 

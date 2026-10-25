@@ -11,24 +11,30 @@ estilo fotográfico de la marca. Variación 4/10, movimiento 1/10, densidad 6/10
 
 - Acento `#8FD63D`, texto de botón `#12141F`, borde glass blanco al 38%.
 - Cabecera pequeña, conexión visible, un panel de sonido y acción inferior.
+- Una franja lima con flecha rellena y lado grande destaca la dirección.
 - El arco e ícono aparecen únicamente con una medición utilizable; una alerta
   usa el ángulo de su propia ventana. La anchura del arco no expresa precisión.
 - Inicio, permisos, calibración, rechazo e incertidumbre tienen estados explícitos.
-- Test vibration, ayuda, Settings y Disconnect están en el menú **…**.
+- Sound & vibration guide permite aprender y probar los diez ritmos.
+- Test vibration, guía de ritmos, ayuda, Settings y Disconnect están en el menú **…**.
 - Colores por categoría en el badge; historial separado de la dirección reciente.
 - Dynamic Type, objetivos de 44 pt o más, nombres VoiceOver, reflujo vertical en
   accesibilidad y panel opaco con Reduce Transparency. Sin animación decorativa.
 
 ## Verificación
 
-- Build de simulador y de iPhone físico: PASS; instalada y abierta en el teléfono.
-- 36 pruebas de audio, calibración, eventos y protocolo: PASS.
+- Builds de simulador y de iPhone: PASS. Instalación actual en iPhone pendiente:
+  Xcode lo muestra no disponible. Firmware actualizado y hash verificado.
+- 37 pruebas de audio, calibración, eventos y protocolo: PASS.
+- Contrato compilado iPhone/pulsera: los diez ritmos coinciden y son distintos.
 - Pantalla inicial y fixtures de KNOCK/calibración fallida inspeccionados en simulador.
 - El fixture de abajo está etiquetado **SIMULATED STATE** y no usa micrófono/BLE.
 - VoiceOver manual, precisión angular y aprobación visual del usuario: pendientes.
 
-Estado funcional y pruebas físicas: [actualización](../../DIRECTION-DESIGN-UPDATE.md).
+Estado funcional y pruebas físicas: [actualización de ritmos y dirección](../../HAPTICS-DIRECTION-UPDATE.md).
 
 ![Pantalla inicial de la app en el simulador](listener.png)
 
 ![Vista de diseño con KNOCK simulado, no una medición](knock-preview.png)
+
+![Guía de ritmos, vista de diseño sin pruebas físicas](vibration-guide-preview.png)

@@ -63,6 +63,7 @@ private struct SoundAppearance {
 struct ListenerView: View {
     @State private var model = ListenerModel()
     @State private var showingGuide = false
+    @State private var showingSoundGuide = false
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
@@ -102,6 +103,13 @@ struct ListenerView: View {
             .toolbar(.hidden, for: .navigationBar)
             .preferredColorScheme(.dark)
             .sheet(isPresented: $showingGuide) { ListeningGuide() }
+            .sheet(isPresented: $showingSoundGuide) {
+                SoundVibrationGuide(canTest: model.bluetooth.isConnected && !model.active,
+                                    disabledReason: model.bluetooth.isConnected
+                                        ? "Stop listening to test vibration patterns."
+                                        : "Connect your wristband to test vibration patterns.",
+                                    testSound: { event in model.testSound(event: event) })
+            }
             .onChange(of: scenePhase) {
                 if scenePhase == .background { model.suspend() }
             }
@@ -118,6 +126,7 @@ struct ListenerView: View {
             Menu {
                 Button("Test vibration", systemImage: "waveform.path") { model.testWristband() }
                     .disabled(!model.bluetooth.isConnected || model.active)
+                Button("Sound & vibration guide", systemImage: "hand.tap") { showingSoundGuide = true }
                 Button("How to use FortWatch", systemImage: "questionmark.circle") { showingGuide = true }
                 Button("Open Settings", systemImage: "gearshape", action: openSettings)
                 if model.bluetooth.isConnected || model.bluetooth.connecting {
@@ -301,13 +310,16 @@ private struct SoundPanel: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            HStack(alignment: .firstTextBaseline) {
+            let headerLayout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+                : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+            headerLayout {
                 Text(eyebrow)
                     .font(.caption.monospaced().weight(.semibold))
                     .tracking(1)
-                Spacer(minLength: 8)
-                if let appearance {
-                    VibrationPattern(category: appearance.category)
+                if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
+                if appearance != nil, let event {
+                    VibrationPattern(event: event)
                 } else {
                     Image(systemName: capturing ? "mic.fill" : "mic.slash")
                         .accessibilityLabel(capturing ? "Microphone active" : "Microphone stopped")
@@ -321,7 +333,7 @@ private struct SoundPanel: View {
             layout {
                 if let usableAngle {
                     DirectionCue(angle: usableAngle, appearance: appearance ?? SoundAppearance(event: ""))
-                        .frame(width: 138, height: 138)
+                        .frame(width: 120, height: 120)
                         .accessibilityHidden(true)
                 } else {
                     Image(systemName: stateIcon)
@@ -338,12 +350,9 @@ private struct SoundPanel: View {
                         .tracking(-0.5)
                         .foregroundStyle(.white)
                         .accessibilityAddTraits(.isHeader)
-                    Text(detail)
-                        .font(ListenerStyle.body(16))
-                        .foregroundStyle(ListenerStyle.secondary)
-                    if usableAngle != nil {
-                        Text("Relative to your phone")
-                            .font(ListenerStyle.body(12, relativeTo: .caption))
+                    if !capturing {
+                        Text(detail)
+                            .font(ListenerStyle.body(16))
                             .foregroundStyle(ListenerStyle.secondary)
                     }
                 }
@@ -353,6 +362,7 @@ private struct SoundPanel: View {
             }
 
             if capturing {
+                DirectionReadout(angle: usableAngle, reason: detail)
                 SoundLevelMeter(level: level)
                 Button(calibrating ? "Calibrating…" : calibrated ? "Recalibrate front" : calibrationFailed ? "Try calibration again" : "Calibrate front",
                        systemImage: "viewfinder", action: calibrate)
@@ -386,9 +396,8 @@ private struct SoundPanel: View {
     }
 
     private var detail: String {
-        if let usableAngle { return directionName(usableAngle) }
         if calibrating { return "Keep one steady sound in front of your phone." }
-        if appearance != nil { return "Direction unclear" }
+        if appearance != nil { return calibrated ? "No clear source location in this sound." : "Calibrate the front to locate sounds." }
         return status
     }
 
@@ -399,10 +408,76 @@ private struct SoundPanel: View {
         return "waveform"
     }
 
+}
+
+private struct DirectionReadout: View {
+    let angle: Double?
+    let reason: String
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    var body: some View {
+        Group {
+            if let angle {
+                let layout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                    : AnyLayout(HStackLayout(alignment: .center, spacing: 16))
+                layout {
+                    FilledDirectionArrow()
+                        .fill(ListenerStyle.ink)
+                        .frame(width: 42, height: 48)
+                        .rotationEffect(.degrees(angle))
+                        .frame(width: 64, height: 64)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(directionName(angle))
+                            .font(ListenerStyle.display(30, relativeTo: .title))
+                            .accessibilityAddTraits(.isHeader)
+                        Text("Relative to your phone")
+                            .font(ListenerStyle.body(13, relativeTo: .caption))
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .foregroundStyle(ListenerStyle.ink)
+                .padding(16)
+                .background(ListenerStyle.lime, in: .rect(cornerRadius: 18))
+                .accessibilityElement(children: .combine)
+            } else {
+                VStack(alignment: .leading, spacing: 7) {
+                    Text("DIRECTION UNAVAILABLE")
+                        .font(ListenerStyle.display(19, relativeTo: .headline))
+                        .accessibilityAddTraits(.isHeader)
+                    Text(reason)
+                        .font(ListenerStyle.body(15, relativeTo: .subheadline))
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .foregroundStyle(.white)
+                .padding(16)
+                .background(ListenerStyle.ink.opacity(0.55), in: .rect(cornerRadius: 18))
+                .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.38), lineWidth: 1))
+                .accessibilityElement(children: .combine)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
     private func directionName(_ angle: Double) -> String {
-        let sectors = ["Ahead", "Front right", "To the right", "Behind right", "Behind", "Behind left", "To the left", "Front left"]
+        let sectors = ["AHEAD", "FRONT RIGHT", "RIGHT", "BEHIND RIGHT", "BEHIND", "BEHIND LEFT", "LEFT", "FRONT LEFT"]
         let normalized = (angle + 360).truncatingRemainder(dividingBy: 360)
         return sectors[Int((normalized + 22.5) / 45) % sectors.count]
+    }
+}
+
+private struct FilledDirectionArrow: Shape {
+    func path(in rect: CGRect) -> Path {
+        let points: [CGPoint] = [CGPoint(x: 0.5, y: 0), CGPoint(x: 1, y: 0.44),
+                                 CGPoint(x: 0.68, y: 0.44), CGPoint(x: 0.68, y: 1),
+                                 CGPoint(x: 0.32, y: 1), CGPoint(x: 0.32, y: 0.44), CGPoint(x: 0, y: 0.44)]
+        var path = Path()
+        path.addLines(points.map { CGPoint(x: rect.minX + $0.x * rect.width, y: rect.minY + $0.y * rect.height) })
+        path.closeSubpath()
+        return path
     }
 }
 
@@ -465,21 +540,42 @@ private struct TaperedSoundArc: Shape {
 }
 
 private struct VibrationPattern: View {
-    let category: String
-    private var count: Int { category == "SAFETY" ? 3 : category == "ATTENTION" ? 2 : 1 }
-    private var description: String { category == "SAFETY" ? "Three long pulses" : category == "ATTENTION" ? "Two short pulses" : "One short pulse" }
+    let event: String
+    private var pattern: SoundHapticPattern { .forEvent(event) }
 
     var body: some View {
         HStack(spacing: 5) {
             Text("VIB").font(.caption2.monospaced().weight(.medium))
-            HStack(spacing: 3) {
-                ForEach(0..<count, id: \.self) { _ in
-                    Capsule().fill(.white.opacity(0.9)).frame(width: category == "SAFETY" ? 10 : 6, height: 4)
-                }
-            }
+            PulseRhythm(segments: pattern.segments)
+                .fill(.white.opacity(0.95))
+                .frame(width: 66, height: 5)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Alert pattern: \(description)")
+        .accessibilityLabel("Vibration pattern: \(pattern.description)")
+    }
+}
+
+/// One shared time scale keeps a short pulse visually short across every event.
+private struct PulseRhythm: Shape {
+    let segments: [Int]
+    private static let longestPattern = SoundHapticPattern.all.map { $0.segments.reduce(0, +) }.max() ?? 1
+
+    func path(in rect: CGRect) -> Path {
+        let total = segments.reduce(0, +)
+        guard total > 0 else { return Path() }
+        let timeline = max(total, Self.longestPattern)
+        var elapsed = 0
+        var path = Path()
+        for (index, duration) in segments.enumerated() {
+            if index.isMultiple(of: 2), duration > 0 {
+                let x = rect.minX + rect.width * CGFloat(elapsed) / CGFloat(timeline)
+                let width = rect.width * CGFloat(duration) / CGFloat(timeline)
+                path.addRoundedRect(in: CGRect(x: x, y: rect.minY, width: width, height: rect.height),
+                                    cornerSize: CGSize(width: rect.height / 2, height: rect.height / 2))
+            }
+            elapsed += duration
+        }
+        return path
     }
 }
 
@@ -574,6 +670,125 @@ private struct SecondaryCapsuleStyle: ButtonStyle {
     }
 }
 
+private struct SoundVibrationGuide: View {
+    let canTest: Bool
+    let disabledReason: String
+    let testSound: (String) -> Bool
+    @State private var lastTestedEvent: String?
+    @State private var testFeedback: String?
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                ListeningBackdrop()
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Learn the rhythms")
+                            .font(ListenerStyle.display(28, relativeTo: .title))
+                            .accessibilityAddTraits(.isHeader)
+                        Text("Each sound has its own vibration. Direction appears on screen.")
+                            .font(ListenerStyle.body())
+                        Text(canTest ? "Choose Test to play a pattern on your wristband." : disabledReason)
+                            .font(ListenerStyle.body(14, relativeTo: .footnote))
+                            .foregroundStyle(ListenerStyle.secondary)
+                        if let testFeedback {
+                            Label(testFeedback, systemImage: "waveform.path")
+                                .font(ListenerStyle.body(14, relativeTo: .footnote))
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(14)
+                                .modifier(FrostedSurface(radius: 18))
+                        }
+                        ForEach(SoundHapticPattern.all, id: \.event) { pattern in
+                            SoundHapticGuideRow(pattern: pattern, canTest: canTest,
+                                               selected: lastTestedEvent == pattern.event) {
+                                lastTestedEvent = pattern.event
+                                let accepted = testSound(pattern.event)
+                                let title = SoundAppearance(event: pattern.event).title
+                                testFeedback = accepted
+                                    ? "\(title) test sent. Feel \(pattern.description.lowercased())."
+                                    : "\(title) test not sent. Check the wristband connection."
+                                if let testFeedback {
+                                    UIAccessibility.post(notification: .announcement, argument: testFeedback)
+                                }
+                            }
+                        }
+                    }
+                    .foregroundStyle(.white)
+                    .padding(20)
+                    .frame(maxWidth: 620)
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .navigationTitle("Sound & vibration")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
+        }
+        .preferredColorScheme(.dark)
+    }
+}
+
+private struct SoundHapticGuideRow: View {
+    let pattern: SoundHapticPattern
+    let canTest: Bool
+    let selected: Bool
+    let test: () -> Void
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    private var appearance: SoundAppearance { SoundAppearance(event: pattern.event) }
+
+    var body: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+        return layout {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: appearance.icon)
+                    .font(.title3)
+                    .frame(width: 40, height: 40)
+                    .background(appearance.color, in: .circle)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 6) {
+                    if selected {
+                        Text("LAST TEST")
+                            .font(.caption2.monospaced().weight(.medium))
+                            .foregroundStyle(ListenerStyle.lime)
+                    }
+                    Text(appearance.title)
+                        .font(ListenerStyle.display(20, relativeTo: .headline))
+                    Text(pattern.description)
+                        .font(ListenerStyle.body(14, relativeTo: .footnote))
+                        .foregroundStyle(ListenerStyle.secondary)
+                    PulseRhythm(segments: pattern.segments)
+                        .fill(.white.opacity(0.95))
+                        .frame(width: 88, height: 5)
+                        .accessibilityHidden(true)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Button(action: test) {
+                Text("Test")
+                    .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
+                    .fixedSize(horizontal: !dynamicTypeSize.isAccessibilitySize, vertical: true)
+            }
+            .buttonStyle(SecondaryCapsuleStyle())
+            .disabled(!canTest)
+            .accessibilityLabel("Test \(appearance.title) vibration")
+            .accessibilityHint("Plays this sound's vibration pattern on the wristband.")
+        }
+        .foregroundStyle(.white)
+        .padding(16)
+        .modifier(FrostedSurface(radius: 22))
+        .overlay {
+            if selected {
+                RoundedRectangle(cornerRadius: 22).strokeBorder(ListenerStyle.lime, lineWidth: 1.5)
+            }
+        }
+    }
+}
+
 private struct ListeningGuide: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -584,9 +799,9 @@ private struct ListeningGuide: View {
                     Label("Keep the phone upright and still, with its microphones uncovered.", systemImage: "iphone")
                     Label("Make one steady sound in front for a second. Calibrate again if you move the phone.", systemImage: "viewfinder")
                     Label("The ring shows one dominant direction relative to the phone. It cannot separate voices or multiple sources.", systemImage: "scope")
-                    Label("Vibration follows alert priority. Direction appears on screen.", systemImage: "waveform.path")
+                    Label("Each sound has its own vibration pattern. Direction appears on screen.", systemImage: "waveform.path")
                     Label("Audio stays on the iPhone and is not saved. Keep the app open during listening.", systemImage: "lock")
-                    Text("Use Test vibration in the options menu to check the wristband gives two short pulses.")
+                    Text("Open Sound & vibration guide in the options menu to learn and test every pattern. Stop listening before testing.")
                         .foregroundStyle(ListenerStyle.secondary)
                 }
                 .font(ListenerStyle.body())
@@ -605,25 +820,46 @@ private struct ListeningGuide: View {
 /// Isolated design fixtures. No model, microphone, Bluetooth or production route.
 struct ListenerDesignPreview: View {
     let scenario: String
+    private var fixtureEvent: String? {
+        switch scenario {
+        case "knock": return "KNOCK"
+        case "long-label": return "CAR_HORN"
+        case "unknown": return "GLASS"
+        default: return nil
+        }
+    }
+    private var fixtureAngle: Double? {
+        switch scenario {
+        case "knock": return 45
+        case "long-label": return -135
+        default: return nil
+        }
+    }
 
     var body: some View {
-        ZStack {
-            ListeningBackdrop()
-            ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    FortWatchWordmark()
-                    Text("DESIGN PREVIEW · SIMULATED STATE")
-                        .font(.caption.monospaced())
-                        .foregroundStyle(.white)
-                    SoundPanel(angle: scenario == "knock" ? 45 : nil,
-                               event: scenario == "knock" ? "KNOCK" : nil,
-                               capturing: true, calibrated: scenario == "knock", calibrating: false,
-                               calibrationFailed: scenario == "calibration-failed", starting: false,
-                               level: scenario == "knock" ? 48 : 25,
-                               status: "Keep one steady sound in front of the phone, then try again.",
-                               calibrate: {})
+        Group {
+            if scenario == "guide" {
+                SoundVibrationGuide(canTest: false, disabledReason: "DESIGN PREVIEW · Manual tests are disabled.",
+                                    testSound: { _ in false })
+            } else {
+                ZStack {
+                    ListeningBackdrop()
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 18) {
+                            FortWatchWordmark()
+                            Text("DESIGN PREVIEW · SIMULATED STATE")
+                                .font(.caption.monospaced())
+                                .foregroundStyle(.white)
+                            SoundPanel(angle: fixtureAngle, event: fixtureEvent,
+                                       capturing: true, calibrated: fixtureEvent != nil, calibrating: false,
+                                       calibrationFailed: scenario == "calibration-failed", starting: false,
+                                       level: fixtureAngle == nil ? 25 : 48,
+                                       status: "Keep one steady sound in front of the phone, then try again.",
+                                       calibrate: {})
+                        }
+                        .padding(20)
+                    }
                 }
-                .padding(20)
             }
         }
         .preferredColorScheme(.dark)
@@ -633,4 +869,7 @@ struct ListenerDesignPreview: View {
 #Preview("App — idle") { ListenerView() }
 #Preview("KNOCK — design fixture") { ListenerDesignPreview(scenario: "knock") }
 #Preview("Calibration — design fixture") { ListenerDesignPreview(scenario: "calibration-failed") }
+#Preview("Long direction — design fixture") { ListenerDesignPreview(scenario: "long-label") }
+#Preview("Unknown direction — design fixture") { ListenerDesignPreview(scenario: "unknown") }
+#Preview("Sound guide — design fixture") { ListenerDesignPreview(scenario: "guide") }
 #endif

@@ -7,6 +7,15 @@ final class WristbandProtocolTests: XCTestCase {
         try XCTUnwrap(String(data: XCTUnwrap(data), encoding: .ascii))
     }
 
+    func testPatternTrainingHasItsOwnCommandAndRejectsUnknownEvents() throws {
+        for pattern in SoundHapticPattern.all {
+            XCTAssertEqual(try text(WristbandProtocol.patternTest(event: pattern.event)), "P," + pattern.event)
+        }
+        for invalid in ["", "knock", "UNKNOWN", "KNOCK,ALARM", "ALARM\n", "ALARM\0", " KNOCK", String(repeating: "A", count: 64)] {
+            XCTAssertNil(WristbandProtocol.patternTest(event: invalid))
+        }
+    }
+
     func testFirmwareUUIDsAndGoldenMessages() throws {
         XCTAssertEqual(WristbandProtocol.serviceUUID, "6b1a0001-5d1e-4c3b-9a7e-50554e445345")
         XCTAssertEqual(WristbandProtocol.receiveUUID, "6b1a0002-5d1e-4c3b-9a7e-50554e445345")

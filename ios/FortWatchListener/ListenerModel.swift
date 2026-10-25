@@ -113,12 +113,19 @@ final class ListenerModel {
     }
 
     func testWristband() {
-        guard !active, bluetooth.isConnected else { return }
-        let sent = bluetooth.sendAlert(event: "KNOCK", score: 1, angle: nil, quality: nil,
-                                       validUntil: ProcessInfo.processInfo.systemUptime + 0.75)
+        testSound(event: "KNOCK")
+    }
+
+    @discardableResult
+    func testSound(event: String) -> Bool {
+        guard !active, bluetooth.isConnected,
+              SoundHapticPattern.all.contains(where: { $0.event == event }) else { return false }
+        let sent = bluetooth.sendPatternTest(event: event)
         status = sent
-            ? "Test sent. Check for KNOCK on your wristband and two short pulses."
+            ? "Test sent: " + event.replacingOccurrences(of: "_", with: " ") + ". "
+                + SoundHapticPattern.forEvent(event).description + "."
             : "Test could not be sent. Check the connection and try again."
+        return sent
     }
 
     func suspend() {

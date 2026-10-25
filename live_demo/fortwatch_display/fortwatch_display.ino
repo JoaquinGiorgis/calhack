@@ -4,6 +4,7 @@
 // (device name "FortWatch") or over the USB cable:
 //   L,<0-100>            sound level -> live level bar
 //   E,<EVENT>,<score>[,<angle>,<quality>] -> full-screen alert + optional direction
+//   P,<EVENT>            manual pattern test, without detection history/analytics
 // Angle: degrees relative to phone, positive right; quality: heuristic coherence.
 //
 // With secrets.h (see secrets.example.h) the wristband also joins Wi-Fi and uploads
@@ -18,8 +19,8 @@
 //
 // The alert stays up for ALERT_MS or until the screen is tapped / BOOT is pressed.
 // Each alert also vibrates (130 motor on GPIO17 through a PN2222 + 1N4007,
-// see hardware/README wiring): the pattern depends on the alert's priority, so the
-// user can tell a safety alert from a low-priority one without looking.
+// see hardware/README wiring): the pattern identifies the sound type, so the
+// user can learn a distinct rhythm for each sound type without looking.
 // Display pins and setup are taken from Waveshare's 02_gfx_helloworld example.
 //
 // Arduino IDE settings (Tools menu):
@@ -36,6 +37,7 @@
 #include "screens.h"
 #include "fonts.h"
 #include "alert_protocol.h"
+#include "event_haptics.h"
 #include "wifi_analytics.h"  // optional Wi-Fi upload to the dashboard (needs secrets.h)
 #include "icons.h"    // generated: python ../fonts/make_icons.py icons.h (alert icons from Figma)    // generated: python ../fonts/make_font_atlas.py fonts.h (Inter, SIL OFL)  // generated: python ../screen_preview/png_to_rgb565.py ../../docs/design/firmware_screens screens.h
 
@@ -125,42 +127,41 @@ class ServerCallbacks : public BLEServerCallbacks {
   }
 };
 
-// Vibration patterns: alternating on/off durations in ms, 0-terminated.
-const uint16_t VIB_SAFETY[] = {400, 150, 400, 150, 400, 0};  // 3 long
-const uint16_t VIB_ATTENTION[] = {150, 120, 150, 0};        // 2 short
-const uint16_t VIB_LOW[] = {150, 0};                        // 1 short
-const uint16_t VIB_SELFTEST[] = {80, 0};                    // boot: motor wiring OK
-
 struct EventStyle {
   const char *name;   // as sent by the Mac
   const char *title;  // shown on screen
   const char *hint;
   uint16_t colour;
-  const uint16_t *vibration;
   const char *image;  // screen name in screens.h
 };
 
 // Names the Mac doesn't send yet still show up, using the fallback style below.
 const EventStyle EVENT_STYLES[] = {
-    {"ALARM", "ALARM!", "Alarm or siren nearby", C_RED, VIB_SAFETY, "alarm"},
-    {"CAR_HORN", "CAR HORN", "Vehicle honking nearby", C_ORANGE, VIB_SAFETY, "car_horn"},
-    {"GLASS", "GLASS", "Something broke", C_CRIMSON, VIB_SAFETY, "glass"},
-    {"SHOUT", "SHOUT!", "Someone is shouting", C_MAGENTA, VIB_SAFETY, "shout"},
-    {"BABY", "BABY", "Baby crying", C_TEAL, VIB_ATTENTION, "baby"},
-    {"KNOCK", "KNOCK", "Someone at the door", C_BLUE, VIB_ATTENTION, "knock"},
-    {"DOORBELL", "DOORBELL", "Someone at the door", C_PURPLE, VIB_ATTENTION, "doorbell"},
-    {"PHONE", "PHONE", "Phone ringing", C_SLATE, VIB_ATTENTION, "phone"},
-    {"DOG", "DOG", "Dog barking", C_BROWN, VIB_LOW, "dog"},
-    {"SPEECH", "SPEECH", "Someone is talking nearby", C_DARKGREEN, VIB_LOW, "speech"},
+    {"ALARM", "ALARM!", "Alarm or siren nearby", C_RED, "alarm"},
+    {"CAR_HORN", "CAR HORN", "Vehicle honking nearby", C_ORANGE, "car_horn"},
+    {"GLASS", "GLASS", "Something broke", C_CRIMSON, "glass"},
+    {"SHOUT", "SHOUT!", "Someone is shouting", C_MAGENTA, "shout"},
+    {"BABY", "BABY", "Baby crying", C_TEAL, "baby"},
+    {"KNOCK", "KNOCK", "Someone at the door", C_BLUE, "knock"},
+    {"DOORBELL", "DOORBELL", "Someone at the door", C_PURPLE, "doorbell"},
+    {"PHONE", "PHONE", "Phone ringing", C_SLATE, "phone"},
+    {"DOG", "DOG", "Dog barking", C_BROWN, "dog"},
+    {"SPEECH", "SPEECH", "Someone is talking nearby", C_DARKGREEN, "speech"},
 };
 
 // Non-blocking vibration player, stepped from loop().
-const uint16_t *vibPattern = nullptr;
+const fortwatch::HapticPattern *vibPattern = nullptr;
 uint8_t vibStep = 0;
 uint32_t vibStepStartedMs = 0;
 
-void vibrate(const uint16_t *pattern) {
-  vibPattern = pattern;
+void stopVibration() {
+  vibPattern = nullptr;
+  vibStep = 0;
+  digitalWrite(PIN_MOTOR, LOW);
+}
+
+void vibrate(const fortwatch::HapticPattern &pattern) {
+  vibPattern = &pattern;
   vibStep = 0;
   vibStepStartedMs = millis();
   digitalWrite(PIN_MOTOR, HIGH);  // even steps are "on"
@@ -168,10 +169,10 @@ void vibrate(const uint16_t *pattern) {
 
 void updateVibration() {
   if (vibPattern == nullptr) return;
-  if (millis() - vibStepStartedMs < vibPattern[vibStep]) return;
+  if (millis() - vibStepStartedMs < vibPattern->durations[vibStep]) return;
   vibStep++;
   vibStepStartedMs = millis();
-  if (vibPattern[vibStep] == 0) {
+  if (vibStep >= vibPattern->durationCount) {
     vibPattern = nullptr;
     digitalWrite(PIN_MOTOR, LOW);
   } else {
@@ -218,7 +219,8 @@ inline uint16_t blend565(uint16_t bg, uint8_t r, uint8_t g, uint8_t b, uint16_t 
 
 // Draws text with its left edge at x and its baseline at y; returns the x after the text.
 int drawText(const AtlasFont &f, const uint16_t *bg, int x, int y, const char *text,
-             float opacity = 1.0f, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255) {
+             float opacity = 1.0f, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255,
+             uint16_t solidBackground = 0) {
   uint16_t op = uint16_t(opacity * 256);
   for (const char *p = text; *p; p++) {
     uint8_t code = (uint8_t)*p;
@@ -229,7 +231,7 @@ int drawText(const AtlasFont &f, const uint16_t *bg, int x, int y, const char *t
       for (int j = 0; j < gl.h; j++) {
         for (int i = 0; i < gl.w; i++) {
           uint16_t a = (f.alpha[gl.offset + j * gl.w + i] * op) >> 8;
-          glyphBuffer[j * gl.w + i] = blend565(bg[(gy + j) * 320 + gx + i], r, g, b, a);
+          glyphBuffer[j * gl.w + i] = blend565(bg ? bg[(gy + j) * 320 + gx + i] : solidBackground, r, g, b, a);
         }
       }
       gfx->draw16bitRGBBitmap(gx, gy, glyphBuffer, gl.w, gl.h);
@@ -332,7 +334,7 @@ void toggleSpeech() {
   speechEnabled = !speechEnabled;
   prefs.putBool("speech", speechEnabled);
   Serial.printf("SPEECH alerts %s\n", speechEnabled ? "on" : "off");
-  vibrate(VIB_LOW);
+  vibrate(fortwatch::kFeedbackHaptics);
   if (screen == Screen::Listening) drawSpeechToggle();
 }
 
@@ -405,43 +407,37 @@ void showListening() {
   drawCentered(footer, 205, 2, C_GREY);
 }
 
-void drawAlertDirection(const fortwatch::AlertMessage &message, const uint16_t *bg) {
-  // Keep the original Figma title, icon, gradient and score track intact. Only
-  // this previously empty y153..185 strip carries captured direction metadata.
-  const int cx = 28, cy = 170, radius = 13;
-  const bool hasDirection = fortwatch::hasUsableDirection(message);
-  char label[32];
-  if (hasDirection) {
-    const int degrees = int(roundf(fabsf(message.angleDegrees)));
-    const char *side = degrees == 0 ? "AHEAD" : degrees == 180 ? "BEHIND" :
-                       message.angleDegrees < 0 ? "LEFT" : "RIGHT";
-    snprintf(label, sizeof(label), "%d deg %s", degrees, side);
+const char *alertDirectionLabel(float angle) {
+  const float magnitude = fabsf(angle);
+  if (magnitude < 22.5f) return "AHEAD";
+  if (magnitude < 67.5f) return angle < 0 ? "AHEAD LEFT" : "AHEAD RIGHT";
+  if (magnitude < 112.5f) return angle < 0 ? "LEFT" : "RIGHT";
+  if (magnitude < 157.5f) return angle < 0 ? "BEHIND LEFT" : "BEHIND RIGHT";
+  return "BEHIND";
+}
 
-    const uint16_t ring = bg ? blend565(bg[cy * 320 + cx], 255, 255, 255, 65) : C_GREY;
-    gfx->drawCircle(cx, cy, radius, ring);
-    gfx->drawLine(cx - 3, cy, cx + 3, cy, C_WHITE);
-    gfx->drawLine(cx, cy - 3, cx, cy + 3, C_WHITE);
-    // One compact tapered arc, with 0 up/front and positive angles right. Its
-    // width is visual styling, not a calibrated error bound or a second source.
-    for (int offset = -40; offset <= 40; offset += 2) {
-      const float a = (message.angleDegrees + offset) * 0.01745329252f;
-      const int thickness = abs(offset) < 20 ? 2 : 1;
-      gfx->fillCircle(cx + int(roundf(sinf(a) * radius)),
-                      cy - int(roundf(cosf(a) * radius)), thickness, C_WHITE);
-    }
-  } else {
-    strcpy(label, "Direction uncertain");
-    // An unavailable measurement never draws an arc at an invented angle.
-    if (bg) drawText(F_TITLE, bg, 22, 178, "?", 0.85f);
-    else {
-      gfx->setTextSize(2);
-      gfx->setTextColor(C_WHITE);
-      gfx->setCursor(22, 162);
-      gfx->print("?");
-    }
+void drawAlertDirection(const fortwatch::AlertMessage &message, const uint16_t *bg) {
+  // Preserve the original Figma title/icon. A filled 32px arrow and a large
+  // eight-sector label use only y153..185; degrees are secondary to orientation.
+  const int cx = 28, cy = 169;
+  const bool hasDirection = fortwatch::hasUsableDirection(message);
+  const char *label = hasDirection ? alertDirectionLabel(message.angleDegrees) : "DIRECTION UNKNOWN";
+  if (hasDirection) {
+    const float a = message.angleDegrees * 0.01745329252f;
+    const float dx = sinf(a), dy = -cosf(a), px = -dy, py = dx;
+    const int tx = cx - int(roundf(dx * 12)), ty = cy - int(roundf(dy * 12));
+    const int bx = cx + int(roundf(dx * 3)), by = cy + int(roundf(dy * 3));
+    const int sx = int(roundf(px * 3)), sy = int(roundf(py * 3));
+    gfx->fillTriangle(tx + sx, ty + sy, tx - sx, ty - sy, bx + sx, by + sy, C_WHITE);
+    gfx->fillTriangle(tx - sx, ty - sy, bx - sx, by - sy, bx + sx, by + sy, C_WHITE);
+    gfx->fillTriangle(cx + int(roundf(dx * 16)), cy + int(roundf(dy * 16)),
+                      bx + int(roundf(px * 9)), by + int(roundf(py * 9)),
+                      bx - int(roundf(px * 9)), by - int(roundf(py * 9)), C_WHITE);
+  } else if (bg) {
+    drawText(F_TITLE, bg, 22, 177, "?", 0.85f);
   }
   if (bg) {
-    drawText(F_BODY, bg, 54, 168, label);
+    drawText(F_TITLE, bg, 54, 172, label);
     drawText(F_TINY, bg, 54, 183, "Captured dominant sound / phone", 0.80f);
   } else {
     drawCentered(label, 154, 2, C_WHITE);
@@ -449,7 +445,52 @@ void drawAlertDirection(const fortwatch::AlertMessage &message, const uint16_t *
   }
 }
 
-void showAlert(const fortwatch::AlertMessage &message) {
+uint16_t alertPillColour(const uint16_t *bg, uint16_t fallback) {
+  return blend565(bg ? bg[40 * 320 + 260] : fallback, 0, 0, 0, 90);
+}
+
+void drawAlertVibration(const fortwatch::HapticPattern &pattern, const uint16_t *bg,
+                         uint16_t fallback) {
+  // Cover the baked priority-based VIB pill with the actual type-specific rhythm.
+  // The larger rounded capsule encloses every old VIB pill; the rest is untouched.
+  const uint16_t pill = alertPillColour(bg, fallback);
+  gfx->fillRoundRect(190, 12, 116, 27, 13, pill);
+  drawText(F_TINY, nullptr, 199, 29, "VIB", 0.95f, 255, 255, 255, pill);
+  int width = 0;
+  for (int i = 0; i < pattern.durationCount; i += 2) {
+    width += pattern.durations[i] >= 300 ? 15 : 7;
+    if (i + 1 < pattern.durationCount) width += pattern.durations[i + 1] >= 300 ? 11 : 5;
+  }
+  int x = 263 - width / 2;
+  for (int i = 0; i < pattern.durationCount; i += 2) {
+    const int pulseWidth = pattern.durations[i] >= 300 ? 15 : 7;
+    gfx->fillRoundRect(x, 23, pulseWidth, 5, 2, C_WHITE);
+    x += pulseWidth;
+    if (i + 1 < pattern.durationCount) x += pattern.durations[i + 1] >= 300 ? 11 : 5;
+  }
+}
+
+void drawPatternTest(const fortwatch::HapticPattern &pattern, const uint16_t *bg,
+                      uint16_t fallback) {
+  const uint16_t pill = alertPillColour(bg, fallback);
+  gfx->fillRoundRect(15, 12, 102, 27, 13, pill);
+  drawText(F_BODY, nullptr, 34, 30, "TEST", 1.0f, 255, 255, 255, pill);
+  if (bg) {
+    drawText(F_TITLE, bg, 16, 172, "PATTERN TEST");
+    drawText(F_TINY, bg, 16, 183, pattern.label, 0.90f);
+  } else {
+    drawCentered("PATTERN TEST", 154, 2, C_WHITE);
+    drawCentered(pattern.label, 178, 1, C_WHITE);
+  }
+  // Hide both the baked CONFIDENCE text and score track on manual tests.
+  gfx->fillRoundRect(13, 190, 294, 16, 4, pill);
+  drawText(F_TINY, nullptr, 76, 201, "Manual test - no sound detected", 1.0f,
+           255, 255, 255, pill);
+}
+
+void showAlert(const fortwatch::AlertMessage &message, bool isTest = false) {
+  // A manual test interrupts the previous rhythm before repainting the card.
+  if (isTest) stopVibration();
   const char *eventName = message.event;
   const float score = message.score;
   const EventStyle *style = nullptr;
@@ -465,36 +506,45 @@ void showAlert(const fortwatch::AlertMessage &message) {
     for (char *c = fallbackTitle; *c; c++) {
       if (*c == '_') *c = ' ';
     }
-    fallback = {eventName, fallbackTitle, "Sound detected", C_UNKNOWN, VIB_LOW};
+    fallback = {eventName, fallbackTitle, "Sound detected", C_UNKNOWN, nullptr};
     style = &fallback;
   }
 
   screen = Screen::Alert;
   alertStartedMs = millis();
-  alertCount++;
-  strncpy(lastAlertTitle, style->title, sizeof(lastAlertTitle) - 1);
-  lastAlertTitle[sizeof(lastAlertTitle) - 1] = '\0';
-  lastAlertMs = millis();
-  lastAlertIcon = style->image;
-  analyticsAlert(eventName, score);
+  if (!isTest) {
+    alertCount++;
+    strncpy(lastAlertTitle, style->title, sizeof(lastAlertTitle) - 1);
+    lastAlertTitle[sizeof(lastAlertTitle) - 1] = '\0';
+    lastAlertMs = millis();
+    lastAlertIcon = style->image;
+    analyticsAlert(eventName, score);
+  }
+  const fortwatch::HapticPattern &pattern = fortwatch::hapticsForEvent(eventName);
   const uint16_t *img = style->image ? screenImage(style->image) : nullptr;
   if (img) {
     gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
     // Live score over the original empty Figma confidence track.
-    const int w = constrain(int(219 * score), 0, 219);
-    if (w > 0) gfx->fillRoundRect(85, 196, w, 6, 3, C_WHITE);
-    drawAlertDirection(message, img);
+    if (!isTest) {
+      const int w = constrain(int(219 * score), 0, 219);
+      if (w > 0) gfx->fillRoundRect(85, 196, w, 6, 3, C_WHITE);
+      drawAlertDirection(message, img);
+    }
   } else {
     gfx->fillScreen(style->colour);
     drawCentered(style->title, 60, 6, C_WHITE);
     drawCentered(style->hint, 125, 2, C_WHITE);
-    drawAlertDirection(message, nullptr);
-    char detail[32];
-    snprintf(detail, sizeof(detail), "confidence %d%%", int(score * 100));
-    drawCentered(detail, 199, 2, C_WHITE);
+    if (!isTest) {
+      drawAlertDirection(message, nullptr);
+      char detail[32];
+      snprintf(detail, sizeof(detail), "confidence %d%%", int(score * 100));
+      drawCentered(detail, 199, 2, C_WHITE);
+    }
     drawCentered("Tap screen or press BOOT to dismiss", 225, 1, C_WHITE);
   }
-  vibrate(style->vibration);
+  drawAlertVibration(pattern, img, style->colour);
+  if (isTest) drawPatternTest(pattern, img, style->colour);
+  vibrate(pattern);
 }
 
 void handleLine(char *text) {
@@ -518,6 +568,12 @@ void handleLine(char *text) {
     strncpy(clockText, time, sizeof(clockText) - 1);
     if (comma) strncpy(dateText, comma + 1, sizeof(dateText) - 1);
     if (changed && screen == Screen::Listening) drawClock();
+  } else if (text[0] == 'P' && text[1] == ',') {
+    const fortwatch::HapticPattern *pattern = nullptr;
+    if (!fortwatch::parsePatternTest(text, pattern)) return;
+    fortwatch::AlertMessage message;
+    strncpy(message.event, pattern->event, sizeof(message.event) - 1);
+    showAlert(message, true);
   } else if (text[0] == 'E' && text[1] == ',') {
     fortwatch::AlertMessage message;
     if (!fortwatch::parseAlert(text, message)) return;
@@ -619,7 +675,7 @@ void setup() {
   startBluetooth();
   startAnalytics();
   showWaiting();
-  vibrate(VIB_SELFTEST);
+  vibrate(fortwatch::kBootHaptics);
 }
 
 void loop() {

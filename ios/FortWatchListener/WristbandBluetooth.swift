@@ -33,6 +33,12 @@ enum WristbandProtocol {
         Data("L,\(min(100, max(0, value)))".utf8)
     }
 
+    /// A deliberate training action, not a detected event or dashboard record.
+    static func patternTest(event: String) -> Data? {
+        guard SoundHapticPattern.all.contains(where: { $0.event == event }) else { return nil }
+        return message("P," + event)
+    }
+
     static func time(date: Date = Date(), timeZone: TimeZone = .autoupdatingCurrent) -> Data? {
         let formatter = DateFormatter()
         formatter.locale = numberLocale
@@ -119,6 +125,12 @@ final class WristbandBluetooth: NSObject {
 
     func sendLevel(_ level: Int) {
         _ = write(WristbandProtocol.level(level))
+    }
+
+    @discardableResult
+    func sendPatternTest(event: String) -> Bool {
+        guard let data = WristbandProtocol.patternTest(event: event) else { return false }
+        return write(data, validUntil: ProcessInfo.processInfo.systemUptime + 0.75)
     }
 
     func sendTime() {
