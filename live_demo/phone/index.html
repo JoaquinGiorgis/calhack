@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FortWatch - escucha en el celular</title>
+<style>
+  :root { color-scheme: dark; --bg:#0b0d10; --card:#161a20; --fg:#f2f4f7; --mut:#8a94a3; --ok:#34d399; --bad:#f87171; --acc:#f59e0b; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:16px/1.4 system-ui,sans-serif; max-width:520px; margin-inline:auto; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  p.sub { margin:0 0 16px; color:var(--mut); font-size:14px; }
+  .card { background:var(--card); border-radius:14px; padding:14px; margin-bottom:12px; }
+  button { width:100%; padding:16px; font-size:17px; font-weight:600; border:0; border-radius:12px; background:var(--acc); color:#111; margin-bottom:8px; }
+  button.sec { background:#2a313b; color:var(--fg); }
+  button:disabled { opacity:.45; }
+  .row { display:flex; justify-content:space-between; gap:8px; font-size:14px; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--bad); margin-right:6px; }
+  .dot.on { background:var(--ok); }
+  #bar { height:14px; background:#252b34; border-radius:7px; overflow:hidden; margin:10px 0; }
+  #bar > div { height:100%; width:0; background:var(--ok); transition:width .15s; }
+  #alert { font-size:28px; font-weight:800; text-align:center; padding:18px 0; min-height:70px; }
+  #top { font-size:13px; color:var(--mut); white-space:pre-line; }
+  #log { font:12px/1.4 ui-monospace,monospace; color:var(--mut); max-height:140px; overflow:auto; white-space:pre-wrap; }
+  details summary { cursor:pointer; color:var(--mut); font-size:14px; }
+  label { display:flex; justify-content:space-between; align-items:center; font-size:14px; padding:4px 0; }
+  input[type=number] { width:70px; background:#252b34; color:var(--fg); border:0; border-radius:6px; padding:6px; }
+</style>
+</head>
+<body>
+<h1>FortWatch</h1>
+<p class="sub">El celular escucha, clasifica con YAMNet y avisa a la pulsera por Bluetooth. El audio no sale del celular.</p>
+
+<div class="card">
+  <div class="row"><span><span class="dot" id="dotMic"></span>Micrófono</span><span id="micState">apagado</span></div>
+  <div class="row"><span><span class="dot" id="dotBle"></span>Pulsera</span><span id="bleState">sin conectar</span></div>
+  <div id="bar"><div></div></div>
+  <div id="alert">—</div>
+  <div id="top"></div>
+</div>
+
+<button id="btnBle">1. Conectar pulsera (Bluetooth)</button>
+<button id="btnStart" disabled>2. Empezar a escuchar</button>
+<button id="btnTest" class="sec" disabled>Enviar alerta de prueba (KNOCK)</button>
+
+<div class="card">
+  <details>
+    <summary>Umbrales (los mismos que en la Mac)</summary>
+    <div id="thresholds"></div>
+  </details>
+</div>
+<div class="card"><div id="log"></div></div>
+
+<script src="tf.min.js"></script>
+<script>
+"use strict";
+// ---- Mismos parametros que live_demo/mac_listener.py ----
+const BLE_NAME = "FortWatch";
+const BLE_SERVICE_UUID = "6b1a0001-5d1e-4c3b-9a7e-50554e445345";
+const BLE_RX_UUID = "6b1a0002-5d1e-4c3b-9a7e-50554e445345";
+const MODEL_RATE = 16000, WINDOW_SECONDS = 1.0, HOP_SECONDS = 0.5;
+
+const EVENTS = {
+  ALARM: { classes: ["Alarm","Alarm clock","Smoke detector, smoke alarm","Fire alarm","Car alarm","Buzzer","Siren","Civil defense siren","Police car (siren)","Ambulance (siren)","Fire engine, fire truck (siren)"], threshold: 0.50, priority: 3 },
+  CAR_HORN: { classes: ["Vehicle horn, car horn, honking","Air horn, truck horn"], threshold: 0.30, priority: 3 },
+  GLASS: { classes: ["Glass","Shatter","Breaking","Smash, crash"], threshold: 0.50, priority: 3 },
+  SHOUT: { classes: ["Shout","Yell","Screaming","Children shouting"], threshold: 0.40, priority: 3 },
+  BABY: { classes: ["Baby cry, infant cry"], threshold: 0.50, priority: 2 },
+  KNOCK: { classes: ["Knock"], threshold: 0.35, priority: 2 },
+  DOORBELL: { classes: ["Doorbell","Ding-dong"], threshold: 0.30, priority: 2 },
+  PHONE: { classes: ["Telephone","Telephone bell ringing","Ringtone"], threshold: 0.50, priority: 2 },
+  DOG: { classes: ["Bark"], threshold: 0.30, priority: 1 },
+  SPEECH: { classes: ["Speech"], threshold: 0.50, priority: 0, minHits: 3, window: 4, cooldown: 15 },
+};
+for (const e of Object.values(EVENTS)) { e.minHits ??= 1; e.window ??= 1; e.cooldown ??= 2; e.enabled = true; }
+
+const $ = (id) => document.getElementById(id);
+const log = (m) => { const el = $("log"); el.textContent = (new Date().toLocaleTimeString() + " " + m + "\n" + el.textContent).slice(0, 4000); };
+
+// ---- Umbrales editables ----
+for (const [name, e] of Object.entries(EVENTS)) {
+  const row = document.createElement("label");
+  row.innerHTML = `<span><input type="checkbox" checked data-n="${name}"> ${name}</span><input type="number" step="0.05" min="0.05" max="1" value="${e.threshold}" data-t="${name}">`;
+  $("thresholds").appendChild(row);
+}
+$("thresholds").addEventListener("input", (ev) => {
+  const t = ev.target;
+  if (t.dataset.n) EVENTS[t.dataset.n].enabled = t.checked;
+  if (t.dataset.t) EVENTS[t.dataset.t].threshold = parseFloat(t.value) || EVENTS[t.dataset.t].threshold;
+});
+
+// ---- Bluetooth LE (Web Bluetooth: Chrome Android, o Bluefy en iPhone) ----
+const ble = { device: null, char: null, queue: Promise.resolve(), connected: false };
+function setBle(on, text) { ble.connected = on; $("dotBle").classList.toggle("on", on); $("bleState").textContent = text; $("btnTest").disabled = !on; }
+
+async function bleConnect() {
+  if (!navigator.bluetooth) { log("Este navegador no tiene Web Bluetooth. Usá Chrome en Android o Bluefy en iPhone."); return; }
+  try {
+    if (!ble.device) {
+      ble.device = await navigator.bluetooth.requestDevice({ filters: [{ services: [BLE_SERVICE_UUID] }, { name: BLE_NAME }], optionalServices: [BLE_SERVICE_UUID] });
+      ble.device.addEventListener("gattserverdisconnected", () => { setBle(false, "desconectada, reintentando…"); setTimeout(bleConnect, 1500); });
+    }
+    setBle(false, "conectando…");
+    const server = await ble.device.gatt.connect();
+    const service = await server.getPrimaryService(BLE_SERVICE_UUID);
+    ble.char = await service.getCharacteristic(BLE_RX_UUID);
+    setBle(true, "conectada");
+    log("Pulsera conectada");
+  } catch (err) {
+    setBle(false, "error"); log("Bluetooth: " + err.message);
+  }
+}
+
+// Un mensaje por escritura. Los "L" van sin confirmacion; "E" y "T" con confirmacion (los largos se parten solos).
+function bleSend(line) {
+  if (!ble.connected || !ble.char) return;
+  const data = new TextEncoder().encode(line);
+  const noResp = line.startsWith("L,");
+  if (noResp && ble.busy) return; // no acumular niveles viejos
+  ble.queue = ble.queue.then(async () => {
+    ble.busy = true;
+    try { noResp ? await ble.char.writeValueWithoutResponse(data) : await ble.char.writeValueWithResponse(data); }
+    catch (err) { log("Error al enviar: " + err.message); }
+    ble.busy = false;
+  });
+}
+
+$("btnBle").onclick = bleConnect;
+$("btnTest").onclick = () => { bleSend("E,KNOCK,0.90"); showAlert("KNOCK (prueba)"); };
+
+// ---- YAMNet ----
+let model = null, classNames = [], indices = {};
+async function loadModel() {
+  log("Cargando YAMNet…");
+  await tf.ready();
+  model = await tf.loadGraphModel("model/model.json");
+  classNames = await (await fetch("model/classes.json")).json();
+  const lookup = new Map(classNames.map((n, i) => [n, i]));
+  for (const [name, e] of Object.entries(EVENTS)) {
+    indices[name] = e.classes.map((c) => { if (!lookup.has(c)) throw new Error("Clase no encontrada: " + c); return lookup.get(c); });
+  }
+  // Calentar el modelo
+  tf.tidy(() => model.predict(tf.zeros([MODEL_RATE])));
+  log("YAMNet listo");
+}
+
+// Devuelve, para las 521 clases, el maximo sobre los frames de YAMNet (igual que en la Mac).
+function classify(waveform) {
+  return tf.tidy(() => {
+    const out = model.predict(tf.tensor1d(waveform));
+    const scores = Array.isArray(out) ? out[0] : out; // [frames, 521]
+    return scores.max(0).dataSync();
+  });
+}
+window.fortwatch = { classify: async (w) => { if (!model) await loadModel(); return Array.from(classify(w)); }, get classNames() { return classNames; } };
+
+// ---- Micro y ventana deslizante ----
+let audioCtx = null, wakeLock = null, running = false;
+let win = new Float32Array(MODEL_RATE * WINDOW_SECONDS), pending = new Float32Array(0);
+const history = {}, lastSent = {};
+for (const n of Object.keys(EVENTS)) history[n] = [];
+let nextClock = 0, resamplePos = 0;
+
+function resample(input, inRate) { // interpolacion lineal a 16 kHz, con posicion continua entre bloques
+  const ratio = inRate / MODEL_RATE, out = [];
+  let pos = resamplePos;
+  while (pos + 1 < input.length) {
+    const i = Math.floor(pos), f = pos - i;
+    out.push(input[i] * (1 - f) + input[i + 1] * f);
+    pos += ratio;
+  }
+  resamplePos = pos - input.length;
+  return Float32Array.from(out);
+}
+
+function showAlert(text) {
+  const el = $("alert"); el.textContent = text; el.style.color = "var(--acc)";
+  clearTimeout(showAlert.t); showAlert.t = setTimeout(() => { el.textContent = "—"; el.style.color = ""; }, 4000);
+  if (navigator.vibrate) navigator.vibrate(200);
+}
+
+function processHop(hop) {
+  win = new Float32Array([...win.subarray(hop.length), ...hop]);
+  let sum = 0; for (const s of hop) sum += s * s;
+  const rms = Math.sqrt(sum / hop.length), db = 20 * Math.log10(rms + 1e-10);
+  const level = Math.max(0, Math.min(100, Math.trunc((db + 60) / 60 * 100)));
+  $("bar").firstElementChild.style.width = level + "%";
+  bleSend("L," + level);
+
+  const now = performance.now() / 1000;
+  if (now >= nextClock) {
+    nextClock = now + 10;
+    const d = new Date();
+    const wd = d.toLocaleDateString("en-US", { weekday: "long" }), md = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    bleSend(`T,${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")},${wd}, ${md}`);
+  }
+
+  const scores = classify(win);
+  const cands = [];
+  for (const [name, e] of Object.entries(EVENTS)) {
+    if (!e.enabled) continue;
+    let score = 0; for (const i of indices[name]) score = Math.max(score, scores[i]);
+    const h = history[name]; h.push(score >= e.threshold); if (h.length > e.window) h.shift();
+    const sustained = h.filter(Boolean).length >= e.minHits;
+    const cooled = now - (lastSent[name] ?? -1e9) >= e.cooldown;
+    if (sustained && cooled) cands.push([e.priority, score / e.threshold, name, score]);
+  }
+  if (cands.length) {
+    cands.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const [, , name, score] = cands[cands.length - 1];
+    lastSent[name] = now;
+    bleSend(`E,${name},${score.toFixed(2)}`);
+    showAlert(name); log(`>>> ${name} score=${score.toFixed(2)}`);
+  }
+  const top = Array.from(scores.keys()).sort((a, b) => scores[b] - scores[a]).slice(0, 3);
+  $("top").textContent = top.map((i) => `${classNames[i]} ${scores[i].toFixed(2)}`).join("\n");
+}
+
+async function start() {
+  $("btnStart").disabled = true;
+  try {
+    if (!model) await loadModel();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false, channelCount: 1 } });
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    await audioCtx.resume();
+    const src = audioCtx.createMediaStreamSource(stream);
+    const proc = audioCtx.createScriptProcessor(4096, 1, 1); // simple y compatible con iOS
+    const mute = audioCtx.createGain(); mute.gain.value = 0;
+    const hopSamples = Math.round(MODEL_RATE * HOP_SECONDS);
+    proc.onaudioprocess = (ev) => {
+      if (!running) return;
+      const r = resample(ev.inputBuffer.getChannelData(0), audioCtx.sampleRate);
+      const merged = new Float32Array(pending.length + r.length); merged.set(pending); merged.set(r, pending.length); pending = merged;
+      while (pending.length >= hopSamples) { const hop = pending.slice(0, hopSamples); pending = pending.slice(hopSamples); processHop(hop); }
+    };
+    src.connect(proc); proc.connect(mute); mute.connect(audioCtx.destination);
+    running = true;
+    $("dotMic").classList.add("on"); $("micState").textContent = `escuchando (${audioCtx.sampleRate} Hz → 16000 Hz)`;
+    try { wakeLock = await navigator.wakeLock?.request("screen"); } catch (_) {}
+    log("Escuchando");
+  } catch (err) { log("Error: " + err.message); $("btnStart").disabled = false; }
+}
+$("btnStart").onclick = start;
+loadModel().then(() => { $("btnStart").disabled = false; }).catch((e) => log("No pude cargar el modelo: " + e.message));
+</script>
+</body>
+</html>
