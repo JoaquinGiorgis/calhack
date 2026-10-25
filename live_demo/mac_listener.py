@@ -73,7 +73,10 @@ class Event:
     min_hits: int = 1  # hops above threshold required within the last `window` hops
     window: int = 1
     cooldown: float = 2.0  # seconds before the same event can alert again
+    unless: tuple[str, ...] = ()  # skip the event when these classes score at least as high
 
+
+KNOCK_CLASSES = ("Knock", "Door", "Wood", "Chop", "Hammer", "Whack, thwack", "Tap")
 
 # Thresholds were chosen on ESC-50 (2,000 labelled clips) to keep false alerts
 # low; SHOUT, DOORBELL, PHONE and SPEECH have no ESC-50 examples, so theirs are
@@ -97,11 +100,16 @@ EVENTS = {
         0.50, priority=3,
     ),
     "CAR_HORN": Event(["Vehicle horn, car horn, honking", "Air horn, truck horn"], 0.30, priority=3),
-    "GLASS": Event(["Glass", "Shatter", "Breaking", "Smash, crash"], 0.50, priority=3),
+    # A knock on a wooden door also lights up "Breaking"/"Glass" for a moment; when the
+    # wood-impact classes score at least as high, it's a knock, not glass.
+    "GLASS": Event(["Glass", "Shatter", "Breaking", "Smash, crash"], 0.50, priority=3,
+                   unless=KNOCK_CLASSES),
     "SHOUT": Event(["Shout", "Yell", "Screaming", "Children shouting"], 0.40, priority=3),
     # Attention: someone or something needs you.
     "BABY": Event(["Baby cry, infant cry"], 0.50, priority=2),
-    "KNOCK": Event(["Knock"], 0.35, priority=2),
+    # Live tests at the venue: knocks on a door scored Knock 0.14-0.24 but Chop up to
+    # 0.55, Wood 0.44, Hammer 0.31, so the wood-impact classes count too.
+    "KNOCK": Event(list(KNOCK_CLASSES), 0.30, priority=2),
     "DOORBELL": Event(["Doorbell", "Ding-dong"], 0.30, priority=2),
     "PHONE": Event(["Telephone", "Telephone bell ringing", "Ringtone"], 0.50, priority=2),
     "DOG": Event(["Bark"], 0.30, priority=1),
@@ -216,10 +224,15 @@ def load_yamnet():
 
 def event_indices(names: list[str]) -> dict[str, list[int]]:
     lookup = {name: index for index, name in enumerate(names)}
-    missing = [c for event in EVENTS.values() for c in event.classes if c not in lookup]
+    missing = [c for event in EVENTS.values() for c in (*event.classes, *event.unless) if c not in lookup]
     if missing:
         sys.exit(f"YAMNet class names not found: {missing}")
     return {name: [lookup[c] for c in event.classes] for name, event in EVENTS.items()}
+
+
+def veto_indices(names: list[str]) -> dict[str, list[int]]:
+    lookup = {name: index for index, name in enumerate(names)}
+    return {name: [lookup[c] for c in event.unless] for name, event in EVENTS.items() if event.unless}
 
 
 class SerialLink:
@@ -305,7 +318,12 @@ class BleLink:
 
         while True:
             print("  Searching for FortWatch over Bluetooth...")
-            device = await BleakScanner.find_device_by_filter(self._is_fortwatch, timeout=10.0)
+            try:
+                device = await BleakScanner.find_device_by_filter(self._is_fortwatch, timeout=10.0)
+            except Exception as error:  # e.g. the Mac's Bluetooth was turned off: keep retrying
+                print(f"  Can't scan for FortWatch ({error}). Is Bluetooth on? Retrying in 5 s...")
+                await asyncio.sleep(5.0)
+                continue
             if device is None:
                 print("  FortWatch not found. Is the ESP32 powered on and nearby? Retrying...")
                 continue
@@ -426,6 +444,7 @@ class SpatialEventProcessor:
     def __init__(self, classify, names, link, analytics=None, quiet=False):
         self.classify, self.names, self.link = classify, names, link
         self.indices = event_indices(names)
+        self.vetoes = veto_indices(names)
         self.analytics, self.quiet = analytics, quiet
         self.epoch = None
         self.history = {}
@@ -458,6 +477,8 @@ class SpatialEventProcessor:
             candidates = []
             for name, event in EVENTS.items():
                 score = float(scores[self.indices[name]].max())
+                if name in self.vetoes and float(scores[self.vetoes[name]].max()) >= score:
+                    score = 0.0
                 hit = score >= event.threshold
                 self.history[name].append(hit)
                 sustained = sum(self.history[name]) >= event.min_hits
@@ -540,6 +561,7 @@ def main() -> None:
 
     classify, names = load_yamnet()
     indices = event_indices(names)
+    vetoes = veto_indices(names)
     link_type = "none" if args.no_serial else args.link
     link = {"ble": BleLink, "usb": lambda: SerialLink(args.port), "none": NoLink}[link_type]()
     analytics = None
@@ -602,10 +624,14 @@ def main() -> None:
             candidates = []
             for name, event in EVENTS.items():
                 score = float(scores[indices[name]].max())
+                if name in vetoes and float(scores[vetoes[name]].max()) >= score:
+                    score = 0.0  # e.g. GLASS during a knock: the wood-impact classes win
                 history[name].append(score >= event.threshold)
                 sustained = sum(history[name]) >= event.min_hits
                 cooled = now - last_sent.get(name, -1e9) >= event.cooldown
-                if sustained and cooled:
+                # Fire on a hop where the sound is still there, so the score shown on the
+                # wristband is a real one (not ~0 from a hop after the sound ended).
+                if sustained and cooled and score >= event.threshold:
                     candidates.append((event.priority, score / event.threshold, name, score))
 
             if candidates:

@@ -4,11 +4,16 @@
 > Contexto técnico y decisiones: [PROJECT_STATUS.md](PROJECT_STATUS.md) · Setup: [README.md](README.md) · Carcasa: [hardware/enclosure](hardware/enclosure/)
 > Dashboard en vivo: `python3 -m http.server 8765` en la raíz → http://localhost:8765/dashboard.html
 
-## 🧭 Arquitectura actual (definida 24/10)
+## 🧭 Arquitecturas disponibles (actualizado 25/10)
 ```
 Mic de la Mac / iPhone ─► YAMNet en la Mac (10 alertas) ─► Bluetooth LE ─► Pulsera ESP32-S3: alerta a pantalla completa + vibración
 ```
 El Grove Sound Sensor **ya no se usa** (su amplificador satura con alarmas/bocinas y no sirve para clasificar). Ver "Key decisions" en PROJECT_STATUS.
+
+La demo anterior usa la Mac. Esta rama también incluye la app nativa
+`iPhone → Apple SoundAnalysis + dirección → BLE → pulsera`, implementada pero con
+validación física pendiente. `origin/main` en `88aebcb` todavía no contiene `ios/`.
+Ver [auditoría del pull y capacidades actuales](docs/CURRENT-CAPABILITIES.md).
 
 ## 🎯 Definición de "terminado" para la demo
 Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a la Mac: ante golpes en la puerta, una alarma o una bocina muestra la alerta a pantalla completa y **vibra** con un patrón según la prioridad. Video de backup grabado.
@@ -40,7 +45,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | H4 | TODO | Probar power bank → USB-C de la placa 15 min (¿se apaga por bajo consumo?) | | — | Funciona 15 min seguidos |
 | H5 | CUT | ~~Recortar pines~~ → la carcasa deja lugar para jumpers Dupont | | — | — |
 | H6 | DONE | Motor en breadboard: GPIO17 → 1 kΩ → base PN2222, emisor a GND, motor entre **5V** y colector, **1N4007** en paralelo al motor (franja al 5V) | Joaquin | P1 | ✅ Probado 24/10: vibra (foto `docs/hardware/motor-breadboard-working.jpg`) |
-| H7 | TODO | Pasar el circuito del motor a formato "sin breadboard" (jumpers hembra + cinta, diodo en los terminales del motor) | | H6 | Entra en la carcasa |
+| H7 | DONE | Circuito del motor sin breadboard: jumpers hembra en "17"/"G"/"5V", 1 kΩ a la base, 2N2222A (E·B·C, cara plana al frente), diodo 1N4007 en los terminales del motor (franja al rojo), todo con cinta | Joaquin, Pedro | H6 | ✅ 24/10: vibra con el power bank y con alertas reales |
 
 ## 💾 2. Software (Mac + pulsera)
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
@@ -50,25 +55,26 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | S3 | DONE | Vibración por prioridad en el firmware (seguridad 3 largas · atención 2 cortas · baja 1 corta · autotest al encender) | Joaquin | — | Compila; falta probar con el motor (H6) |
 | S4 | DOING | Probar en vivo cada alerta con sonidos reales y ajustar con `--set`. ✅ Mic iPhone + USB: CAR_HORN 0.57–0.87, SPEECH 0.90–0.98 llegan a la pulsera. ❌ Golpes en la mesa → "Basketball bounce", no KNOCK (probar con una puerta) | Joaquin | S1 | Tabla alerta → score típico |
 | S5 | TODO | Modo ensayo: pasar una grabación fija por el mismo pipeline (demo reproducible) | | S1 | Demo idéntica cada vez |
-| S6 | DOING | (Implementado, falta probar) Descartar alerta tocando la pantalla (touch CST816 en I2C SDA 48 / SCL 47) — dentro de la carcasa el BOOT queda en la ranura del USB | | S2 | Toque descarta |
+| S6 | DONE | Táctil CST816 (I2C SDA 48 / SCL 47): tocar descarta la alerta; en la home, mantener 1 s (o BOOT) prende/apaga SPEECH (ícono On/Off junto al reloj, guardado en flash) | Joaquin | S2 | ✅ 25/10: probado en la placa |
 | S7 | DONE | Diseño Figma de las 13 pantallas + escenarios + prototipo ([docs/design](docs/design/README.md)) y **slider** en la pulsera (`live_demo/screen_preview`) para verlas en el display real | Joaquin | — | Slider corriendo en la placa |
 | S8 | DONE | Pantallas de Figma en el firmware real (`fortwatch_display`): imagen de cada alerta + barra de confianza real, ecualizador en vivo, nº de alertas | Joaquin | S7 | Alertas en vivo con el diseño nuevo |
 | S9 | DONE | Home estilo iOS *Liquid Glass*: wallpaper real, reloj (hora desde la Mac), widgets Listening/Last alert con ícono, texto Inter con antialias | Joaquin | S8 | ✅ Cargado en la placa (24/10); falta confirmar visualmente |
 | S10 | DONE | Analytics en vivo (dashboard de Mana): la **pulsera sube cada alerta por WiFi** ella misma (`wifi_analytics.h`, secretos en `secrets.h` git-ignorado); el ícono de SPEECH es una persona hablando. El WiFi de Cal Hacks es solo 5/6 GHz y la ESP32-S3 solo usa 2,4 GHz → usa el hotspot del iPhone ("Maximizar compatibilidad") | Joaquin, Nico | S2 | ✅ 24/10: conectada al hotspot, serial dice `Analytics: uploaded`; la Mac ya no sube (sin duplicados) |
+| S11 | DONE | Golpes en la puerta se confundían con GLASS: KNOCK suma clases de golpe en madera (Door, Wood, Chop, Hammer…) y GLASS se descarta cuando esas ganan. WiFi de la pulsera sin escaneo continuo (ya no se reinicia si se corta el hotspot); listener reconecta si se apaga el Bluetooth | Joaquin | S1 | Golpes salen como KNOCK en vivo |
 
 ### Extensión opcional de dirección
 
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
 |---|---|---|---|---|---|
-| S11 | DOING | iPhone reconoce y calcula dirección localmente → Bluetooth directo → pulsera. Sin Mac/IP/código. Incluye prueba de vibración. [Guía](ios/README.md) · [Validación](docs/SPATIAL-VALIDATION.md). Pendiente comprobar captura, ángulos y motor en hardware. | Codex | S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
+| S12 | DOING | iPhone reconoce y calcula dirección localmente → Bluetooth directo → pulsera. Sin Mac/IP/código. Incluye prueba de vibración. [Guía](ios/README.md) · [Validación](docs/SPATIAL-VALIDATION.md). Pendiente comprobar captura, ángulos y motor en hardware. | Codex | S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
 |---|---|---|---|---|---|
 | C1 | DONE | Carcasa paramétrica, encastre sin tornillos (reglas PLA), todo adentro, verificada con `check_stl.py` | Joaquin | — | `hardware/enclosure/stl/plate.stl` |
-| C2 | DOING | **Reenviar `plate.stl` (v3: sin Grove, repisa del power bank, STL binario limpio)** a la cola de impresión. v1/v2 dieron "file error" en la Adventurer 5M (form Cal Hacks, 2 h, settings en [README](hardware/enclosure/README.md)) | | — | Aparece en el spreadsheet de la cola |
+| C2 | DONE | `plate.stl` impreso (shell, tapa y 2 contrapesos). El agujero del contrapeso salió chico: se agrandó con un clip caliente | Joaquin | — | Piezas en mano |
 | C3 | DONE | Motor medido (130: 25 mm + eje) | Joaquin | — | — |
-| C5 | TODO | Montaje: vidrio → shell, motor + contrapeso en la cuna, transistor/cables en el compartimento, tapa a presión, velcro | | C2, H7 | Se usa en la muñeca 10 min sin moverse |
+| C5 | DOING | Montaje: vidrio → shell, motor + contrapeso en la cuna, transistor/cables bajo la placa, tapa a presión, velcro | Joaquin, Pedro | C2, H7 | Se usa en la muñeca 10 min sin moverse |
 
 ## 🧪 4. Validación (números reales para el pitch)
 | ID | Estado | Tarea | Owner | Done cuando |

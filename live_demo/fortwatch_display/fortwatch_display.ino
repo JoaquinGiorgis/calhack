@@ -32,6 +32,7 @@
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
+#include <Preferences.h>
 #include <Wire.h>
 #include "screens.h"
 #include "fonts.h"
@@ -312,8 +313,32 @@ void drawStatus() {
   drawText(F_TINY, bg, 24, 218, status, 0.7f);
 }
 
+// SPEECH alerts can be turned off on the wristband itself (they fire with any conversation
+// nearby): hold the home screen, or BOOT, for 1 s. Saved in flash, so it survives a restart.
+Preferences prefs;
+bool speechEnabled = true;
+
+void drawIcon(const uint16_t *bg, const char *name, int x, int y, float opacity = 1.0f);
+
+// Top-right of the home screen, beside the clock: speaking-person icon + On/Off.
+void drawSpeechToggle() {
+  const uint16_t *bg = homeBg();
+  if (!bg) return;
+  restoreRegion(bg, 240, 40, 70, 28);
+  drawIcon(bg, "speech", 246, 44, speechEnabled ? 1.0f : 0.35f);
+  drawText(F_SMALL, bg, 270, 59, speechEnabled ? "On" : "Off", speechEnabled ? 0.9f : 0.5f);
+}
+
+void toggleSpeech() {
+  speechEnabled = !speechEnabled;
+  prefs.putBool("speech", speechEnabled);
+  Serial.printf("SPEECH alerts %s\n", speechEnabled ? "on" : "off");
+  vibrate(VIB_LOW);
+  if (screen == Screen::Listening) drawSpeechToggle();
+}
+
 // Alert icon (alpha mask from icons.h) blended over the background.
-void drawIcon(const uint16_t *bg, const char *name, int x, int y, float opacity = 1.0f) {
+void drawIcon(const uint16_t *bg, const char *name, int x, int y, float opacity) {
   const uint8_t *mask = nullptr;
   for (int i = 0; i < ICON_COUNT; i++) if (strcmp(ICONS[i].name, name) == 0) mask = ICONS[i].alpha;
   if (!mask) return;
@@ -371,6 +396,7 @@ void showListening() {
     drawClock();
     drawStatus();
     drawLastAlert();
+    drawSpeechToggle();
     return;
   }
   gfx->fillScreen(C_BLACK);
@@ -485,7 +511,9 @@ void handleLine(char *text) {
     if (changed && screen == Screen::Listening) drawClock();
   } else if (text[0] == 'E' && text[1] == ',') {
     fortwatch::AlertMessage message;
-    if (fortwatch::parseAlert(text, message)) showAlert(message);
+    if (!fortwatch::parseAlert(text, message)) return;
+    if (!speechEnabled && strcmp(message.event, "SPEECH") == 0) return;
+    showAlert(message);
   }
 }
 
@@ -545,15 +573,22 @@ void startBluetooth() {
   Serial.printf("BLE advertising as %s (%s)\n", BLE_NAME, BLEDevice::getAddress().toString().c_str());
 }
 
-// CST816 touch: register 0x02 = number of fingers on the screen.
+// CST816 touch: registers 0x02 = number of fingers, 0x03-0x06 = X/Y (12-bit, raw panel
+// coordinates in portrait). touchX/touchY hold the last raw point while a finger is down.
 bool touchReady = false;
+int touchX = -1, touchY = -1;
 bool screenTouched() {
   if (!touchReady) return false;
   Wire.beginTransmission(TOUCH_ADDR);
   Wire.write(0x02);
   if (Wire.endTransmission(false) != 0) return false;
-  if (Wire.requestFrom(TOUCH_ADDR, 1) != 1) return false;
-  return (Wire.read() & 0x0F) > 0;
+  if (Wire.requestFrom(TOUCH_ADDR, 5) != 5) return false;
+  uint8_t fingers = Wire.read() & 0x0F;
+  uint8_t xh = Wire.read(), xl = Wire.read(), yh = Wire.read(), yl = Wire.read();
+  if (fingers == 0) return false;
+  touchX = ((xh & 0x0F) << 8) | xl;
+  touchY = ((yh & 0x0F) << 8) | yl;
+  return true;
 }
 
 void setup() {
@@ -568,6 +603,10 @@ void setup() {
   pinMode(PIN_LCD_BL, OUTPUT);
   digitalWrite(PIN_LCD_BL, HIGH);
   touchReady = Wire.begin(PIN_TOUCH_SDA, PIN_TOUCH_SCL, 400000);
+  Wire.beginTransmission(TOUCH_ADDR);
+  Serial.printf("Touch controller %s\n", Wire.endTransmission() == 0 ? "found" : "not answering (asleep until touched?)");
+  prefs.begin("fortwatch", false);
+  speechEnabled = prefs.getBool("speech", true);
   startBluetooth();
   startAnalytics();
   showWaiting();
@@ -586,6 +625,23 @@ void loop() {
   bool touched = screenTouched();
   bool tap = touched && !wasTouched;
   wasTouched = touched;
+  if (tap) Serial.printf("Touch: raw x=%d y=%d\n", touchX, touchY);  // for mapping the panel
+
+  // Hold the home screen (or BOOT) for 1 s to turn SPEECH alerts on/off. Only presses that
+  // start on the home screen count, so the tap that dismisses an alert can't toggle it.
+  static uint32_t holdStartMs = 0;
+  static bool holdUsed = false;
+  bool pressed = touched || digitalRead(PIN_BOOT_BUTTON) == LOW;
+  if (!pressed) {
+    holdStartMs = 0;
+    holdUsed = false;
+  } else if (holdStartMs == 0) {
+    holdStartMs = now;
+    holdUsed = screen != Screen::Listening;
+  } else if (!holdUsed && screen == Screen::Listening && now - holdStartMs >= 1000) {
+    holdUsed = true;
+    toggleSpeech();
+  }
 
   if (screen == Screen::Alert) {
     bool dismissed = digitalRead(PIN_BOOT_BUTTON) == LOW || (tap && now - alertStartedMs > 300);

@@ -1,9 +1,12 @@
 # FortWatch — project status and context
 
-*Last updated: 2026-10-24, during Cal Hacks 13.0 (Palace of Fine Arts, San Francisco).*
+*Last updated: 2026-10-25, during Cal Hacks 13.0 (Palace of Fine Arts, San Francisco).*
 
 For setup and usage, see [README.md](README.md). This document records where the
 project stands, why it is built the way it is, and what comes next.
+The [main-sync audit](docs/CURRENT-CAPABILITIES.md) records the current branch
+differences, software checks and unresolved limitations. Hardware reports below
+come from the team's updated BOARD; this audit did not repeat them physically.
 
 ## The problem
 
@@ -21,14 +24,14 @@ replace smoke alarms or other alerting systems.
 |---|---|
 | Direct iPhone recognition + spatial direction + BLE | Implemented; physical validation pending |
 | Sound classification on the Mac (YAMNet fallback) | Working |
-| Wristband firmware: Figma-designed alert screens, live level meter, dismiss | Working; touch-to-dismiss added, needs a test on the board |
+| Wristband firmware: Figma-designed alert screens, live level meter, dismiss | Team reports touch tested on 25/10; hold home/BOOT for 1 s to toggle SPEECH, persisted across restart |
 | Bluetooth LE link, Mac → wristband (wristband on a power bank) | Working |
 | USB link (fallback) | Working |
 | 10 alert types with priorities and thresholds | Working, thresholds partly validated (see below) |
 | Live test with real sounds, end to end | Partially done; needs a full pass per alert |
-| 3D-printed case and strap | Designed and verified (`hardware/enclosure/`, `plate.stl`); not printed yet |
-| Vibration | Firmware done (pattern per alert priority, compiles); motor + PN2222 driver working on a breadboard |
-| Live analytics: the wristband uploads every alert it shows to the team dashboard over Wi-Fi (`wifi_analytics.h`) | Working on a phone hotspot (24/10); the alert appears on the dashboard |
+| 3D-printed case and strap | Team reports shell, lid and weights printed; assembly and wrist-use validation remain in progress |
+| Vibration | Team reports motor circuit assembled without breadboard and working with power bank and real alerts |
+| Live analytics: wristband uploads alert metadata over Wi-Fi (`wifi_analytics.h`) | Team reports hotspot upload working; bounded queues can lose events during outages |
 | Classification on the wristband itself | Not started (needs an I2S microphone) |
 
 ### What has been verified
@@ -36,7 +39,7 @@ replace smoke alarms or other alerting systems.
 - **Classification:** YAMNet run over all 2,000 ESC-50 clips to choose thresholds;
   results are in the README. A short live run on the MacBook mic raised no false
   alerts in a noisy hackathon hall.
-- **Firmware:** compiles for the ESP32-S3 and was flashed to the board.
+- **Firmware:** earlier team version was compiled and flashed to the board; the combined iPhone/main firmware has separate software checks in the audit and has not been flashed during this audit.
 - **Bluetooth:** the board advertises as `FortWatch`; the Mac finds it, connects in
   about 2.5 s, and the board acknowledges alert messages.
 - **Mac program options:** `--set`, `--disable`, `--link` and input validation.
@@ -117,10 +120,12 @@ research code is kept outside this repo.
 Bluetooth, so Bluetooth headsets can't be used as a microphone. BLE is ideal for
 short alert messages. USB remains as a fallback.
 
-**Thresholds chosen from data.** Each threshold trades hit rate against false
-alerts measured on ESC-50. Some initial guesses were changed as a result: KNOCK went
-from 0.20 to 0.35 because keyboard typing and footsteps triggered it, and DOG uses
-only "Bark" because the broader "Dog" class fired on pigs and toothbrushes.
+**Thresholds chosen from data, then adjusted in live tests.** The initial Mac
+thresholds were measured on ESC-50. KNOCK was initially raised to 0.35, then changed
+to 0.30 with broader wood-impact classes in the 25/10 update. That update also vetoes
+GLASS when those classes score as highly; the old benchmark has not been rerun for
+this configuration. DOG uses only "Bark" because the broader "Dog" class fired on
+pigs and toothbrushes. The iPhone uses a separate, unvalidated Apple mapping.
 
 ## Known limitations
 

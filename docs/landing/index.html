@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FortWatch · Your wrist hears for you</title>
+<meta name="description" content="FortWatch is a wristband for Deaf and hard-of-hearing people. It recognizes 10 important sounds, like a knock, a car horn or a baby crying, and alerts you with a full-screen message and a vibration. It runs on the wristband: no phone, no internet, and audio never leaves your wrist.">
+<link rel="canonical" href="https://fortwatch.vercel.app/">
+<meta name="theme-color" content="#11160d">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FortWatch">
+<meta property="og:url" content="https://fortwatch.vercel.app/">
+<meta property="og:title" content="FortWatch · Your wrist hears for you">
+<meta property="og:description" content="A wristband that hears a knock, a car horn or a baby crying and tells you with a big alert and a vibration. No phone, no internet. Audio never leaves your wrist.">
+<meta property="og:image" content="https://fortwatch.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A lime-green FortWatch wristband on a wrist showing a KNOCK alert, next to the words Your wrist hears for you.">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FortWatch · Your wrist hears for you">
+<meta name="twitter:description" content="A wristband that hears a knock, a car horn or a baby crying and tells you with a big alert and a vibration. No phone, no internet.">
+<meta name="twitter:image" content="https://fortwatch.vercel.app/og.jpg">
+<meta name="twitter:image:alt" content="A lime-green FortWatch wristband on a wrist showing a KNOCK alert.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Gabarito:wght@700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Hero only — mirrors Figma "Landing — Hero" (node 65:694). */
+:root {
+  --knock: #1e4dd4;          /* event/knock — only for the KNOCK alert */
+  --lime: #8fd63d;           /* brand/case-lime — the printed case */
+  --lime-glow: 143, 214, 61;
+  --ink: #12141f;
+  --white: #ffffff;
+  --glass: rgba(255, 255, 255, .14);
+  --glass-line: rgba(255, 255, 255, .38);
+  --shade: 8, 13, 26;
+  --font-display: "Gabarito", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Atkinson Hyperlegible Next", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --gutter: max(40px, env(safe-area-inset-left, 0px));
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #1e2130; color: var(--white); font-family: var(--font-body); }
+
+.hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  min-height: 100vh; min-height: 100svh;
+  display: flex; align-items: flex-end;
+  padding: 0 64px 64px;
+}
+.hero video, .hero .still { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -3; }
+.hero::before {           /* the two shade gradients from Figma */
+  content: ""; position: absolute; inset: 0; z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(var(--shade), .78) 0%, rgba(var(--shade), .5) 42%, rgba(var(--shade), .05) 72%, rgba(var(--shade), 0) 100%),
+    linear-gradient(180deg, rgba(var(--shade), .35) 0%, rgba(var(--shade), 0) 20%, rgba(var(--shade), 0) 55%, rgba(var(--shade), .7) 100%);
+}
+
+/* liquid glass */
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(16px) saturate(170%) brightness(1.05);
+  backdrop-filter: blur(16px) saturate(170%) brightness(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .45),
+    inset 0 -1px 0 rgba(255, 255, 255, .08),
+    inset 1px 0 0 rgba(255, 255, 255, .12),
+    0 8px 30px rgba(40, 90, 10, .22);
+}
+
+.nav {
+  position: absolute; top: calc(24px + env(safe-area-inset-top, 0px)); left: 40px; right: 40px;
+  height: 64px; border-radius: 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 10px 0 24px;
+}
+.logo { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 700; font-size: 24px; letter-spacing: -.03em; text-decoration: none; color: inherit; }
+.logo i { width: 14px; height: 14px; border-radius: 50%; background: var(--lime); border: 2px solid rgba(255,255,255,.9); }
+.links { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.links a { display: block; padding: 8px 12px; border-radius: 999px; color: inherit; text-decoration: none; font-weight: 500; font-size: 15px; transition: background .2s; }
+.links a:hover { background: rgba(255,255,255,.14); }
+.nav-cta { padding: 11px 18px; border-radius: 999px; background: rgba(255,255,255,.92); color: var(--ink); font-weight: 700; font-size: 14px; text-decoration: none; }
+
+.content { display: grid; gap: 16px; max-width: 640px; }
+h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(42px, 4.6vw, 66px); line-height: 1; letter-spacing: -.02em; max-width: 480px; text-wrap: balance; }
+.sub { margin: 0; font-size: clamp(16px, 1.3vw, 18px); line-height: 1.45; max-width: 440px; opacity: .9; }
+.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.cta {
+  display: inline-flex; align-items: center; padding: 15px 26px; border-radius: 999px;
+  background: var(--lime); color: var(--ink); font-weight: 700; font-size: 17px; text-decoration: none;
+  box-shadow: 0 10px 32px rgba(var(--lime-glow), .55); transition: transform .2s, box-shadow .2s;
+}
+.cta:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(var(--lime-glow), .7); }
+.trust { display: flex; flex-wrap: wrap; gap: 8px 24px; list-style: none; margin: 0; padding: 0; }
+.trust li { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; opacity: .85; }
+.trust svg { flex: none; }
+
+.alert {
+  position: absolute; right: 64px; bottom: 64px;
+  display: flex; align-items: center; gap: 12px; padding: 12px 20px 12px 12px; border-radius: 24px;
+  animation: arrive .7s cubic-bezier(.2,.8,.2,1) 1.2s both;
+}
+.alert .badge { width: 44px; height: 44px; border-radius: 50%; background: var(--knock); display: grid; place-items: center; }
+.alert .tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; opacity: .8; }
+.alert b { display: block; font-family: var(--font-display); font-size: 22px; letter-spacing: -.01em; line-height: 1.1; }
+.alert span { font-size: 13px; opacity: .9; }
+@keyframes arrive { from { opacity: 0; transform: translateY(16px) scale(.97); } to { opacity: 1; transform: none; } }
+
+:focus-visible { outline: 3px solid #9fb4ff; outline-offset: 3px; }
+
+@media (max-width: 1100px) { .links { display: none; } .alert { display: none; } }
+@media (max-width: 640px) {
+  .hero { padding: 0 max(16px, env(safe-area-inset-left, 0px)) 40px max(16px, env(safe-area-inset-right, 0px)); }
+  .nav { left: 12px; right: 12px; height: 64px; padding-left: 20px; }
+  .logo { font-size: 24px; }
+  .cta { width: 100%; justify-content: center; }
+  }
+@media (prefers-reduced-motion: reduce) { .alert { animation: none; } .cta { transition: none; } }
+</style>
+</head>
+<body>
+<header class="hero">
+  <img class="still" src="hero-poster.jpg" alt="">
+  <video id="film" autoplay muted loop playsinline preload="auto" poster="hero-poster.jpg"
+    aria-label="A day with Maya, who is Deaf: her wristband tells her when someone knocks, when a car honks and when her baby wakes up.">
+    <source src="hero.mp4" type="video/mp4">
+  </video>
+
+  <nav class="nav glass" aria-label="Main">
+    <a class="logo" href="/"><i aria-hidden="true"></i>fortwatch</a>
+    <ul class="links">
+      <li><a href="#">Home</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#sounds">Sounds</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a class="nav-cta" href="#reserve">Reserve</a>
+  </nav>
+
+  <div class="content">
+    <h1>Your wrist hears for you</h1>
+    <p class="sub">It hears a knock, a car horn or your baby crying, and tells you with a big alert and a vibration. No phone, no internet.</p>
+    <div class="cta-row">
+      <a class="cta" href="#reserve">Reserve yours for $29.97</a>
+    </div>
+    <ul class="trust">
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>10 everyday sounds</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Audio never leaves your wrist</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Screen and vibration</li>
+    </ul>
+  </div>
+
+  <div class="alert glass" role="img" aria-label="Example alert: KNOCK, someone is at the door">
+    <div class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.157a.5.5 0 0 1-.652.476l-4.696-1.565A2 2 0 0 1 6 17.733V5.562a2 2 0 0 1 1.515-1.94l4.243-1.06A1 1 0 0 1 13 3.56z"/></svg></div>
+    <div><div class="tag">ATTENTION · VIB ●●</div><b>KNOCK</b><span>Someone at the door · now</span></div>
+  </div>
+</header>
+</body>
+</html>

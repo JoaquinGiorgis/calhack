@@ -6,7 +6,7 @@
 
 struct WifiNetwork { const char *ssid; const char *password; };
 
-// Tried in order of signal strength. 2.4 GHz WPA2 networks only (the ESP32 can't join
+// Tried in this order (put the one you use most first). 2.4 GHz WPA2 networks only (the ESP32 can't join
 // 5 GHz, or networks that need a login web page or a username, like eduroam).
 // A phone hotspot works well for demos.
 const WifiNetwork WIFI_NETWORKS[] = {

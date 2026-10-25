@@ -21,6 +21,8 @@ thresholds and ESC-50 results do not measure the new Apple classifier.
 
 For where the project stands, why it is built this way, and what's next, see
 [PROJECT_STATUS.md](PROJECT_STATUS.md).
+The [2026-10-25 capability audit](docs/CURRENT-CAPABILITIES.md) separates changes
+from `main`, local iPhone functionality, team-reported hardware tests and remaining gaps.
 
 ## What's in this repo
 
@@ -62,13 +64,19 @@ the highest priority wins, and the same alert won't repeat within 2 seconds.
 | Safety | GLASS | Glass, shatter, breaking, smash | 0.50 |
 | Safety | SHOUT! | Shout, yell, screaming, children shouting | 0.40 |
 | Attention | BABY | Baby cry | 0.50 |
-| Attention | KNOCK | Knock | 0.35 |
+| Attention | KNOCK | Knock, Door, Wood, Chop, Hammer, Whack/thwack, Tap | 0.30 |
 | Attention | DOORBELL | Doorbell, ding-dong | 0.30 |
 | Attention | PHONE | Telephone, telephone bell, ringtone | 0.50 |
 | Low | DOG | Bark | 0.30 |
 | Lowest | SPEECH | Speech lasting ~1.5 s; at most once every 15 s | 0.50 |
 
 Everything else (music, typing, general noise) only moves the level bar.
+
+The 2026-10-25 Mac update expands the KNOCK mapping and suppresses GLASS when a
+wood-impact class scores at least as highly. This heuristic applies to both Mac
+input paths after integration; it is not part of the iPhone's Apple classifier.
+The ESC-50 numbers below describe the earlier mapping and thresholds, not a new
+evaluation of this knock/glass heuristic.
 
 **How the thresholds were chosen:** YAMNet was run over the 2,000 labelled clips of
 the [ESC-50](https://github.com/karolpiczak/ESC-50) dataset, picking values that
@@ -218,10 +226,12 @@ The same text messages go over Bluetooth LE or USB:
   `6b1a0002-5d1e-4c3b-9a7e-50554e445345` is one message.
 - **USB:** newline-terminated lines at 115200 baud.
 
-To add a new alert, add an entry to `EVENTS` in `mac_listener.py` using YAMNet's
+To add a new alert to the Mac listener, add an entry to `EVENTS` in `mac_listener.py` using YAMNet's
 class names from `pretrained/yamnet/assets/yamnet_class_map.csv`. The wristband shows
 any new name automatically. For a custom colour and hint text, add it to
 `EVENT_STYLES` in the sketch.
+For the native iPhone app, update `SoundEventSelector.defaultPolicies` separately
+using identifiers from Apple's classifier; Python/YAMNet changes do not carry over.
 
 ## Roadmap
 

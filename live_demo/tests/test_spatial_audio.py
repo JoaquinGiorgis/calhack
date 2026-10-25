@@ -274,6 +274,28 @@ class EventIntegrationTests(unittest.TestCase):
             processor.process(window, stream.receiver)
         self.assertIn("E,KNOCK,0.90", self.sent)
 
+    def test_wood_impact_veto_matches_the_mono_listener(self):
+        for wood_score, glass_score, expected in (
+                (0.7, 0.6, "KNOCK"),
+                (0.6, 0.6, "KNOCK"),
+                (0.4, 0.8, "GLASS")):
+            with self.subTest(wood=wood_score, glass=glass_score):
+                self.sent.clear()
+                stream = Stream()
+                stream.calibrate()
+                window = stream.window(-45)
+                scores = np.zeros(len(self.names), np.float32)
+                scores[self.names.index("Wood")] = wood_score
+                scores[self.names.index("Glass")] = glass_score
+                processor = SpatialEventProcessor(lambda _: scores, self.names,
+                                                  self.link, quiet=True)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    self.assertTrue(processor.process(window, stream.receiver))
+                alerts = [line for line in self.sent if line.startswith("E,")]
+                self.assertEqual(len(alerts), 1)
+                self.assertTrue(alerts[0].startswith(f"E,{expected},"), alerts)
+                self.assertTrue(alerts[0].endswith(",-45,1.00"), alerts)
+
     def test_ble_revalidates_at_write_after_gap_or_expiry(self):
         stream = Stream()
         stream.calibrate()

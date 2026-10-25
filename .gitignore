@@ -31,3 +31,7 @@ docs/SPEC.md
 # Local secrets for the analytics upload (live_demo/analytics.env.example shows the format)
 live_demo/analytics.env
 live_demo/fortwatch_display/secrets.h
+# Landing: heavy or unused local files (JPG copies of the board are committed)
+docs/landing/hero-clean.mp4
+docs/landing/board/*.png
+docs/landing/assets/

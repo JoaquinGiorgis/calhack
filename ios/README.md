@@ -69,6 +69,9 @@ habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
   clasificador. Una fuente distinta puede dominar esa ventana; probar con una sola.
 - Calibrar fija un cero; no valida los ejes físicos ni el signo izquierda/derecha.
 - La vibración indica prioridad. Un único motor no vibra de un lado u otro.
+- El firmware nuevo permite apagar SPEECH manteniendo la home o BOOT un segundo.
+  La pulsera descarta esas alertas; el iPhone no recibe el estado del interruptor,
+  por lo que "enviada" no implica que una alerta SPEECH se haya mostrado.
 - La app no mantiene cola BLE: si el enlace está ocupado o el resultado caducó,
   descarta el envío. “Enviada” indica aceptación por CoreBluetooth; este firmware
   no confirma que el motor haya vibrado físicamente.
