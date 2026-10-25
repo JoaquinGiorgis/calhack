@@ -1,9 +1,29 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FortWatch</title>
+<title>FortWatch · Your wrist hears for you</title>
+<meta name="description" content="FortWatch is a wristband for Deaf and hard-of-hearing people. It recognizes 10 important sounds, like a knock, a car horn or a baby crying, and alerts you with a full-screen message and a vibration. It runs on the wristband: no phone, no internet, and audio never leaves your wrist.">
+<link rel="canonical" href="https://fortwatch.vercel.app/">
+<meta name="theme-color" content="#11160d">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FortWatch">
+<meta property="og:url" content="https://fortwatch.vercel.app/">
+<meta property="og:title" content="FortWatch · Your wrist hears for you">
+<meta property="og:description" content="A wristband that hears a knock, a car horn or a baby crying and tells you with a big alert and a vibration. No phone, no internet. Audio never leaves your wrist.">
+<meta property="og:image" content="https://fortwatch.vercel.app/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A lime-green FortWatch wristband on a wrist showing a KNOCK alert, next to the words Your wrist hears for you.">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FortWatch · Your wrist hears for you">
+<meta name="twitter:description" content="A wristband that hears a knock, a car horn or a baby crying and tells you with a big alert and a vibration. No phone, no internet.">
+<meta name="twitter:image" content="https://fortwatch.vercel.app/og.jpg">
+<meta name="twitter:image:alt" content="A lime-green FortWatch wristband on a wrist showing a KNOCK alert.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Gabarito:wght@700&family=JetBrains+Mono:wght@500&display=swap">
@@ -108,37 +128,38 @@ h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: c
 <header class="hero">
   <img class="still" src="hero-poster.jpg" alt="">
   <video id="film" autoplay muted loop playsinline preload="auto" poster="hero-poster.jpg"
-    aria-label="Un día de Maya, que es sorda: la pulsera le avisa cuando golpean la puerta, cuando suena una bocina y cuando su bebé se despierta.">
+    aria-label="A day with Maya, who is Deaf: her wristband tells her when someone knocks, when a car honks and when her baby wakes up.">
     <source src="hero.mp4" type="video/mp4">
   </video>
 
-  <nav class="nav glass" aria-label="Principal">
-    <a class="logo" href="#"><i aria-hidden="true"></i>fortwatch</a>
+  <nav class="nav glass" aria-label="Main">
+    <a class="logo" href="/"><i aria-hidden="true"></i>fortwatch</a>
     <ul class="links">
-      <li><a href="#">Inicio</a></li>
-      <li><a href="#como-funciona">Cómo funciona</a></li>
-      <li><a href="#sonidos">Sonidos</a></li>
-      <li><a href="#precio">Precio</a></li>
-      <li><a href="#faq">Preguntas frecuentes</a></li>
+      <li><a href="#">Home</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#sounds">Sounds</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
     </ul>
-    <a class="nav-cta" href="#reservar">Reservar</a>
+    <a class="nav-cta" href="#reserve">Reserve</a>
   </nav>
 
   <div class="content">
-    <h1>Tu muñeca escucha por vos</h1>
-    <p class="sub">Te avisa cuando golpean la puerta, suena una bocina o llora tu bebé.</p>
+    <h1>Your wrist hears for you</h1>
+    <p class="sub">It hears a knock, a car horn or your baby crying, and tells you with a big alert and a vibration. No phone, no internet.</p>
     <div class="cta-row">
-      <a class="cta" href="#reservar">Reservá por US$29,97</a>
+      <a class="cta" href="#reserve">Reserve yours for $29.97</a>
     </div>
     <ul class="trust">
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>10 sonidos reconocidos</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Pantalla y vibración en la muñeca</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>10 everyday sounds</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Audio never leaves your wrist</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Screen and vibration</li>
     </ul>
   </div>
 
-  <div class="alert glass" role="img" aria-label="Ejemplo de alerta: KNOCK, alguien golpea la puerta">
+  <div class="alert glass" role="img" aria-label="Example alert: KNOCK, someone is at the door">
     <div class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.157a.5.5 0 0 1-.652.476l-4.696-1.565A2 2 0 0 1 6 17.733V5.562a2 2 0 0 1 1.515-1.94l4.243-1.06A1 1 0 0 1 13 3.56z"/></svg></div>
-    <div><div class="tag">ATTENTION · VIB ●●</div><b>KNOCK</b><span>Alguien golpea la puerta · ahora</span></div>
+    <div><div class="tag">ATTENTION · VIB ●●</div><b>KNOCK</b><span>Someone at the door · now</span></div>
   </div>
 </header>
 </body>
