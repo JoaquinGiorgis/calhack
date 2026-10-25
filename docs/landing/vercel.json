@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/dashboard", "destination": "https://mana.space/a/fortwatch", "permanent": false }
+  ]
+}
