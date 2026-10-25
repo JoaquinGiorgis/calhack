@@ -64,6 +64,14 @@ void drawPatternTest(const fortwatch::HapticPattern&,const uint16_t*,uint16_t){b
 void drawAlertRhythm(const fortwatch::HapticPattern&,const uint16_t*,uint16_t){}
 uint16_t alertPillColour(const uint16_t*,uint16_t){return 0;}
 '''
+    render_stubs = r'''
+void drawAlertBadge(const char *label){badge=label;}
+void drawExpiredDirection(){renderedDirection=false;}
+void drawFortWatchAlert(const EventStyle&,const SoundCatalogEntry*,const fortwatch::AlertMessage&m,
+                       const fortwatch::HapticPattern&,bool isTest,bool isLive) {
+  badge=isTest?"TEST":isLive?"LIVE":"CAPTURED";renderedEvent=m.event;renderedDirection=!isTest&&m.hasDirection;
+}
+'''
     tests = r'''
 void wire(const char*text){char copy[64];assert(strlen(text)<sizeof(copy));strcpy(copy,text);handleLine(copy);}
 int main(){
@@ -71,7 +79,7 @@ int main(){
  wire("D,Y283,.8,45,.8");
  assert(screen==Screen::Alert&&badge=="LIVE"&&renderedEvent=="Y283"&&renderedDirection);
  assert(alertCount==0&&analyticsCalls==0&&motorWrites==0&&strcmp(lastAlertTitle,"BEFORE")==0&&lastAlertMs==42);
- now=1499;expireLiveDisplay();assert(badge=="LIVE");now=1500;expireLiveDisplay();assert(badge=="RECENT");
+ now=1499;expireLiveDisplay();assert(badge=="LIVE"&&renderedDirection);now=1500;expireLiveDisplay();assert(badge=="RECENT"&&!renderedDirection);
  wire("E,DOG,.9");assert(motorOn&&vibPattern&&alertCount==1&&analyticsCalls==1);
  const auto*playing=vibPattern;uint32_t started=vibStepStartedMs;int writes=motorWrites;now+=100;
  wire("D,Y076,.9"); // Cat shares DOG/ANIMAL rhythm; do not truncate or restart.
@@ -98,7 +106,7 @@ int main(){
     with tempfile.TemporaryDirectory(prefix="fortwatch-display-runtime-") as directory:
         temp = Path(directory)
         source = temp / "runtime.cpp"
-        source.write_text(prefix + colours + styles_player + dispatch + tests)
+        source.write_text(prefix + colours + styles_player + render_stubs + dispatch + tests)
         executable = temp / "runtime"
         subprocess.run(["xcrun", "clang++", "-std=c++11", "-fsanitize=address,undefined",
                         "-I", str(ROOT / "live_demo/fortwatch_display"), str(source),

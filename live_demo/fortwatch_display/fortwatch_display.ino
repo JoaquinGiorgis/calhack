@@ -14,9 +14,9 @@
 // Over BLE, each write to the RX characteristic is one message; over USB,
 // messages are newline-terminated. Both paths feed the same handler.
 //
-// Screens use the original Figma backgrounds (docs/design, exported to screens.h).
-// Alerts overlay a readable vibration rhythm and a captured-direction strip;
-// unknown event names use a plain text fallback.
+// Alerts share the dark FortWatch landing palette and bundled Gabarito/Atkinson
+// fonts: precise sound name, a measured crescent relative to the phone, and the
+// learned vibration rhythm. Home keeps its original Figma background.
 //
 // The alert stays up for ALERT_MS or until the screen is tapped / BOOT is pressed.
 // Each alert also vibrates (130 motor on GPIO17 through a PN2222 + 1N4007,
@@ -37,7 +37,7 @@
 #include <Wire.h>
 #include "screens.h"
 #include "fonts.h"
-#include "sound_title_font.h"
+#include "brand_fonts.h"
 #include "alert_protocol.h"
 #include "event_haptics.h"
 #include "analytics_compatibility.h"
@@ -97,7 +97,6 @@ uint32_t alertStartedMs = 0;
 uint32_t alertCount = 0;
 bool liveDisplayActive = false;
 bool liveDisplayDismissed = false;
-uint16_t liveBadgeColour = C_BLACK;
 int lastLevel = -1;
 char line[fortwatch::kMaxMessageLength + 1];
 size_t lineLength = 0;
@@ -225,34 +224,10 @@ inline uint16_t blend565(uint16_t bg, uint8_t r, uint8_t g, uint8_t b, uint16_t 
   return ((R & 0xF8) << 8) | ((G & 0xFC) << 3) | (B >> 3);
 }
 
-// Reconstruct only the original title/hint area for a catalog-specific label.
-// Smoothed clean corners avoid stretching image grain into vertical stripes.
-uint16_t catalogTitleCorners[4];
-uint16_t sampleCatalogBackground(const uint16_t *bg, int cx, int cy) {
-  uint32_t r = 0, g = 0, b = 0;
-  for (int y = cy - 2; y <= cy + 2; y++) for (int x = cx - 4; x <= cx + 4; x++) {
-    const uint16_t colour = bg[y * 320 + x];
-    r += colour >> 11; g += (colour >> 5) & 63; b += colour & 31;
-  }
-  return ((r / 45) << 11) | ((g / 45) << 5) | (b / 45);
-}
-uint16_t mixCatalogColour(uint16_t a, uint16_t b, int amount) {
-  return blend565(a, (b >> 11) << 3, ((b >> 5) & 63) << 2, (b & 31) << 3, amount);
-}
-uint16_t catalogTitlePixel(const uint16_t *bg, int x, int y) {
-  if (x < 100 || x >= 310 || y < 75 || y > 151) return bg[y * 320 + x];
-  const int across = (x - 100) * 256 / 209;
-  const uint16_t top = mixCatalogColour(catalogTitleCorners[0], catalogTitleCorners[1], across);
-  const uint16_t bottom = mixCatalogColour(catalogTitleCorners[2], catalogTitleCorners[3], across);
-  const uint16_t clean = mixCatalogColour(top, bottom, (y - 75) * 256 / 76);
-  const int edge = min(256, min(min(x - 100, 309 - x) * 86, min(y - 75, 151 - y) * 64));
-  return mixCatalogColour(bg[y * 320 + x], clean, edge);
-}
-
 // Draws text with its left edge at x and its baseline at y; returns the x after the text.
 int drawText(const AtlasFont &f, const uint16_t *bg, int x, int y, const char *text,
              float opacity = 1.0f, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255,
-             uint16_t solidBackground = 0, bool catalogTitle = false) {
+             uint16_t solidBackground = 0) {
   uint16_t op = uint16_t(opacity * 256);
   for (const char *p = text; *p; p++) {
     uint8_t code = (uint8_t)*p;
@@ -263,8 +238,7 @@ int drawText(const AtlasFont &f, const uint16_t *bg, int x, int y, const char *t
       for (int j = 0; j < gl.h; j++) {
         for (int i = 0; i < gl.w; i++) {
           uint16_t a = (f.alpha[gl.offset + j * gl.w + i] * op) >> 8;
-          const uint16_t base = bg ? (catalogTitle ? catalogTitlePixel(bg, gx + i, gy + j) :
-                                     bg[(gy + j) * 320 + gx + i]) : solidBackground;
+          const uint16_t base = bg ? bg[(gy + j) * 320 + gx + i] : solidBackground;
           glyphBuffer[j * gl.w + i] = blend565(base, r, g, b, a);
         }
       }
@@ -457,77 +431,7 @@ const char *catalogImage(const SoundCatalogEntry &entry) {
   return "phone";  // neutral device palette for MACHINE / OTHER
 }
 
-int catalogTextWidth(const AtlasFont &font, const char *text) {
-  int width = 0;
-  for (const char *p = text; *p; p++) {
-    const uint8_t c = uint8_t(*p);
-    if (c >= font.first && c <= font.last) width += font.glyphs[c - font.first].adv + font.tracking;
-  }
-  return width;
-}
-
-int catalogTitleLines(const AtlasFont &font, const char *text, char lines[3][48]) {
-  int lineCount = 0;
-  while (*text && lineCount < 3) {
-    char *part = lines[lineCount];
-    int count = 0, lastSpace = -1;
-    while (text[count] && count < 47) {
-      part[count] = text[count]; part[count + 1] = '\0';
-      if (catalogTextWidth(font, part) > 198 && count > 0) break;
-      if (text[count] == ' ') lastSpace = count;
-      count++;
-    }
-    // An oversized word should use the smaller native font, not split into
-    // misleading fragments such as "Conversatio" / "n".
-    if (text[count] && text[count] != ' ' && lastSpace < 0) return 4;
-    if (text[count] && lastSpace > 0) count = lastSpace;
-    part[count] = '\0'; text += count;
-    while (*text == ' ') text++;
-    lineCount++;
-  }
-  return *text ? 4 : lineCount;
-}
-
-int catalogTitleX(const AtlasFont &font, const char *line) {
-  const uint8_t first = uint8_t(*line);
-  if (first >= font.first && first <= font.last) {
-    const int overhang = font.glyphs[first - font.first].xoff;
-    if (overhang < 0) return 106 - overhang;
-  }
-  return 106;
-}
-
-bool catalogTitleFits(const AtlasFont &font, const char lines[3][48], int count,
-                      int firstBaseline, int lineSpacing) {
-  for (int line = 0; line < count; line++) {
-    int x = catalogTitleX(font, lines[line]);
-    const int baseline = firstBaseline + line * lineSpacing;
-    for (const char *p = lines[line]; *p; p++) {
-      const uint8_t c = uint8_t(*p);
-      if (c < font.first || c > font.last) return false;
-      const Glyph &g = font.glyphs[c - font.first];
-      if (g.w && g.h && (x + g.xoff < 106 || x + g.xoff + g.w > 305 ||
-                        baseline + g.yoff < 75 || baseline + g.yoff + g.h > 151)) return false;
-      x += g.adv + font.tracking;
-    }
-  }
-  return true;
-}
-
-const AtlasFont &catalogTitleLayout(const char *title, char lines[3][48], int &count,
-                                   int &firstBaseline, int &lineSpacing) {
-  // Native 32 px glyphs keep short class names as prominent as the original
-  // artwork. Long names retain all their words in up to three native 20 px lines.
-  count = catalogTitleLines(F_SOUND_TITLE, title, lines);
-  firstBaseline = count == 1 ? 124 : 103;
-  lineSpacing = 35;
-  if (count <= 2 && catalogTitleFits(F_SOUND_TITLE, lines, count, firstBaseline, lineSpacing))
-    return F_SOUND_TITLE;
-  count = catalogTitleLines(F_TITLE, title, lines);
-  firstBaseline = count == 1 ? 117 : count == 2 ? 104 : 91;
-  lineSpacing = 23;
-  return F_TITLE;
-}
+#include "alert_ui.h"
 
 void catalogHistoryTitle(const char *title) {
   strncpy(lastAlertTitle, title, sizeof(lastAlertTitle) - 1);
@@ -540,206 +444,6 @@ void catalogHistoryTitle(const char *title) {
     if (catalogTextWidth(F_TITLE, lastAlertTitle) <= 130 || n == 0) break;
     n--;
   } while (true);
-}
-
-void drawCatalogIcon(const SoundCatalogEntry &entry) {
-  // Specific legacy exceptions retain their original large icon. The remaining
-  // icons identify only a family, never pretend to distinguish all 521 classes.
-  if (fortwatch::hapticsForKey(entry.hapticEvent)) {
-    for (const EventStyle &style : EVENT_STYLES)
-      if (strcmp(entry.hapticEvent, style.name) == 0) return;
-  }
-  const bool music = strcmp(entry.family, "MUSIC") == 0;
-  const bool nature = strcmp(entry.family, "NATURE") == 0;
-  const bool machine = strcmp(entry.family, "MACHINE") == 0;
-  const bool home = strcmp(entry.family, "HOUSEHOLD") == 0;
-  const bool other = strcmp(entry.family, "OTHER") == 0;
-  if (!music && !nature && !machine && !home && !other) return;
-  const uint16_t colour = catalogColour(entry.colorHex);
-  gfx->fillCircle(54, 114, 33, colour);
-  if (music) {
-    gfx->fillRect(48, 99, 3, 27, C_WHITE); gfx->fillRect(66, 95, 3, 27, C_WHITE);
-    gfx->fillTriangle(48, 99, 69, 95, 69, 102, C_WHITE);
-    gfx->fillTriangle(48, 99, 48, 106, 69, 102, C_WHITE);
-    gfx->fillCircle(44, 126, 6, C_WHITE); gfx->fillCircle(62, 122, 6, C_WHITE);
-  } else if (nature) {
-    gfx->fillTriangle(39, 128, 42, 105, 70, 98, C_WHITE);
-    gfx->fillTriangle(39, 128, 70, 98, 65, 120, C_WHITE);
-    gfx->drawLine(42, 124, 65, 104, colour); gfx->drawLine(43, 124, 66, 104, colour);
-  } else if (machine) {
-    gfx->fillCircle(54, 114, 13, C_WHITE);
-    for (int i = 0; i < 8; i++) {
-      const float a = i * 0.7853981634f;
-      gfx->fillCircle(54 + int(roundf(sinf(a) * 15)), 114 - int(roundf(cosf(a) * 15)), 3, C_WHITE);
-    }
-    gfx->fillCircle(54, 114, 6, colour);
-  } else if (home) {
-    gfx->fillTriangle(35, 110, 54, 95, 73, 110, C_WHITE);
-    gfx->fillRect(40, 108, 28, 23, C_WHITE); gfx->fillRect(50, 117, 8, 14, colour);
-  } else {
-    gfx->fillRoundRect(40, 106, 4, 16, 2, C_WHITE);
-    gfx->fillRoundRect(52, 99, 4, 30, 2, C_WHITE);
-    gfx->fillRoundRect(64, 103, 4, 22, 2, C_WHITE);
-    if (entry.isQuiet) {
-      gfx->drawLine(36, 98, 72, 130, colour);
-      gfx->drawLine(36, 99, 72, 131, C_WHITE);
-      gfx->drawLine(36, 100, 72, 132, C_WHITE);
-    }
-  }
-}
-
-bool catalogSameTitle(const char *a, const char *b) {
-  while (*a && *b) {
-    char ac = *a >= 'a' && *a <= 'z' ? *a - 'a' + 'A' : *a;
-    char bc = *b >= 'a' && *b <= 'z' ? *b - 'a' + 'A' : *b;
-    if (ac != bc) return false;
-    a++; b++;
-  }
-  if (*a == '!') a++;
-  if (*b == '!') b++;
-  return !*a && !*b;
-}
-
-bool catalogUsesOriginalTitle(const SoundCatalogEntry &entry) {
-  // YAMNet's broad Glass class includes clinks; the legacy card's baked-in
-  // "Something broke" hint is only retained for the explicit E,GLASS alert.
-  if (strcmp(entry.name, "Glass") == 0) return false;
-  for (const EventStyle &style : EVENT_STYLES)
-    if (strcmp(entry.hapticEvent, style.name) == 0 &&
-        (catalogSameTitle(entry.title, style.title) || catalogSameTitle(entry.title, style.hint))) return true;
-  return false;
-}
-
-void drawCatalogCard(const SoundCatalogEntry &entry, const uint16_t *bg) {
-  gfx->draw16bitRGBBitmap(0, 0, bg, 320, 240);
-  // Retain the original large artwork when it already names this exact class;
-  // descendants such as Bellow must display their own name, not just SHOUT.
-  if (!catalogUsesOriginalTitle(entry)) {
-    catalogTitleCorners[0] = sampleCatalogBackground(bg, 100, 75);
-    catalogTitleCorners[1] = sampleCatalogBackground(bg, 309, 75);
-    catalogTitleCorners[2] = sampleCatalogBackground(bg, 100, 151);
-    catalogTitleCorners[3] = sampleCatalogBackground(bg, 309, 151);
-    for (int row = 75; row <= 150; row += 16) {
-      const int rows = min(16, 151 - row);
-      for (int y = 0; y < rows; y++) for (int x = 0; x < 210; x++)
-        blitBuffer[y * 210 + x] = catalogTitlePixel(bg, 100 + x, row + y);
-      gfx->draw16bitRGBBitmap(100, row, blitBuffer, 210, rows);
-    }
-    char lines[3][48] = {};
-    int count, firstBaseline, lineSpacing;
-    const AtlasFont &font = catalogTitleLayout(entry.title, lines, count, firstBaseline, lineSpacing);
-    for (int i = 0; i < min(count, 3); i++)
-      drawText(font, bg, catalogTitleX(font, lines[i]), firstBaseline + i * lineSpacing,
-               lines[i], 1.0f, 255, 255, 255, 0, true);
-  }
-  const uint16_t pill = blend565(catalogColour(entry.colorHex), 0, 0, 0, 70);
-  gfx->fillRoundRect(15, 12, 102, 27, 13, pill);
-  drawText(F_SMALL, nullptr, 26, 29, entry.family, 1.0f, 255, 255, 255, pill);
-  drawCatalogIcon(entry);
-}
-
-const char *alertDirectionLabel(float angle) {
-  const float magnitude = fabsf(angle);
-  if (magnitude < 22.5f) return "AHEAD";
-  if (magnitude < 67.5f) return angle < 0 ? "AHEAD LEFT" : "AHEAD RIGHT";
-  if (magnitude < 112.5f) return angle < 0 ? "LEFT" : "RIGHT";
-  if (magnitude < 157.5f) return angle < 0 ? "BEHIND LEFT" : "BEHIND RIGHT";
-  return "BEHIND";
-}
-
-void drawAlertDirection(const fortwatch::AlertMessage &message, const uint16_t *bg) {
-  // Preserve the original Figma title/icon. A filled 32px arrow and a large
-  // eight-sector label use only y153..185; degrees are secondary to orientation.
-  const int cx = 28, cy = 169;
-  const bool hasDirection = fortwatch::hasUsableDirection(message);
-  const char *label = hasDirection ? alertDirectionLabel(message.angleDegrees) : "DIRECTION UNKNOWN";
-  if (hasDirection) {
-    const float a = message.angleDegrees * 0.01745329252f;
-    const float dx = sinf(a), dy = -cosf(a), px = -dy, py = dx;
-    const int tx = cx - int(roundf(dx * 12)), ty = cy - int(roundf(dy * 12));
-    const int bx = cx + int(roundf(dx * 3)), by = cy + int(roundf(dy * 3));
-    const int sx = int(roundf(px * 3)), sy = int(roundf(py * 3));
-    gfx->fillTriangle(tx + sx, ty + sy, tx - sx, ty - sy, bx + sx, by + sy, C_WHITE);
-    gfx->fillTriangle(tx - sx, ty - sy, bx - sx, by - sy, bx + sx, by + sy, C_WHITE);
-    gfx->fillTriangle(cx + int(roundf(dx * 16)), cy + int(roundf(dy * 16)),
-                      bx + int(roundf(px * 9)), by + int(roundf(py * 9)),
-                      bx - int(roundf(px * 9)), by - int(roundf(py * 9)), C_WHITE);
-  } else if (bg) {
-    drawText(F_TITLE, bg, 22, 177, "?", 0.85f);
-  }
-  if (bg) {
-    drawText(F_TITLE, bg, 54, 172, label);
-    // This is the dominant sound captured with the alert, not live tracking or
-    // a source isolated to the sound category. Unknown never implies a bearing.
-    drawText(F_BODY, bg, 54, 184, hasDirection ? "CAPTURED / RELATIVE TO PHONE" :
-                                              "NO RELIABLE DIRECTION");
-  } else {
-    drawCentered(label, 154, 2, C_WHITE);
-    drawCentered(hasDirection ? "CAPTURED / RELATIVE TO PHONE" : "NO RELIABLE DIRECTION",
-                  178, 1, C_WHITE);
-  }
-}
-
-void drawAlertBrand(const uint16_t *bg, uint16_t fallback) {
-  // Original priority and VIB pills leave this top-center gap free.
-  drawText(F_SMALL, bg, 125, 29, "fortwatch", 0.95f, 255, 255, 255, fallback);
-}
-
-uint16_t alertPillColour(const uint16_t *bg, uint16_t fallback) {
-  return blend565(bg ? bg[40 * 320 + 260] : fallback, 0, 0, 0, 90);
-}
-
-void drawAlertVibration(const fortwatch::HapticPattern &pattern, const uint16_t *bg,
-                         uint16_t fallback) {
-  // Cover the baked priority-based VIB pill with the actual type-specific rhythm.
-  // The larger rounded capsule encloses every old VIB pill; the rest is untouched.
-  const uint16_t pill = alertPillColour(bg, fallback);
-  gfx->fillRoundRect(190, 12, 116, 27, 13, pill);
-  drawText(F_TINY, nullptr, 199, 29, "VIB", 0.95f, 255, 255, 255, pill);
-  if (pattern.durationCount == 0) {
-    drawText(F_TINY, nullptr, 252, 29, "OFF", 1.0f, 255, 255, 255, pill);
-    return;
-  }
-  int width = 0;
-  for (int i = 0; i < pattern.durationCount; i += 2) {
-    width += pattern.durations[i] >= 300 ? 15 : 7;
-    if (i + 1 < pattern.durationCount) width += pattern.durations[i + 1] >= 300 ? 11 : 5;
-  }
-  int x = 263 - width / 2;
-  for (int i = 0; i < pattern.durationCount; i += 2) {
-    const int pulseWidth = pattern.durations[i] >= 300 ? 15 : 7;
-    gfx->fillRoundRect(x, 23, pulseWidth, 5, 2, C_WHITE);
-    x += pulseWidth;
-    if (i + 1 < pattern.durationCount) x += pattern.durations[i + 1] >= 300 ? 11 : 5;
-  }
-}
-
-void drawAlertRhythm(const fortwatch::HapticPattern &pattern, const uint16_t *bg,
-                      uint16_t fallback) {
-  // Deliberately replace the tiny, uncalibrated confidence visualization with
-  // the learnable motor rhythm. The classification score still reaches analytics.
-  const uint16_t pill = alertPillColour(bg, fallback);
-  gfx->fillRoundRect(13, 190, 294, 18, 5, pill);
-  drawText(F_SMALL, nullptr, 23, 202, "VIBRATION", 0.90f, 255, 255, 255, pill);
-  drawText(F_BODY, nullptr, 99, 202, pattern.label, 1.0f, 255, 255, 255, pill);
-}
-
-void drawPatternTest(const fortwatch::HapticPattern &pattern, const uint16_t *bg,
-                      uint16_t fallback) {
-  const uint16_t pill = alertPillColour(bg, fallback);
-  gfx->fillRoundRect(15, 12, 102, 27, 13, pill);
-  drawText(F_BODY, nullptr, 34, 30, "TEST", 1.0f, 255, 255, 255, pill);
-  if (bg) {
-    drawText(F_TITLE, bg, 16, 172, "PATTERN TEST");
-    drawText(F_BODY, bg, 16, 183, pattern.label);
-  } else {
-    drawCentered("PATTERN TEST", 154, 2, C_WHITE);
-    drawCentered(pattern.label, 178, 1, C_WHITE);
-  }
-  // Hide both the baked CONFIDENCE text and score track on manual tests.
-  gfx->fillRoundRect(13, 190, 294, 18, 5, pill);
-  drawText(F_BODY, nullptr, 60, 203, "Manual test - no sound detected", 1.0f,
-           255, 255, 255, pill);
 }
 
 void queueCompatibleAnalytics(const char *event, float score) {
@@ -757,8 +461,7 @@ void queueCompatibleAnalytics(const char *event, float score) {
 }
 
 void drawLiveStateBadge(const char *label) {
-  gfx->fillRoundRect(15, 12, 102, 27, 13, liveBadgeColour);
-  drawText(F_BODY, nullptr, 34, 30, label, 1.0f, 255, 255, 255, liveBadgeColour);
+  drawAlertBadge(label);
 }
 
 void dismissAlert() {
@@ -772,6 +475,7 @@ void expireLiveDisplay() {
   if (liveDisplayActive && millis() - alertStartedMs >= LIVE_BADGE_MS) {
     liveDisplayActive = false;
     drawLiveStateBadge("RECENT");
+    drawExpiredDirection();
   }
 }
 
@@ -821,28 +525,8 @@ void showAlert(const fortwatch::AlertMessage &message, bool isTest = false, bool
   if (isLive && vibPattern && !fortwatch::sameHapticRhythm(*vibPattern, pattern)) stopVibration();
   fortwatch::AlertMessage visualMessage = message;
   if (catalog && catalog->isQuiet) visualMessage.hasDirection = false;
-  const uint16_t *img = style->image ? screenImage(style->image) : nullptr;
-  if (img) {
-    if (catalog) drawCatalogCard(*catalog, img);
-    else gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
-    if (!isTest) drawAlertDirection(visualMessage, img);
-  } else {
-    gfx->fillScreen(style->colour);
-    drawCentered(style->title, 60, 6, C_WHITE);
-    drawCentered(style->hint, 125, 2, C_WHITE);
-    if (!isTest) drawAlertDirection(visualMessage, nullptr);
-    drawCentered("Tap screen or press BOOT to dismiss", 225, 1, C_WHITE);
-  }
-  drawAlertBrand(img, style->colour);
-  drawAlertVibration(pattern, img, style->colour);
-  if (isTest) drawPatternTest(pattern, img, style->colour);
-  else drawAlertRhythm(pattern, img, style->colour);
-  if (isLive) {
-    liveBadgeColour = alertPillColour(img, style->colour);
-    drawLiveStateBadge("LIVE");
-  } else {
-    vibrate(pattern);
-  }
+  drawFortWatchAlert(*style, catalog, visualMessage, pattern, isTest, isLive);
+  if (!isLive) vibrate(pattern);
 }
 
 void handleLine(char *text) {

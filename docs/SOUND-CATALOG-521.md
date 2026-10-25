@@ -14,10 +14,11 @@ and a wristband renderer. The legacy ten-alert wire format remains supported.
   implying 521 unique motor patterns. The ten learned alert rhythms remain.
 - The photo, translucent dark surfaces, lime accent and bundled brand typefaces
   are preserved. Names wrap, with longer model names retained in explanatory copy.
-- Wristband titles use a new native 32 px Inter atlas for 493 new cards. Twenty-one
-  long titles use 20 px, and seven preserve their original artwork. Every catalog
-  title fits without splitting words or overflowing the title region. The legacy
-  font atlases and ten original alert screens remain unchanged.
+- The [Orbit redesign](design/ORBIT-REDESIGN.md) now shares graphite/smoke surfaces,
+  Gabarito/Atkinson type and a lime bearing crescent across both devices. Wristband
+  titles use Gabarito 32 px for 476 cards and 20 px for 45 long titles. All 521
+  preserve full words and fit their region. The ten legacy alert screens use this
+  new composition too; their wire messages and learned pulse arrays are preserved.
 - Silence is listed for vocabulary completeness, with **No vibration**; it does
   not create an automatic alert. All other 520 classes are eligible for selection.
 - A direction is shown only when the current spatial measurement meets the
@@ -53,13 +54,13 @@ Weaker guesses cannot become alerts merely because the winner is cooling down. T
 |---|---|---|
 | Model conversion vs original TensorFlow | PASS, 238/238 top labels identical; max score error 0.0000117123 | 26 public ESC-50 clips ×9 windows +4 synthetic inputs; CPU on Mac |
 | Installed iOS model in Simulator | PASS | Three deterministic waveforms, all 521 scores compared against original TF, error limit 0.001 |
-| Full iOS suite | PASS, 66 tests; separate render export PASS | Catalog/CSV, styles/SF Symbols/contrast, all 520 alertable classes, quiet behavior, hierarchy, messages, audio resampling, windows, existing spatial/legacy tests |
+| Full iOS suite | PASS, 66 production tests plus three render exports | Catalog/CSV, styles/SF Symbols/contrast, all 520 alertable classes, quiet behavior, hierarchy, messages, audio resampling, windows, existing spatial/legacy tests |
 | Swift/C++ rhythm contract | PASS, 531 event IDs | 521 catalog IDs plus 10 legacy events; exact pulse arrays, quiet and invalid IDs |
 | C++ host checks | PASS | Catalog, legacy haptics and parser under AddressSanitizer/UndefinedBehaviorSanitizer |
 | Signed iPhone app build | PASS | Compiles, signs and includes the model |
 | New model inference on connected iPhone | PASS, 3 runtime tests | All 521 synthetic score parity, six source-rate conversion checks, window scheduling; predictions 5.07–8.76ms |
 | New visual render review | PASS within software scope | Native SwiftUI cards, three sample library rows and largest accessibility text size inspected; 521 firmware titles checked. Actual Simulator search returned Piano/Electric piano; Nature filter returned 17 classes; no-results state and search dismissal verified. Physical screen review remains pending |
-| New firmware build | PASS | Final 32 px title atlas included; analytics enabled, RAM 84,116 B, flash 3,687,913 B; no credentials changed |
+| New firmware build | PASS | Orbit composition and Gabarito/Atkinson atlases; analytics enabled, RAM 84,108 B, flash 3,712,625 B; no credentials changed |
 | Final app + firmware installation | PENDING | Both USB devices became unavailable after the model runtime test; final D-support pair not installed |
 | Expanded dashboard vocabulary | NOT VERIFIED | Mana project requires access; never send unknown IDs into legacy batch until contract is verified |
 

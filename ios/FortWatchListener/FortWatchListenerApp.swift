@@ -10,6 +10,7 @@ struct FortWatchListenerApp: App {
 
 private enum ListenerStyle {
     static let ink = color(0x12141F)
+    static let smoke = color(0x1E2130)
     static let lime = color(0x8FD63D)
     static let secondary = Color.white.opacity(0.84)
 
@@ -272,20 +273,22 @@ private struct FrostedSurface: ViewModifier {
     func body(content: Content) -> some View {
         Group {
             if reduceTransparency {
-                content.background(tint ?? ListenerStyle.color(0x292E38), in: .rect(cornerRadius: radius))
+                content.background(ListenerStyle.smoke, in: .rect(cornerRadius: radius))
             } else if let tint {
                 // Bound the brightness independently of the photograph beneath.
                 content
-                    .background(tint.opacity(0.58), in: .rect(cornerRadius: radius))
-                    .background(ListenerStyle.ink.opacity(0.86), in: .rect(cornerRadius: radius))
+                    .background(tint.opacity(0.12), in: .rect(cornerRadius: radius))
+                    .background(ListenerStyle.ink.opacity(0.82), in: .rect(cornerRadius: radius))
                     .background(.ultraThinMaterial, in: .rect(cornerRadius: radius))
             } else {
                 content
-                    .background(ListenerStyle.ink.opacity(0.45), in: .rect(cornerRadius: radius))
+                    .background(ListenerStyle.ink.opacity(0.72), in: .rect(cornerRadius: radius))
                     .background(.ultraThinMaterial, in: .rect(cornerRadius: radius))
             }
         }
-        .overlay(RoundedRectangle(cornerRadius: radius).strokeBorder(border?.opacity(0.75) ?? .white.opacity(0.38), lineWidth: 1))
+        .overlay(RoundedRectangle(cornerRadius: radius).strokeBorder(
+            LinearGradient(colors: [.white.opacity(0.35), border?.opacity(0.2) ?? .white.opacity(0.12)],
+                           startPoint: .topLeading, endPoint: .bottomTrailing), lineWidth: 1))
     }
 }
 
@@ -322,7 +325,7 @@ private struct SoundPanel: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 18) {
             let headerLayout = dynamicTypeSize.isAccessibilitySize
                 ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
                 : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
@@ -331,52 +334,31 @@ private struct SoundPanel: View {
                     .font(.caption.monospaced().weight(.semibold))
                     .tracking(1)
                 if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
-                if let displayedEvent {
-                    VibrationPattern(event: displayedEvent)
-                } else {
-                    Image(systemName: capturing ? "mic.fill" : "mic.slash")
-                        .accessibilityLabel(capturing ? "Microphone active" : "Microphone stopped")
-                }
+                Image(systemName: capturing ? "mic.fill" : "mic.slash")
+                    .foregroundStyle(capturing ? ListenerStyle.lime : ListenerStyle.secondary)
+                    .accessibilityLabel(capturing ? "Microphone active" : "Microphone stopped")
             }
             .foregroundStyle(ListenerStyle.secondary)
 
-            let layout = dynamicTypeSize.isAccessibilitySize
-                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
-                : AnyLayout(HStackLayout(alignment: .center, spacing: usableAngle == nil ? 16 : 12))
-            layout {
-                if let usableAngle {
-                    DirectionCue(angle: usableAngle, appearance: appearance ?? SoundAppearance(event: ""))
-                        .frame(width: 120, height: 120)
-                        .accessibilityHidden(true)
-                } else {
-                    Image(systemName: stateIcon)
-                        .font(.system(size: 30, weight: .regular))
-                        .foregroundStyle(.white)
-                        .frame(width: 64, height: 64)
-                        .background(appearance?.color ?? .white.opacity(0.12), in: .circle)
-                        .overlay(Circle().strokeBorder(.white.opacity(0.28), lineWidth: 1))
-                        .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 5) {
+                Text(title)
+                    .font(ListenerStyle.display(title.count > 24 ? 30 : 38, relativeTo: .largeTitle))
+                    .tracking(-0.6)
+                    .foregroundStyle(.white)
+                    .accessibilityAddTraits(.isHeader)
+                if let appearance, !appearance.summary.isEmpty {
+                    Text(appearance.summary)
+                        .font(ListenerStyle.body(16))
+                        .foregroundStyle(ListenerStyle.secondary)
+                } else if !capturing && !presentingRecent {
+                    Text(detail)
+                        .font(ListenerStyle.body(16))
+                        .foregroundStyle(ListenerStyle.secondary)
                 }
-                VStack(alignment: .leading, spacing: 7) {
-                    Text(title)
-                        .font(ListenerStyle.display(appearance == nil ? 28 : title.count > 24 ? 26 : 34, relativeTo: .title))
-                        .tracking(-0.5)
-                        .foregroundStyle(.white)
-                        .accessibilityAddTraits(.isHeader)
-                    if let appearance, !appearance.summary.isEmpty {
-                        Text(appearance.summary)
-                            .font(ListenerStyle.body(16))
-                            .foregroundStyle(ListenerStyle.secondary)
-                    } else if !capturing {
-                        Text(detail)
-                            .font(ListenerStyle.body(16))
-                            .foregroundStyle(ListenerStyle.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .accessibilityElement(children: .combine)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .fixedSize(horizontal: false, vertical: true)
+            .accessibilityElement(children: .combine)
 
             if presentingRecent, let recentSound = presented.recent {
                 VStack(alignment: .leading, spacing: 4) {
@@ -391,22 +373,47 @@ private struct SoundPanel: View {
                 .foregroundStyle(ListenerStyle.secondary)
                 .accessibilityElement(children: .combine)
             }
+
+            VStack(spacing: 8) {
+                DirectionCue(angle: usableAngle, appearance: appearance, stateIcon: stateIcon)
+                    .aspectRatio(1, contentMode: .fit)
+                    .frame(maxWidth: presentingRecent ? 120 : usableAngle == nil ? 160 : dynamicTypeSize.isAccessibilitySize ? 220 : 240)
+                    .accessibilityHidden(true)
+                if capturing || presentingRecent {
+                    DirectionReadout(angle: usableAngle, reason: detail,
+                                     isRecent: presentingRecent)
+                }
+            }
+            .frame(maxWidth: .infinity)
+
             if let displayedEvent {
-                Label(SoundHapticPattern.forEvent(displayedEvent).description, systemImage: "waveform.path")
-                    .font(ListenerStyle.body(15, relativeTo: .subheadline))
-                    .foregroundStyle(.white)
-                    .fixedSize(horizontal: false, vertical: true)
+                let rhythm = SoundHapticPattern.forEvent(displayedEvent)
+                let rhythmLayout = dynamicTypeSize.isAccessibilitySize
+                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+                    : AnyLayout(HStackLayout(alignment: .center, spacing: 14))
+                rhythmLayout {
+                    PulseRhythm(segments: rhythm.segments)
+                        .fill(appearance?.signal ?? ListenerStyle.lime)
+                        .frame(width: 70, height: 6)
+                        .accessibilityHidden(true)
+                    Text(rhythm.description)
+                        .font(ListenerStyle.body(15, relativeTo: .subheadline))
+                        .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 16)
+                .overlay(alignment: .top) { Rectangle().fill(.white.opacity(0.12)).frame(height: 1) }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Vibration: \(rhythm.description)")
             }
             if presentingRecent, capturing, calibrating || calibrationFailed || !calibrated {
-                Label(calibrating ? "Calibrating front — keep one sound steady." : calibrationFailed
+                Label(calibrating ? "Calibrating front. Keep one sound steady." : calibrationFailed
                       ? "Calibration failed. Try again." : "Calibrate the front to locate the next sound.",
                       systemImage: "viewfinder")
                     .font(ListenerStyle.body(14, relativeTo: .footnote))
                     .foregroundStyle(.white)
                     .fixedSize(horizontal: false, vertical: true)
-            }
-            if capturing || presentingRecent {
-                DirectionReadout(angle: usableAngle, reason: detail)
             }
             if presentingRecent, !capturing {
                 Label(status, systemImage: "mic.slash")
@@ -416,8 +423,17 @@ private struct SoundPanel: View {
             }
             if capturing {
                 SoundLevelMeter(level: level)
-                Button(calibrating ? "Calibrating…" : calibrated ? "Recalibrate front" : calibrationFailed ? "Try calibration again" : "Calibrate front",
-                       systemImage: "viewfinder", action: calibrate)
+                Button(action: calibrate) {
+                    let buttonLayout = dynamicTypeSize.isAccessibilitySize
+                        ? AnyLayout(VStackLayout(spacing: 8))
+                        : AnyLayout(HStackLayout(spacing: 8))
+                    buttonLayout {
+                        Image(systemName: "viewfinder").accessibilityHidden(true)
+                        Text(calibrating ? "Calibrating…" : calibrated || calibrationFailed ? "Calibrate again" : "Calibrate front")
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
                     .buttonStyle(SecondaryCapsuleStyle())
                     .disabled(calibrating)
                     .accessibilityHint("Keep one steady sound in front of the phone for a second.")
@@ -425,7 +441,7 @@ private struct SoundPanel: View {
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .modifier(FrostedSurface(tint: appearance?.color, border: appearance?.signal))
+        .modifier(FrostedSurface(radius: 28))
     }
 
     private var eyebrow: String {
@@ -466,104 +482,105 @@ private struct SoundPanel: View {
 private struct DirectionReadout: View {
     let angle: Double?
     let reason: String
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    var isRecent = false
 
     var body: some View {
         Group {
             if let angle {
-                let layout = dynamicTypeSize.isAccessibilitySize
-                    ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
-                    : AnyLayout(HStackLayout(alignment: .center, spacing: 16))
-                layout {
-                    FilledDirectionArrow()
-                        .fill(ListenerStyle.ink)
-                        .frame(width: 42, height: 48)
-                        .rotationEffect(.degrees(angle))
-                        .frame(width: 64, height: 64)
-                        .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(directionName(angle))
-                            .font(ListenerStyle.display(30, relativeTo: .title))
-                            .accessibilityAddTraits(.isHeader)
-                        Text("Relative to your phone")
-                            .font(ListenerStyle.body(13, relativeTo: .caption))
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                VStack(spacing: 4) {
+                    Text(directionName(angle))
+                        .font(ListenerStyle.display(30, relativeTo: .title))
+                        .foregroundStyle(ListenerStyle.lime)
+                        .accessibilityAddTraits(.isHeader)
+                    Text("Relative to your phone")
+                        .font(ListenerStyle.body(14, relativeTo: .footnote))
+                        .foregroundStyle(ListenerStyle.secondary)
                 }
-                .foregroundStyle(ListenerStyle.ink)
-                .padding(16)
-                .background(ListenerStyle.lime, in: .rect(cornerRadius: 18))
+                .fixedSize(horizontal: false, vertical: true)
                 .accessibilityElement(children: .combine)
             } else {
-                VStack(alignment: .leading, spacing: 7) {
-                    Text("DIRECTION UNAVAILABLE")
-                        .font(ListenerStyle.display(19, relativeTo: .headline))
+                VStack(spacing: 6) {
+                    Text(isRecent ? "No live location" : "Direction unavailable")
+                        .font(ListenerStyle.display(22, relativeTo: .headline))
                         .accessibilityAddTraits(.isHeader)
                     Text(reason)
                         .font(ListenerStyle.body(15, relativeTo: .subheadline))
                 }
                 .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity)
                 .foregroundStyle(.white)
-                .padding(16)
-                .background(ListenerStyle.ink.opacity(0.55), in: .rect(cornerRadius: 18))
-                .overlay(RoundedRectangle(cornerRadius: 18).strokeBorder(.white.opacity(0.38), lineWidth: 1))
                 .accessibilityElement(children: .combine)
             }
         }
         .frame(maxWidth: .infinity)
+        .multilineTextAlignment(.center)
     }
 
     private func directionName(_ angle: Double) -> String {
-        let sectors = ["AHEAD", "FRONT RIGHT", "RIGHT", "BEHIND RIGHT", "BEHIND", "BEHIND LEFT", "LEFT", "FRONT LEFT"]
+        let sectors = ["Ahead", "Front right", "Right", "Behind right", "Behind", "Behind left", "Left", "Front left"]
         let normalized = (angle + 360).truncatingRemainder(dividingBy: 360)
         return sectors[Int((normalized + 22.5) / 45) % sectors.count]
     }
 }
 
-private struct FilledDirectionArrow: Shape {
-    func path(in rect: CGRect) -> Path {
-        let points: [CGPoint] = [CGPoint(x: 0.5, y: 0), CGPoint(x: 1, y: 0.44),
-                                 CGPoint(x: 0.68, y: 0.44), CGPoint(x: 0.68, y: 1),
-                                 CGPoint(x: 0.32, y: 1), CGPoint(x: 0.32, y: 0.44), CGPoint(x: 0, y: 0.44)]
-        var path = Path()
-        path.addLines(points.map { CGPoint(x: rect.minX + $0.x * rect.width, y: rect.minY + $0.y * rect.height) })
-        path.closeSubpath()
-        return path
-    }
-}
-
-/// Only a valid angle places an icon around the phone. The arc is not an
-/// uncertainty measurement, and its category comes from the same audio window.
+/// One measured source around a fixed phone. An absent angle never creates a
+/// bearing marker; the center glyph identifies the sound without locating it.
 private struct DirectionCue: View {
-    let angle: Double
-    let appearance: SoundAppearance
+    let angle: Double?
+    let appearance: SoundAppearance?
+    let stateIcon: String
 
     var body: some View {
         GeometryReader { geometry in
             let side = min(geometry.size.width, geometry.size.height)
             let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
-            let radians = angle * .pi / 180
             ZStack {
-                Circle().strokeBorder(.white.opacity(0.15), lineWidth: 1)
-                    .frame(width: side * 0.56, height: side * 0.56)
+                Circle()
+                    .fill(.white.opacity(0.025))
+                    .overlay(Circle().strokeBorder(.white.opacity(0.17), lineWidth: 1))
+                    .frame(width: side * 0.8, height: side * 0.8)
                     .position(center)
-                Image(systemName: "iphone")
-                    .font(.system(size: 18, weight: .light))
-                    .foregroundStyle(.white.opacity(0.8))
+                ForEach(0..<4) { index in
+                    Capsule().fill(.white.opacity(0.35))
+                        .frame(width: 2, height: 7)
+                        .offset(y: -side * 0.4)
+                        .rotationEffect(.degrees(Double(index) * 90))
+                        .position(center)
+                }
+                if let angle {
+                    VStack(spacing: 10) {
+                        Image(systemName: "chevron.up")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(.white.opacity(0.55))
+                        Image(systemName: "iphone")
+                            .font(.system(size: 36, weight: .ultraLight))
+                        Text("Phone")
+                            .font(ListenerStyle.body(14, relativeTo: .footnote))
+                    }
+                    .foregroundStyle(ListenerStyle.secondary)
+                    .environment(\.dynamicTypeSize, .large)
                     .position(center)
-                TaperedSoundArc()
-                    .fill(appearance.signal)
-                    .rotationEffect(.degrees(angle))
-                Image(systemName: appearance.icon)
-                    .font(.system(size: 19, weight: .medium))
-                    .foregroundStyle(.white)
-                    .frame(width: 36, height: 36)
-                    .background(appearance.color, in: .circle)
-                    .overlay(Circle().strokeBorder(.white.opacity(0.6), lineWidth: 1))
-                    .position(x: center.x + CGFloat(sin(radians)) * side * 0.365,
-                              y: center.y - CGFloat(cos(radians)) * side * 0.365)
+                    TaperedSoundArc()
+                        .fill(ListenerStyle.lime)
+                        .rotationEffect(.degrees(angle))
+                    let radians = angle * .pi / 180
+                    Image(systemName: appearance?.icon ?? "waveform")
+                        .font(.system(size: 21, weight: .medium))
+                        .foregroundStyle(.white)
+                        .frame(width: 44, height: 44)
+                        .background(appearance?.color ?? ListenerStyle.smoke, in: .circle)
+                        .overlay(Circle().strokeBorder(appearance?.signal ?? .white.opacity(0.8), lineWidth: 1.5))
+                        .position(x: center.x + CGFloat(sin(radians)) * side * 0.4,
+                                  y: center.y - CGFloat(cos(radians)) * side * 0.4)
+                } else {
+                    Image(systemName: stateIcon)
+                        .font(.system(size: 34, weight: .light))
+                        .foregroundStyle(.white)
+                        .frame(width: 76, height: 76)
+                        .background(appearance?.color.opacity(0.7) ?? .white.opacity(0.06), in: .circle)
+                        .overlay(Circle().strokeBorder(.white.opacity(0.16), lineWidth: 1))
+                        .position(center)
+                }
             }
         }
     }
@@ -572,7 +589,7 @@ private struct DirectionCue: View {
 private struct TaperedSoundArc: Shape {
     func path(in rect: CGRect) -> Path {
         let side = min(rect.width, rect.height)
-        let radius = side * 0.28
+        let radius = side * 0.4
         let center = CGPoint(x: rect.midX, y: rect.midY)
         let steps = 48
         var outer: [CGPoint] = []
@@ -580,7 +597,7 @@ private struct TaperedSoundArc: Shape {
         for index in 0...steps {
             let progress = Double(index) / Double(steps)
             let radians = (-90 - 48 + 96 * progress) * .pi / 180
-            let halfWidth = CGFloat(sin(.pi * progress)) * side * 0.027
+            let halfWidth = CGFloat(sin(.pi * progress)) * side * 0.024
             let x = CGFloat(cos(radians)), y = CGFloat(sin(radians))
             outer.append(CGPoint(x: center.x + x * (radius + halfWidth), y: center.y + y * (radius + halfWidth)))
             inner.append(CGPoint(x: center.x + x * (radius - halfWidth), y: center.y + y * (radius - halfWidth)))

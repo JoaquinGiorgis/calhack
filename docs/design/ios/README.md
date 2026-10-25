@@ -1,5 +1,13 @@
 # FortWatch Listener — interfaz iPhone
 
+**Diseño vigente:** [Orbit redesign](../ORBIT-REDESIGN.md). Círculo grande con
+creciente lima, nombre destacado, dirección debajo y superficies smoke. Las
+capturas `orbit-*.png` corresponden a esta revisión. Software compilado y probado;
+instalación en ambos dispositivos pendiente. La franja lima y las capturas de
+la sección siguiente documentan el diseño anterior.
+
+## Revisión anterior
+
 **Estado actual:** el catálogo de 521 clases y su validación están en
 [SOUND-CATALOG-521.md](../../SOUND-CATALOG-521.md). La instalación y las 47 pruebas
 descritas en la primera sección corresponden a la revisión anterior de diez alertas.
