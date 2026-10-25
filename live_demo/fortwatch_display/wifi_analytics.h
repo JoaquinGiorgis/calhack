@@ -21,7 +21,6 @@
 #include <HTTPClient.h>
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include <WiFiMulti.h>
 #include <esp_mac.h>
 #include <time.h>
 #include "root_ca.h"
@@ -77,24 +76,24 @@ int postJson(HTTPClient &http, WiFiClientSecure &client, const char *path, const
   return status;
 }
 
-// Says which configured networks are in range, so a failed join is easy to diagnose
-// (most often: the network only broadcasts on 5 GHz, which the ESP32 can't use).
-void reportVisibleNetworks() {
-  int found = WiFi.scanNetworks();
+// Joins the first configured network that answers, without scanning every channel
+// first: a full scan while Bluetooth is busy froze the radio core (watchdog resets).
+bool joinKnownNetwork() {
   for (const WifiNetwork &n : WIFI_NETWORKS) {
-    int best = -1;
-    for (int i = 0; i < found; i++)
-      if (WiFi.SSID(i) == n.ssid && (best < 0 || WiFi.RSSI(i) > WiFi.RSSI(best))) best = i;
-    if (best < 0) Serial.printf("Wi-Fi: \"%s\" not in range on 2.4 GHz\n", n.ssid);
-    else Serial.printf("Wi-Fi: \"%s\" seen (channel %d, %d dBm) but joining failed; check the password\n",
-                       n.ssid, WiFi.channel(best), WiFi.RSSI(best));
+    WiFi.begin(n.ssid, n.password);
+    // Low transmit power: the phone hotspot is centimetres away, and full power drew
+    // current spikes this board (on USB or a power bank) didn't always handle.
+    WiFi.setTxPower(WIFI_POWER_8_5dBm);
+    for (int i = 0; i < 40 && WiFi.status() != WL_CONNECTED; i++) vTaskDelay(pdMS_TO_TICKS(250));
+    if (WiFi.status() == WL_CONNECTED) return true;
+    WiFi.disconnect();
+    vTaskDelay(pdMS_TO_TICKS(200));
   }
-  WiFi.scanDelete();
+  return false;
 }
 
 void uploadTask(void *) {
-  WiFiMulti wifi;
-  for (const WifiNetwork &n : WIFI_NETWORKS) wifi.addAP(n.ssid, n.password);
+  WiFi.setAutoReconnect(true);  // after a short drop the driver rejoins by itself
   WiFiClientSecure client;
   client.setCACert(ANALYTICS_ROOT_CA);
   HTTPClient http;
@@ -106,6 +105,7 @@ void uploadTask(void *) {
   bool clockStarted = false;
   uint32_t nextHeartbeat = 0;
   uint32_t lastWarning = 0;
+  uint32_t retryMs = 5000;  // grows to 60 s while no network is in range
 
   for (;;) {
     AlertUpload a;
@@ -117,16 +117,18 @@ void uploadTask(void *) {
       pending[pendingCount++] = a;
     }
 
-    if (wifi.run(5000) != WL_CONNECTED) {
+    // Link down: try the known networks, then back off (5 s up to 60 s) so a missing
+    // hotspot doesn't keep the radio busy.
+    if (WiFi.status() != WL_CONNECTED && !joinKnownNetwork()) {
       if (wifiUp) Serial.println("Wi-Fi: disconnected; alerts are kept and retried");
       wifiUp = false;
-      if (millis() - lastWarning > 30000) {
-        lastWarning = millis();
-        reportVisibleNetworks();
-      }
-      vTaskDelay(pdMS_TO_TICKS(2000));
+      Serial.printf("Wi-Fi: no configured network in range (2.4 GHz only); retrying in %lu s\n",
+                    (unsigned long)(retryMs / 1000));
+      vTaskDelay(pdMS_TO_TICKS(retryMs));
+      retryMs = min<uint32_t>(retryMs * 2, 60000);
       continue;
     }
+    retryMs = 5000;
     if (!wifiUp) Serial.printf("Wi-Fi: connected to %s (%s)\n", WiFi.SSID().c_str(), WiFi.localIP().toString().c_str());
     wifiUp = true;
     if (!clockStarted) {
