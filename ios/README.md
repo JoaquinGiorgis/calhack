@@ -29,7 +29,7 @@ guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototip
 6. Tocar **Start listening** y permitir micrófono. El reconocimiento empieza sin
    exigir calibración. Para intentar ubicar sonidos, tocar **Calibrate front** y
    mantener una fuente continua al frente unos segundos. Durante ese intento se
-   pausa el reconocimiento. **Recalibrate front** repite la referencia si se mueve
+   pausa el reconocimiento. **Calibrate again** repite la referencia si se mueve
    el soporte; un fallo no impide seguir reconociendo categorías.
 7. Probar sonidos desde izquierda, frente y derecha; confirmar evento, ángulo y
    vibración. La precisión física y los umbrales deben medirse en el aparato.
@@ -44,9 +44,10 @@ detiene; todavía no es escucha en segundo plano ni orientación desde el bolsil
 Toda la interfaz está en inglés. Usa la foto, tipografías Gabarito/Atkinson,
 paneles translúcidos y acento lima de la landing FortWatch indicada por el usuario.
 Las fuentes y la foto están incluidas en la app, sin descargarlas al escuchar.
-El panel muestra una franja lima con flecha grande y lado en mayúsculas cuando
-hay dirección válida. El arco e ícono alrededor del teléfono quedan como apoyo.
-Sin medición válida aparece **DIRECTION UNAVAILABLE**, sin inventar una flecha. Una alerta usa su propio ángulo; entre alertas se muestra
+El panel Orbit destaca el nombre del sonido, un círculo grande con creciente lima
+y el lado escrito debajo. El teléfono del centro es la referencia; el ícono del
+sonido se ubica en el círculo cuando hay una dirección válida.
+Sin medición válida aparece **Direction unavailable**, sin inventar una dirección. Una alerta usa su propio ángulo; entre alertas se muestra
 la dirección dominante reciente con un ícono genérico. Una alerta incierta no
 toma prestado otro ángulo. Los datos vencidos se retiran; **Latest alert** es
 historial, no una ubicación en vivo. La última detección queda como **RECENT SOUND**,

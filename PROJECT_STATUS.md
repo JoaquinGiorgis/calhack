@@ -31,7 +31,7 @@ replace smoke alarms or other alerting systems.
 |---|---|
 | Direct iPhone recognition + spatial direction + BLE | Implemented; physical validation pending |
 | Sound classification on the Mac (YAMNet fallback) | Working |
-| Wristband firmware: Figma-designed alert screens, live level meter, dismiss | Team reports touch tested on 25/10; hold home/BOOT for 1 s to toggle SPEECH, persisted across restart |
+| Wristband firmware: Orbit alerts, live level meter, dismiss | Orbit installed on 25/10; previous touch controls preserved. Hold home/BOOT for 1 s to toggle SPEECH, persisted across restart |
 | Bluetooth LE link, Mac → wristband (wristband on a power bank) | Working |
 | USB link (fallback) | Working |
 | 10 alert types with priorities and thresholds | Working, thresholds partly validated (see below) |
@@ -60,17 +60,19 @@ replace smoke alarms or other alerting systems.
 
 ## How it works
 
-### Direct iPhone listener (2026-10-24)
+### Direct iPhone listener (2026-10-25)
 
-The native app now uses Apple SoundAnalysis and FOA direction estimation on the
+The native app now uses bundled YAMNet through Core ML and FOA direction estimation on the
 iPhone, then connects directly to the existing ESP32 BLE service. No Mac, HTTP,
 pairing token or Wi-Fi is required at runtime. There is a manual vibration test,
 explicit Bluetooth connection and foreground-only capture. See [iOS setup](ios/README.md).
 
-The Apple model replaces YAMNet for this path. Its provisional thresholds have
-not been validated with ESC-50 or live sound tests. The Mac/YAMNet benchmark below
-applies only to the older Mac demo. Physical angular accuracy, Bluetooth delivery
-and vibration with the new iPhone build remain to be tested.
+YAMNet replaces the earlier Apple classifier and exposes all 521 class names.
+Model conversion and on-device synthetic inference checks passed; a small public
+audio replay is documented in `docs/validation/yamnet/`. This does not establish
+general accuracy. The Mac benchmark below applies only to the older Mac demo.
+Both updated devices are installed. Physical calibration accuracy, microphone
+recognition and end-to-end screen/motor behavior still need validation.
 
 ### Existing Mac fallback path
 
@@ -101,7 +103,7 @@ Mac microphone ─► YAMNet (on the Mac) ─► Bluetooth LE ─► ESP32-S3 wr
 
 ## Key decisions and why
 
-**Classification runs on the listener, not the wristband.** The current iPhone app uses Apple SoundAnalysis; the original demo used YAMNet on the Mac. The board has no microphone
+**Classification runs on the listener, not the wristband.** Both the current iPhone app and original Mac demo use YAMNet, with different selection policies. The board has no microphone
 suitable for classification. The team's Grove Sound Sensor is built for loudness:
 its fixed high-gain amplifier clips on loud sounds such as alarms and horns, so it
 cannot feed a classifier. An I2S MEMS microphone (e.g. INMP441) is needed for
@@ -132,7 +134,8 @@ thresholds were measured on ESC-50. KNOCK was initially raised to 0.35, then cha
 to 0.30 with broader wood-impact classes in the 25/10 update. That update also vetoes
 GLASS when those classes score as highly; the old benchmark has not been rerun for
 this configuration. DOG uses only "Bark" because the broader "Dog" class fired on
-pigs and toothbrushes. The iPhone uses a separate, unvalidated Apple mapping.
+pigs and toothbrushes. The iPhone's expanded selector exposes all classes with
+hierarchy suppression and provisional thresholds; physical accuracy remains unverified.
 
 ## Known limitations
 

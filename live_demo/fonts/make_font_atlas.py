@@ -97,7 +97,7 @@ def main(dst, sound_title_only=False, brand_only=False):
         out.append("")
         print(f"{n}: {len(glyphs)} glyphs, {len(data)} bytes")
     rendered = "\n".join(out)
-    if sound_title_only:
+    if sound_title_only or brand_only:
         rendered = rendered.rstrip()
     Path(dst).write_text(rendered + "\n")
 

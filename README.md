@@ -18,6 +18,8 @@ rhythms. The Mac demo remains a separate ten-alert fallback. Its older benchmark
 does not establish accuracy for the expanded iPhone selector.
 
 See [the 521-class integration and verification](docs/SOUND-CATALOG-521.md).
+The [25 October release notes](docs/RELEASE-2026-10-25.md) summarize the changes,
+installation evidence, usage and remaining limitations.
 
 > **Status:** direct iPhone software integration; real iPhone capture, angular
 > accuracy and physical BLE/motor validation still pending. FortWatch is a
@@ -35,7 +37,7 @@ from `main`, local iPhone functionality, team-reported hardware tests and remain
 | `live_demo/mac_listener.py` | Mac program: microphone → YAMNet → Bluetooth/USB → wristband |
 | `ios/` | Native iPhone recognition, spatial direction and direct Bluetooth to the wristband |
 | `live_demo/spatial_audio.py` | Spatial receiver, calibration and dominant-sound angle estimator |
-| `live_demo/fortwatch_display/` | Wristband firmware (Arduino sketch). Screens are the Figma designs in `screens.h` |
+| `live_demo/fortwatch_display/` | Wristband firmware: Orbit alerts in `alert_ui.h`, original home artwork in `screens.h` |
 | `live_demo/screen_preview/` | Slideshow firmware to preview every designed screen on the real display |
 | `live_demo/requirements.txt` | Python packages for the Mac program |
 | `pretrained/yamnet/` | Google's YAMNet model (Apache 2.0), loaded by the Mac program |
@@ -79,7 +81,7 @@ Everything else (music, typing, general noise) only moves the level bar.
 
 The 2026-10-25 Mac update expands the KNOCK mapping and suppresses GLASS when a
 wood-impact class scores at least as highly. This heuristic applies to both Mac
-input paths after integration; it is not part of the iPhone's Apple classifier.
+input paths after integration; the expanded iPhone selector has its own policies.
 The ESC-50 numbers below describe the earlier mapping and thresholds, not a new
 evaluation of this knock/glass heuristic.
 
@@ -235,8 +237,9 @@ To add a new alert to the Mac listener, add an entry to `EVENTS` in `mac_listene
 class names from `pretrained/yamnet/assets/yamnet_class_map.csv`. The wristband shows
 any new name automatically. For a custom colour and hint text, add it to
 `EVENT_STYLES` in the sketch.
-For the native iPhone app, update `SoundEventSelector.defaultPolicies` separately
-using identifiers from Apple's classifier; Python/YAMNet changes do not carry over.
+For the native iPhone app, update `YAMNetEventSelector` and the shared catalog
+separately; Python policy changes do not carry over. Regenerate both platforms'
+catalogs with `python3 tools/generate_sound_catalog.py` after catalog changes.
 
 ## Roadmap
 
@@ -247,7 +250,7 @@ using identifiers from Apple's classifier; Python/YAMNet changes do not carry ov
 
 ## Credits
 
-- [Apple SoundAnalysis](https://developer.apple.com/documentation/soundanalysis) for the native iPhone classifier
+- [Apple Core ML](https://developer.apple.com/documentation/coreml) for local iPhone model inference
 
 - [YAMNet](https://github.com/tensorflow/models/tree/master/research/audioset/yamnet)
   by Google, Apache License 2.0

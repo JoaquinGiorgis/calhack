@@ -2920,4 +2920,3 @@ const Glyph F_ALERT_SMALL_GLYPHS[] = {
   {4461, 3, 4, 0, -4, 3},
 };
 const AtlasFont F_ALERT_SMALL = {F_ALERT_SMALL_ALPHA, F_ALERT_SMALL_GLYPHS, 32, 127, 0, 11, 4};
-
