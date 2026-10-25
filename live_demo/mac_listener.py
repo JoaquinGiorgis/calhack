@@ -276,7 +276,12 @@ class BleLink:
 
         while True:
             print("  Searching for FortWatch over Bluetooth...")
-            device = await BleakScanner.find_device_by_filter(self._is_fortwatch, timeout=10.0)
+            try:
+                device = await BleakScanner.find_device_by_filter(self._is_fortwatch, timeout=10.0)
+            except Exception as error:  # e.g. the Mac's Bluetooth was turned off: keep retrying
+                print(f"  Can't scan for FortWatch ({error}). Is Bluetooth on? Retrying in 5 s...")
+                await asyncio.sleep(5.0)
+                continue
             if device is None:
                 print("  FortWatch not found. Is the ESP32 powered on and nearby? Retrying...")
                 continue
@@ -475,7 +480,9 @@ def main() -> None:
                 history[name].append(score >= event.threshold)
                 sustained = sum(history[name]) >= event.min_hits
                 cooled = now - last_sent.get(name, -1e9) >= event.cooldown
-                if sustained and cooled:
+                # Fire on a hop where the sound is still there, so the score shown on the
+                # wristband is a real one (not ~0 from a hop after the sound ended).
+                if sustained and cooled and score >= event.threshold:
                     candidates.append((event.priority, score / event.threshold, name, score))
 
             if candidates:
