@@ -67,7 +67,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 |---|---|---|---|---|
 | V1 | TODO | Latencia sonido → alerta en la pulsera (video a 60 fps) | | Número en ms |
 | V2 | TODO | Falsas alertas: 5 min en zona tranquila + 5 min en zona ruidosa | | Tabla en PROJECT_STATUS |
-| V3 | DOING | Hablar con ≥1 persona sorda/hipoacúsica (o mentor de accesibilidad). ✅ Sierra (Sierra College): no le alcanza para un Apple Watch y espera compañía para salir sola ([docs/user-research](docs/user-research/README.md)) | Nico | 3 learnings |
+| V3 | DOING | Hablar con ≥1 persona sorda/hipoacúsica (o mentor de accesibilidad). ✅ Sofia: no le alcanza para un Apple Watch y espera compañía para salir sola ([docs/user-research](docs/user-research/README.md)) | Nico | 3 learnings |
 | V4 | TODO | Alcance Bluetooth en la venue llena | | Metros anotados |
 
 ## 🎤 5. Demo / Devpost
