@@ -54,6 +54,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | S7 | DONE | Diseño Figma de las 13 pantallas + escenarios + prototipo ([docs/design](docs/design/README.md)) y **slider** en la pulsera (`live_demo/screen_preview`) para verlas en el display real | Joaquin | — | Slider corriendo en la placa |
 | S8 | DONE | Pantallas de Figma en el firmware real (`fortwatch_display`): imagen de cada alerta + barra de confianza real, ecualizador en vivo, nº de alertas | Joaquin | S7 | Alertas en vivo con el diseño nuevo |
 | S9 | DONE | Home estilo iOS *Liquid Glass*: wallpaper real, reloj (hora desde la Mac), widgets Listening/Last alert con ícono, texto Inter con antialias | Joaquin | S8 | ✅ Cargado en la placa (24/10); falta confirmar visualmente |
+| S10 | DOING | Analytics en vivo (dashboard de Mana): la **pulsera sube cada alerta por WiFi** ella misma (`wifi_analytics.h`, secretos en `secrets.h` git-ignorado); el ícono de SPEECH es una persona hablando. El WiFi de Cal Hacks es solo 5/6 GHz y la ESP32-S3 solo usa 2,4 GHz → usar hotspot del celular ("Maximizar compatibilidad"). Mientras tanto sube la Mac (`live_demo/analytics.env`) | Joaquin, Nico | S2 | Serial dice `Analytics: uploaded` y aparece en el dashboard |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |

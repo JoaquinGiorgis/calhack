@@ -5,6 +5,9 @@
 //   L,<0-100>            sound level -> live level bar
 //   E,<EVENT>,<score>    detected event -> full-screen alert
 //
+// With secrets.h (see secrets.example.h) the wristband also joins Wi-Fi and uploads
+// every alert it shows to the analytics dashboard itself (wifi_analytics.h).
+//
 // Over BLE, each write to the RX characteristic is one message; over USB,
 // messages are newline-terminated. Both paths feed the same handler.
 //
@@ -31,6 +34,7 @@
 #include <Wire.h>
 #include "screens.h"
 #include "fonts.h"
+#include "wifi_analytics.h"  // optional Wi-Fi upload to the dashboard (needs secrets.h)
 #include "icons.h"    // generated: python ../fonts/make_icons.py icons.h (alert icons from Figma)    // generated: python ../fonts/make_font_atlas.py fonts.h (Inter, SIL OFL)  // generated: python ../screen_preview/png_to_rgb565.py ../../docs/design/firmware_screens screens.h
 
 #define PIN_LCD_SCLK 39
@@ -395,6 +399,7 @@ void showAlert(const char *eventName, float score) {
   lastAlertTitle[sizeof(lastAlertTitle) - 1] = '\0';
   lastAlertMs = millis();
   lastAlertIcon = style->image;
+  analyticsAlert(eventName, score);
   const uint16_t *img = style->image ? screenImage(style->image) : nullptr;
   if (img) {
     gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
@@ -418,6 +423,7 @@ void handleLine(char *text) {
   lastMessageMs = millis();
   if (text[0] == 'L' && text[1] == ',') {
     int level = constrain(atoi(text + 2), 0, 100);
+    analyticsStatus(level, strcmp(linkName, "USB") == 0 ? "usb" : "ble");
     if (screen == Screen::Waiting) showListening();
     if (screen == Screen::Listening && level != lastLevel) {
       bool crossed = (level > 60) != (lastLevel > 60);
@@ -519,6 +525,7 @@ void setup() {
   digitalWrite(PIN_LCD_BL, HIGH);
   touchReady = Wire.begin(PIN_TOUCH_SDA, PIN_TOUCH_SCL, 400000);
   startBluetooth();
+  startAnalytics();
   showWaiting();
   vibrate(VIB_SELFTEST);
 }

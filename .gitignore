@@ -26,3 +26,4 @@ docs/hardware/waveshare-*.jpg
 docs/SPEC.md
 # Local secrets for the analytics upload (live_demo/analytics.env.example shows the format)
 live_demo/analytics.env
+live_demo/fortwatch_display/secrets.h

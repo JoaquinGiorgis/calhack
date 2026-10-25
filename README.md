@@ -154,12 +154,20 @@ a bit below it.
 
 ### Live analytics dashboard (optional)
 
-`mac_listener.py` can also upload every alert (name, score, level, whether the
-wristband got it; never audio) plus the live level to the team's analytics dashboard.
-Copy `live_demo/analytics.env.example` to `live_demo/analytics.env` and fill in the URL
-and device key (ask the team; the file is git-ignored so the secrets never get
-committed). On start the terminal says `Analytics: on, as <name>`. Without the file it
-stays off.
+The wristband can upload every alert it shows (name, score, level, time; never audio)
+to the team's analytics dashboard over **Wi-Fi**, on its own, without the Mac's help:
+copy `live_demo/fortwatch_display/secrets.example.h` to `secrets.h` in the same folder,
+fill in the Wi-Fi networks, the ingest URL and the device key (ask the team; the file
+is git-ignored so the secrets never get committed), and flash. The serial monitor
+prints `Wi-Fi: connected to ...` and `Analytics: uploaded 1 alert(s)`.
+
+The ESP32-S3 only joins **2.4 GHz** WPA2/WPA3 networks without a login page. If the
+venue Wi-Fi is 5 GHz only (the serial monitor says `not in range on 2.4 GHz`), use a
+phone hotspot with "Maximize Compatibility" turned on.
+
+Without Wi-Fi, `mac_listener.py` can upload instead: copy
+`live_demo/analytics.env.example` to `live_demo/analytics.env` and fill it in. Use one
+or the other, not both, or every alert is counted twice.
 
 ## Troubleshooting
 
