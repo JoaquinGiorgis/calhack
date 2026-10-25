@@ -1,11 +1,40 @@
 import Foundation
 
+/// Numeric summaries only; no audio samples or source identity are retained.
+struct SpatialDirectionMetrics: Equatable, Sendable {
+    let rms: Double
+    let coherence: Double
+    let horizontalFraction: Double
+    let stability: Double
+    let quality: Double
+    let directionalRMS: Double
+
+    init?(rms: Double, coherence: Double, horizontalFraction: Double, stability: Double, quality: Double,
+          directionalRMS: Double = 0) {
+        guard [rms, coherence, horizontalFraction, stability, quality, directionalRMS].allSatisfy(\.isFinite) else { return nil }
+        self.rms = rms
+        self.coherence = coherence
+        self.horizontalFraction = horizontalFraction
+        self.stability = stability
+        self.quality = quality
+        self.directionalRMS = directionalRMS
+    }
+}
+
 /// An estimate of the dominant sound, not separation of a classified event.
 /// Quality measures coherence and stability; it is not an accuracy probability.
 struct SpatialDirectionResult: Equatable, Sendable {
     let angle: Double?
     let quality: Double?
     let reason: String
+    let metrics: SpatialDirectionMetrics?
+
+    init(angle: Double?, quality: Double?, reason: String, metrics: SpatialDirectionMetrics? = nil) {
+        self.angle = angle
+        self.quality = quality
+        self.reason = reason
+        self.metrics = metrics
+    }
 }
 
 enum SpatialDirection {
@@ -66,18 +95,21 @@ enum SpatialDirection {
         }
 
         power /= Double(frames)
-        guard power >= minimumRMS * minimumRMS else { return unknown("quiet") }
         vector = vector.scaled(by: 1 / Double(frames))
         let magnitude = vector.length
         let energy = power + directionalPower / Double(frames)
         let coherence = min(1, 2 * magnitude / max(energy, 1e-20))
         let horizontal = hypot(vector.x, vector.y) / max(magnitude, 1e-20)
-        guard horizontal >= 0.5 else { return unknown("vertical_or_diffuse") }
         let stability = validBlocks == 0 ? 0 : normalizedBlocks.length / Double(validBlocks)
         let quality = min(1, max(0, coherence * horizontal * stability))
-        guard quality >= minimumQuality else { return unknown("diffuse_or_moving") }
+        let metrics = SpatialDirectionMetrics(rms: sqrt(power), coherence: coherence,
+                                              horizontalFraction: horizontal, stability: stability, quality: quality,
+                                              directionalRMS: sqrt(directionalPower / Double(frames)))
+        guard power >= minimumRMS * minimumRMS else { return unknown("quiet", metrics: metrics) }
+        guard horizontal >= 0.5 else { return unknown("vertical_or_diffuse", metrics: metrics) }
+        guard quality >= minimumQuality else { return unknown("diffuse_or_moving", metrics: metrics) }
         let angle = wrapAngle(-atan2(vector.y, vector.x) * 180 / .pi - zero)
-        return SpatialDirectionResult(angle: angle, quality: quality, reason: "direction_ready")
+        return SpatialDirectionResult(angle: angle, quality: quality, reason: "direction_ready", metrics: metrics)
     }
 
     /// [-180, 180), with positive angles to the listener's right after calibration.
@@ -89,8 +121,8 @@ enum SpatialDirection {
         return result
     }
 
-    private static func unknown(_ reason: String) -> SpatialDirectionResult {
-        SpatialDirectionResult(angle: nil, quality: nil, reason: reason)
+    private static func unknown(_ reason: String, metrics: SpatialDirectionMetrics? = nil) -> SpatialDirectionResult {
+        SpatialDirectionResult(angle: nil, quality: nil, reason: reason, metrics: metrics)
     }
 
     private struct Vector {
@@ -117,6 +149,7 @@ struct FrontCalibration: Sendable {
     private(set) var zero: Double?
     private(set) var calibrating = false
     private(set) var failed = false
+    private(set) var lastResult: SpatialDirectionResult?
     private var startedAt: TimeInterval = 0
     private var lastTime: TimeInterval = 0
     private var duration = 0.0
@@ -127,6 +160,7 @@ struct FrontCalibration: Sendable {
         reset()
         guard now.isFinite, now >= 0 else {
             failed = true
+            lastResult = SpatialDirectionResult(angle: nil, quality: nil, reason: "calibration_invalid_time")
             return
         }
         startedAt = now
@@ -138,6 +172,7 @@ struct FrontCalibration: Sendable {
         zero = nil
         calibrating = false
         failed = false
+        lastResult = nil
         startedAt = 0
         lastTime = 0
         clearAccumulation()
@@ -145,17 +180,25 @@ struct FrontCalibration: Sendable {
 
     mutating func consume(samples: [Float], sampleRate: Int, now: TimeInterval) {
         guard calibrating else { return }
-        guard now.isFinite, now >= lastTime, now - startedAt <= 10,
-              SpatialDirection.supportedSampleRates.contains(sampleRate),
+        guard now.isFinite, now >= lastTime else {
+            fail("calibration_invalid_time")
+            return
+        }
+        guard now - startedAt <= 10 else {
+            fail("calibration_timeout")
+            return
+        }
+        guard SpatialDirection.supportedSampleRates.contains(sampleRate),
               !samples.isEmpty, samples.count.isMultiple(of: 4),
               samples.count / 4 <= sampleRate / 4 else {
-            fail()
+            fail("invalid_input")
             return
         }
         lastTime = now
         let result = SpatialDirection.estimate(samples: samples, sampleRate: sampleRate)
+        lastResult = result
         if result.reason == "invalid_input" {
-            fail()
+            fail("invalid_input")
             return
         }
         guard let angle = result.angle else {
@@ -186,8 +229,10 @@ struct FrontCalibration: Sendable {
         y = 0
     }
 
-    private mutating func fail() {
+    private mutating func fail(_ reason: String) {
+        let metrics = lastResult?.metrics
         reset()
         failed = true
+        lastResult = SpatialDirectionResult(angle: nil, quality: nil, reason: reason, metrics: metrics)
     }
 }

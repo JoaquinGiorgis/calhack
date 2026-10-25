@@ -30,6 +30,7 @@ struct LocalAudioUpdate: Sendable {
     let quality: Double?
     let calibrated: Bool
     let calibrating: Bool
+    let calibrationFailed: Bool
     let level: Int
     let status: String
     let alert: SoundEventDetection?

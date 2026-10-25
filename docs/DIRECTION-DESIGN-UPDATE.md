@@ -65,3 +65,46 @@ Render de software de las funciones de dibujo reales con datos sintéticos para
 revisar distribución; **no es una captura de la pulsera ni una medición acústica**.
 
 ![Diseño de alertas y dirección](design/directional-alert-preview.png)
+
+## Seguimiento: dirección ausente en ambas pantallas
+
+El usuario aclaró que no veía dirección ni en iPhone ni en pulsera. No se considera
+validado el ángulo físico. Se encontró que el mensaje de calibración fallida duraba
+solo hasta la siguiente actualización de audio y se reemplazaba por Listening.
+
+La siguiente revisión conserva el fallo visible, muestra una guía circular neutral
+sin inventar ángulo, compacta la pantalla durante captura y agrega un resumen
+numérico local de RMS/coherencia/estabilidad/motivo de rechazo. No contiene audio
+ni transcripciones ni eventos reconocidos. Los umbrales y la fórmula del ángulo
+se conservan. La revisión final volvió a pasar los 30 tests de simulador
+(`spatial-session-final-tests.xcresult`). Se verificó la pantalla inicial actual
+en el simulador y se actualizó la captura de diseño.
+
+La prueba física ampliada a 50 actualizaciones pasó después de desbloquear el
+iPhone. Con la configuración manual `.record/.default`, las 44 ventanas del
+último resumen dieron coherencia, estabilidad y calidad cero. Esto no demuestra
+que los canales XYZ estuvieran vacíos: esa primera prueba no medía su RMS.
+
+Se pasó a la configuración automática de audio de `AVCaptureSession`, como en
+el ejemplo oficial de Apple. La misma prueba pasó y registró RMS direccional
+0.0173 y calidad máxima 0.408; ninguna de las 44 ventanas superó 0.60 en ese
+ambiente. El resumen final tenía coherencia 0.0752 y estabilidad 0.0985. Son
+mediciones de señal, no una prueba de precisión angular ni de calibración.
+
+La app normal actualizada compiló, se instaló y abrió en el iPhone. Se pidió
+una prueba con una fuente continua al frente; calibración, signo y ángulo
+físicos siguen sin validar. Se conserva el firmware y la configuración privada
+del dashboard. No se cambiaron los umbrales ni los patrones de vibración.
+
+Las lecturas posteriores de la app mostraron ventanas aceptadas de forma
+intermitente (calidad máxima 0.760, 66/302 ventanas en el último resumen), pero
+el estado final fue `calibrationFailed:true` / `calibration_timeout`. No se
+confirmó todavía qué fuente ni posición se usaron; estos datos no validan el
+montaje, el plano horizontal o el signo izquierda/derecha. La revisión del
+diagnóstico agrega fecha de medición y marca de captura detenida para no
+confundir una lectura guardada con una captura activa.
+
+Evidencia local: `direction-diagnostic-retry.xcresult`,
+`automatic-session-probe.xcresult`, `spatial-diagnostic.json`,
+`spatial-automatic.json` y `spatial-input-fix-{build,install,launch}.log`,
+todos bajo `/tmp/fortwatch-design-update/`.

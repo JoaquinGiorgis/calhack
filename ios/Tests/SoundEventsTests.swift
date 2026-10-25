@@ -7,7 +7,7 @@ import XCTest
 final class SoundEventsTests: XCTestCase {
 #if FORTWATCH_CAPTURE_PROBE
     /// Opt-in physical smoke test. Uses the production pipeline, retains no
-    /// audio, and stops after its first decoded update. Never runs by default.
+    /// audio, and stops after 50 decoded updates. Never runs by default.
     @MainActor
     func testPhysicalSpatialCaptureProvidesValidAudio() async throws {
 #if targetEnvironment(simulator)
@@ -18,12 +18,12 @@ final class SoundEventsTests: XCTestCase {
             return
         }
         let outcome = CaptureProbeOutcome()
-        let finished = expectation(description: "First spatial audio update or a capture error")
+        let finished = expectation(description: "50 spatial audio updates or a capture error")
         let capture = SpatialCapture { event in
             switch event {
             case .started: break
             case .update:
-                if outcome.finish(error: nil) { finished.fulfill() }
+                if outcome.receiveAudio() { finished.fulfill() }
             case .stopped(let message):
                 if outcome.finish(error: message) { finished.fulfill() }
             }
@@ -186,7 +186,16 @@ private final class CaptureProbeOutcome: @unchecked Sendable {
     private let lock = NSLock()
     private var completed = false
     private var failure: String?
+    private var updates = 0
     var error: String? { lock.lock(); defer { lock.unlock() }; return failure }
+    func receiveAudio() -> Bool {
+        lock.lock(); defer { lock.unlock() }
+        guard !completed else { return false }
+        updates += 1
+        guard updates >= 50 else { return false }
+        completed = true
+        return true
+    }
     func finish(error: String?) -> Bool {
         lock.lock(); defer { lock.unlock() }
         guard !completed else { return false }

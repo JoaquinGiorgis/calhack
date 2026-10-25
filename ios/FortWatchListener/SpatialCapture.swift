@@ -33,7 +33,6 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
     private let captureSession = AVCaptureSession()
     private let onEvent: (CaptureEvent) -> Void
     private var running = false
-    private var audioActivated = false
     private var pendingSamples: [Float] = []
     private var pendingPTS: Double?
     private var sampleRate: Int?
@@ -56,6 +55,11 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
     private var currentLevel = 0
     private var currentDirection = SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
     private var currentExpiry: TimeInterval = 0
+    private var lastDiagnosticWrite = -Double.infinity
+    private var diagnosticWindows = 0
+    private var diagnosticValidWindows = 0
+    private var diagnosticPeakQuality = 0.0
+    private var lastDiagnosticSnapshot: [String: Any] = [:]
     // The following three fields belong exclusively to inferenceQueue.
     private var analyzer: SNAudioStreamAnalyzer?
     private var analyzerGeneration: UUID?
@@ -70,22 +74,17 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
     func start() {
         queue.async { [self] in
             do {
-                let audioSession = AVAudioSession.sharedInstance()
-                captureSession.automaticallyConfiguresApplicationAudioSession = false
-                try audioSession.setCategory(.record, mode: .default)
-                try audioSession.setActive(true)
-                audioActivated = true
-                guard let microphone = audioSession.availableInputs?.first(where: { $0.portType == .builtInMic }) else {
-                    throw ListenerError.message("The iPhone’s built-in microphone is unavailable.")
-                }
-                try audioSession.setPreferredInput(microphone)
+                // Let AVCaptureSession negotiate the built-in microphone's FOA
+                // configuration, as in Apple's spatial-audio capture sample.
+                // Forcing .record/.default yielded audio but no directional
+                // intensity on the connected iPhone during physical diagnosis.
+                captureSession.automaticallyConfiguresApplicationAudioSession = true
                 try configureCapture()
                 // Load Apple's built-in model before capture starts, so cold model
                 // startup cannot repeatedly overflow the single inference slot.
-                let rate = Int(audioSession.sampleRate)
-                guard SpatialPCM.sampleRates.contains(rate) else {
-                    throw ListenerError.message("The microphone’s sample rate is not supported.")
-                }
+                // Warm the model at a supported nominal rate. submitAnalysis
+                // recreates the analyzer if the actual decoded rate differs.
+                let rate = 48_000
                 let generation = analysisGeneration
                 try Self.inferenceQueue.sync { try prepareAnalyzer(rate: rate, generation: generation) }
                 running = true
@@ -137,6 +136,10 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             let now = ProcessInfo.processInfo.systemUptime
             calibration.start(now: now)
             calibrationStartedAt = now
+            diagnosticWindows = 0
+            diagnosticValidWindows = 0
+            diagnosticPeakQuality = 0
+            lastDiagnosticWrite = -Double.infinity
             currentDirection = SpatialDirectionResult(angle: nil, quality: nil, reason: "calibrating")
             currentExpiry = now + 0.75
             publish(status: "Keep a sound in front of the phone for one second.")
@@ -149,6 +152,11 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
 
     private func stopOnQueue(_ message: String) {
         running = false
+        if !lastDiagnosticSnapshot.isEmpty {
+            lastDiagnosticSnapshot["capturing"] = false
+            lastDiagnosticSnapshot["stoppedAt"] = Date().timeIntervalSince1970
+            writeSpatialDiagnostics(lastDiagnosticSnapshot)
+        }
         observers.forEach(NotificationCenter.default.removeObserver)
         observers.removeAll()
         watchdog?.cancel()
@@ -165,10 +173,6 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             analyzerRate = nil
         }
         if captureSession.isRunning { captureSession.stopRunning() }
-        if audioActivated {
-            try? AVAudioSession.sharedInstance().setActive(false)
-            audioActivated = false
-        }
         onEvent(.stopped(message))
     }
 
@@ -272,12 +276,18 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             }
             let status = calibration.calibrating ? "Keep a steady sound in front of the phone…" :
                 (calibration.zero != nil ? "Front calibrated. Listening for sounds…" : "Calibration failed. Try a clear, steady sound in front of the phone.")
+            recordSpatialDiagnostics(calibration.lastResult, capturedEnd: capturedEnd, now: now)
             publish(status: status)
             return
         }
-        currentDirection = calibration.zero.map { SpatialDirection.estimate(samples: samples, sampleRate: rate, zero: $0) }
-            ?? SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
-        publish(status: calibration.zero == nil ? "Listening. Calibrate the front to locate sounds." : "Listening on iPhone…")
+        let measured = SpatialDirection.estimate(samples: samples, sampleRate: rate, zero: calibration.zero ?? 0)
+        currentDirection = calibration.zero != nil ? measured
+            : SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
+        recordSpatialDiagnostics(measured, capturedEnd: capturedEnd, now: now)
+        let status = calibration.failed
+            ? "Calibration failed. Keep one clear, continuous sound in front and try again."
+            : calibration.zero == nil ? "Listening. Calibrate the front to locate sounds." : "Listening on iPhone…"
+        publish(status: status)
         if analysisBusy && pendingAnalysis.count + samples.count > rate * 4 / 2 {
             // At most 500ms can wait behind the one inference call. Overflow
             // discards that window instead of letting latency grow without bound.
@@ -432,6 +442,45 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
     private func publish(status: String, alert: SoundEventDetection? = nil) {
         onEvent(.update(LocalAudioUpdate(angle: currentDirection.angle, quality: currentDirection.quality,
                                         calibrated: calibration.zero != nil, calibrating: calibration.calibrating,
+                                        calibrationFailed: calibration.failed,
                                         level: currentLevel, status: status, alert: alert, expiresAt: currentExpiry)))
+    }
+
+    /// Latest numeric health snapshot only. No audio, speech, event categories,
+    /// network data or Bluetooth identifiers; at most one periodic write per second,
+    /// plus a terminal snapshot that marks capture stopped.
+    private func recordSpatialDiagnostics(_ result: SpatialDirectionResult?, capturedEnd: TimeInterval, now: TimeInterval) {
+        diagnosticWindows += 1
+        if result?.angle != nil { diagnosticValidWindows += 1 }
+        diagnosticPeakQuality = max(diagnosticPeakQuality, result?.metrics?.quality ?? 0)
+        guard now - lastDiagnosticWrite >= 1 else { return }
+        lastDiagnosticWrite = now
+        var snapshot: [String: Any] = [
+            "capturing": running, "sampledAt": Date().timeIntervalSince1970,
+            "calibrated": calibration.zero != nil, "calibrating": calibration.calibrating,
+            "calibrationFailed": calibration.failed, "windows": diagnosticWindows,
+            "validDirectionWindows": diagnosticValidWindows, "peakQuality": diagnosticPeakQuality,
+            "reason": result?.reason ?? "waiting_for_audio", "inputLevel": currentLevel,
+            "audioAgeMs": max(0, now - capturedEnd) * 1000
+        ]
+        if let last = calibration.lastResult { snapshot["calibrationReason"] = last.reason }
+        if let angle = result?.angle { snapshot["rawAngle"] = angle }
+        if let metrics = result?.metrics {
+            snapshot["rms"] = metrics.rms
+            snapshot["coherence"] = metrics.coherence
+            snapshot["horizontalFraction"] = metrics.horizontalFraction
+            snapshot["stability"] = metrics.stability
+            snapshot["quality"] = metrics.quality
+            snapshot["directionalRMS"] = metrics.directionalRMS
+        }
+        lastDiagnosticSnapshot = snapshot
+        writeSpatialDiagnostics(snapshot)
+    }
+
+    private func writeSpatialDiagnostics(_ snapshot: [String: Any]) {
+        guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+              let data = try? JSONSerialization.data(withJSONObject: snapshot, options: [.sortedKeys]) else { return }
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try? data.write(to: directory.appendingPathComponent("fortwatch-spatial-status.json"), options: .atomic)
     }
 }

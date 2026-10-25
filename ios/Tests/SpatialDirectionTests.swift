@@ -32,6 +32,38 @@ final class SpatialDirectionTests: XCTestCase {
         XCTAssertTrue(SpatialDirection.wrapAngle(.infinity).isNaN)
     }
 
+    func testRejectedDirectionKeepsDiagnosticsWithoutAnAngle() throws {
+        let quiet = SpatialDirection.estimate(samples: [Float](repeating: 0, count: rate * 4), sampleRate: rate)
+        XCTAssertNil(quiet.angle)
+        XCTAssertNil(quiet.quality)
+        XCTAssertEqual(try XCTUnwrap(quiet.metrics).rms, 0)
+        let vertical = SpatialDirection.estimate(samples: plane(0, elevation: 89), sampleRate: rate)
+        let metrics = try XCTUnwrap(vertical.metrics)
+        XCTAssertEqual(vertical.reason, "vertical_or_diffuse")
+        XCTAssertNil(vertical.angle)
+        XCTAssertNil(vertical.quality)
+        XCTAssertGreaterThan(metrics.coherence, 0.99)
+        XCTAssertLessThan(metrics.horizontalFraction, 0.5)
+        XCTAssertLessThan(metrics.quality, SpatialDirection.minimumQuality)
+        XCTAssertNil(SpatialDirectionMetrics(rms: .nan, coherence: 1, horizontalFraction: 1, stability: 1, quality: 1))
+    }
+
+    func testCalibrationTimeoutKeepsItsFailureEvidenceUntilRetry() throws {
+        var calibration = FrontCalibration()
+        calibration.start(now: 10)
+        calibration.consume(samples: plane(0, elevation: 89), sampleRate: rate, now: 10.1)
+        let before = try XCTUnwrap(calibration.lastResult?.metrics)
+        calibration.consume(samples: plane(0), sampleRate: rate, now: 20.1)
+        XCTAssertTrue(calibration.failed)
+        XCTAssertEqual(calibration.lastResult?.reason, "calibration_timeout")
+        XCTAssertEqual(calibration.lastResult?.metrics, before)
+        XCTAssertNil(calibration.lastResult?.angle)
+        XCTAssertNil(calibration.zero)
+        calibration.start(now: 21)
+        XCTAssertFalse(calibration.failed)
+        XCTAssertNil(calibration.lastResult)
+    }
+
     func testRotatedZeroCrossesTheBackBoundary() throws {
         let result = SpatialDirection.estimate(samples: plane(-175), sampleRate: rate, zero: 175)
         XCTAssertEqual(try XCTUnwrap(result.angle), 10, accuracy: 0.0001)

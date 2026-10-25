@@ -10,6 +10,7 @@ final class ListenerModel {
     private(set) var status = "Connect your wristband to get started."
     private(set) var calibrated = false
     private(set) var calibrating = false
+    private(set) var calibrationFailed = false
     private(set) var angle: Double?
     private(set) var directionCue = SoundDirectionCue(angle: nil, event: nil)
     var directionAngle: Double? { directionCue.angle }
@@ -135,6 +136,7 @@ final class ListenerModel {
         calibrationRequested = true
         calibrated = false
         calibrating = true
+        calibrationFailed = false
         angle = nil
         lastEvent = nil
         directionalAlert = nil
@@ -150,6 +152,7 @@ final class ListenerModel {
         refreshDirectionCue()
         calibrated = false
         calibrating = false
+        calibrationFailed = false
         calibrationRequested = false
     }
 
@@ -183,6 +186,7 @@ final class ListenerModel {
             audioDeadline = update.expiresAt
             calibrated = update.calibrated
             calibrating = update.calibrating
+            calibrationFailed = update.calibrationFailed
             if calibrated, !calibrating, let value = update.angle, value.isFinite,
                (-180...180).contains(value), let quality = update.quality,
                quality.isFinite, (0.60...1).contains(quality) {

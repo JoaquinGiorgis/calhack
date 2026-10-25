@@ -78,16 +78,16 @@ struct ListenerView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: model.capturing ? 12 : 24) {
                     header
                     bluetoothPanel
-                    status
                     DirectionPanel(angle: model.directionAngle, event: model.directionEvent,
                                    capturing: model.capturing, calibrated: model.calibrated,
-                                   calibrating: model.calibrating, starting: model.active && !model.capturing,
+                                   calibrating: model.calibrating, calibrationFailed: model.calibrationFailed,
+                                   starting: model.active && !model.capturing,
                                    canCalibrate: model.bluetooth.isConnected && (!model.active || model.capturing),
-                                   level: model.level,
                                    calibrate: model.calibrate)
+                    status
                     if let event = model.lastEvent {
                         SoundAlertCard(event: event, sent: model.lastEventSent)
                     }
@@ -119,7 +119,7 @@ struct ListenerView: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 Text("FortWatch")
-                    .font(.largeTitle.weight(.black))
+                    .font((model.capturing ? Font.title : Font.largeTitle).weight(.black))
                     .tracking(-1)
                     .accessibilityAddTraits(.isHeader)
                 Text("FEEL WHAT YOU CAN’T HEAR")
@@ -171,10 +171,9 @@ struct ListenerView: View {
                     .font(.subheadline)
                     .foregroundStyle(ListenerStyle.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-            } else {
+            } else if !model.active {
                 Button("Test vibration", systemImage: "waveform.path") { model.testWristband() }
                     .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.background))
-                    .disabled(model.active)
                     .accessibilityHint("Sends a test alert. Check the wristband for two short pulses.")
             }
         }
@@ -190,6 +189,9 @@ struct ListenerView: View {
 
     private var status: some View {
         VStack(alignment: .leading, spacing: 12) {
+            if model.capturing {
+                SoundLevelMeter(level: model.level, active: true)
+            }
             Label(model.status, systemImage: model.capturing ? "mic.fill" : "mic.slash")
                 .font(.subheadline)
                 .foregroundStyle(ListenerStyle.secondary)
@@ -259,20 +261,20 @@ private struct DirectionPanel: View {
     let capturing: Bool
     let calibrated: Bool
     let calibrating: Bool
+    let calibrationFailed: Bool
     let starting: Bool
     let canCalibrate: Bool
-    let level: Int
     let calibrate: () -> Void
 
     private var appearance: SoundAppearance? { event.map(SoundAppearance.init(event:)) }
     private var usableAngle: Double? {
-        guard capturing, calibrated, !calibrating,
+        guard capturing, calibrated, !calibrating, !calibrationFailed,
               let angle, angle.isFinite, (-180...180).contains(angle) else { return nil }
         return angle
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: capturing ? 12 : 16) {
             HStack(alignment: .firstTextBaseline) {
                 Text("SOUND DIRECTION")
                     .font(.caption.monospaced().weight(.semibold))
@@ -285,13 +287,13 @@ private struct DirectionPanel: View {
             .foregroundStyle(ListenerStyle.secondary)
 
             DirectionCue(angle: usableAngle, appearance: appearance ?? SoundAppearance(event: ""))
-                .frame(maxWidth: capturing ? 260 : 220)
+                .frame(maxWidth: capturing ? 200 : 220)
                 .frame(maxWidth: .infinity)
                 .accessibilityHidden(true)
 
             VStack(spacing: 6) {
                 Text(title)
-                    .font(.largeTitle.weight(.black))
+                    .font((capturing ? Font.title2 : Font.largeTitle).weight(.black))
                     .tracking(-0.8)
                     .foregroundStyle(.white)
                     .accessibilityAddTraits(.isHeader)
@@ -303,15 +305,13 @@ private struct DirectionPanel: View {
             .fixedSize(horizontal: false, vertical: true)
             .accessibilityElement(children: .combine)
 
-            SoundLevelMeter(level: level, active: capturing)
-                .padding(.vertical, 4)
-
-            Button(calibrating ? "Calibrating front…" : capturing ? "Calibrate front" : "Listen & calibrate",
-                   systemImage: "viewfinder", action: calibrate)
-                .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.surface))
-                .disabled(!canCalibrate || calibrating)
-                .accessibilityHint(capturing ? "Keep one steady sound in front of the phone for one second." : "Starts the microphone, then calibrates using one steady sound in front of the phone.")
-            if !capturing {
+            if capturing {
+                Button(calibrating ? "Calibrating front…" : "Calibrate front",
+                       systemImage: "viewfinder", action: calibrate)
+                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.surface))
+                    .disabled(!canCalibrate || calibrating)
+                    .accessibilityHint("Keep one steady sound in front of the phone for one second.")
+            } else {
                 Text(starting ? "Waiting for the microphone to start…" : canCalibrate ? "Starts the microphone and sets the front direction." : "Connect your wristband to start calibration.")
                     .font(.footnote)
                     .foregroundStyle(ListenerStyle.secondary)
@@ -326,7 +326,9 @@ private struct DirectionPanel: View {
         if calibrating { return "Calibrating" }
         if starting { return "Starting microphone" }
         if !capturing { return "Ready to listen" }
-        if !calibrated { return "Set your front" }
+        if calibrationFailed { return "Calibration failed" }
+        if !calibrated { return "Calibration needed" }
+        if usableAngle == nil { return "Direction unclear" }
         if let appearance { return appearance.title }
         if usableAngle != nil { return "Dominant sound" }
         return "Listening"
@@ -336,10 +338,11 @@ private struct DirectionPanel: View {
         if calibrating { return "Keep a steady sound in front of the phone." }
         if starting { return "Preparing sound recognition. Calibration will unlock when audio starts." }
         if !capturing { return "Connect your wristband, then start listening." }
-        if !calibrated { return "Calibrate once with the phone upright and still." }
+        if calibrationFailed { return "Try again with one steady sound in front of the phone." }
+        if !calibrated { return "Tap Calibrate front, then make a steady sound in front." }
         if let usableAngle { return "\(directionName(usableAngle)) · relative to the phone" }
-        if event != nil { return "Direction uncertain. No clear source location." }
-        return "Waiting for a clear direction."
+        if let appearance { return "\(appearance.title) detected, but its direction is unclear." }
+        return "No clear direction yet. Try one nearby sound."
     }
 
     private func directionName(_ angle: Double) -> String {
@@ -359,19 +362,24 @@ private struct DirectionCue: View {
             let side = min(geometry.size.width, geometry.size.height)
             let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
             ZStack {
+                // A neutral guide stays visible without implying a measured source.
+                Circle()
+                    .strokeBorder(.white.opacity(0.18), lineWidth: 1)
+                    .frame(width: side * 0.61, height: side * 0.61)
+                    .position(center)
                 ReticleShape()
                     .stroke(.white.opacity(0.5), style: StrokeStyle(lineWidth: 1.5, lineCap: .square))
                     .frame(width: 58, height: 58)
                     .position(center)
-                VStack(spacing: 8) {
-                    Image(systemName: "iphone")
-                        .font(.system(size: 23, weight: .light))
-                    Text("PHONE")
-                        .font(.caption2.monospaced().weight(.medium))
-                        .tracking(1)
-                }
-                .foregroundStyle(ListenerStyle.secondary)
-                .position(x: center.x, y: center.y + 41)
+                Image(systemName: "iphone")
+                    .font(.system(size: 23, weight: .light))
+                    .foregroundStyle(ListenerStyle.secondary)
+                    .position(center)
+                Text("PHONE")
+                    .font(.caption2.monospaced().weight(.medium))
+                    .tracking(1)
+                    .foregroundStyle(ListenerStyle.secondary)
+                    .position(x: center.x, y: center.y + 43)
 
                 if let angle, let appearance {
                     TaperedSoundArc()

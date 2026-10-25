@@ -126,8 +126,16 @@ Fuentes: [Apple SoundAnalysis](https://developer.apple.com/documentation/soundan
 
 La prueba `testPhysicalSpatialCaptureProvidesValidAudio` se compila solo con
 `FORTWATCH_CAPTURE_PROBE`, requiere un iPhone real y permiso de micrófono. Usa
-`SpatialCapture`, espera el primer bloque decodificado y detiene la captura; no
+`SpatialCapture`, espera 50 actualizaciones decodificadas y detiene la captura; no
 guarda audio ni envía alertas. Se ejecutó en el iPhone 17 Pro conectado: PASS.
 No valida el signo ni la precisión angular. Para diagnosticar el inicio, la app
 guarda solo el último estado/mensaje en `Documents/fortwatch-capture-status.json`,
 sin muestras, eventos reconocidos ni identificadores.
+
+`Documents/fortwatch-spatial-status.json` guarda como máximo una vez por segundo
+el último resumen numérico de la señal y de la calibración: RMS, coherencia,
+estabilidad, calidad y motivo de rechazo. No contiene audio ni transcripciones.
+El archivo incluye `sampledAt` y `capturing`; al detener, conserva la última
+medición y marca `capturing:false` con `stoppedAt`. Su presencia sola no indica
+que la captura esté activa. La sesión configura automáticamente el audio para FOA;
+mantiene la comprobación de micrófono integrado y layout de cuatro canales.
