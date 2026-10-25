@@ -1,8 +1,8 @@
 # User research
 
-## Sofia
+## Sofia, Sierra College
 
-Sofia is deaf. Nico met her before Cal Hacks 13.0. She agreed to us using her name,
+Sofia is deaf and studies at Sierra College, a community college in Northern California. Nico met her before Cal Hacks 13.0. She agreed to us using her name,
 quote and photo.
 
 - She can't afford an Apple Watch, the usual option for sound alerts on the wrist.
