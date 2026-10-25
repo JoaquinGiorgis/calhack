@@ -8,6 +8,33 @@ struct SoundEventDetection: Sendable {
     let expiresAt: TimeInterval
 }
 
+/// An on-device, in-memory record for readable event identity after its live
+/// location has expired. Intentionally contains no angle or direction quality.
+struct RecentSound: Equatable, Sendable {
+    let event: String
+    let observedAt: Date
+    let sent: Bool
+}
+
+/// The visual card may retain a sound longer than its live location. The
+/// retained label must never inherit the direction of a newer generic sound.
+struct PresentedSound: Equatable {
+    let event: String?
+    let angle: Double?
+    let recent: RecentSound?
+    var isRecent: Bool { recent != nil }
+
+    static func current(live: SoundDirectionCue, recent: RecentSound?) -> Self {
+        if let event = live.event {
+            return Self(event: event, angle: live.angle, recent: nil)
+        }
+        if let recent {
+            return Self(event: recent.event, angle: nil, recent: recent)
+        }
+        return Self(event: nil, angle: live.angle, recent: nil)
+    }
+}
+
 /// A category marker must use the direction measured in that category's own
 /// audio window. A fresh but uncertain alert must never borrow a live angle.
 struct SoundDirectionCue: Equatable {

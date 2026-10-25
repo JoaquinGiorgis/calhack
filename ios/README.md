@@ -20,14 +20,16 @@ guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototip
    `mac_listener.py` para que no ocupe la conexión Bluetooth.
 3. En la app tocar **Connect** y permitir Bluetooth. La conexión se hace
    desde la app; no requiere emparejar un dispositivo de audio en Ajustes.
-4. Abrir el menú **…** → **Sound & vibration guide** y tocar **Test** en cada sonido.
+4. Abrir el menú **…** → **Sound library** y tocar **Test** en cada sonido.
    La pulsera muestra **TEST / PATTERN TEST** y reproduce su ritmo sin guardar una
    detección en el dashboard. **Test vibration** sigue probando KNOCK: dos pulsos
    cortos. Detener la escucha antes de probar; no hace falta calibrar para esto.
 5. Mantener el iPhone vertical en un soporte, con micrófonos libres y la app abierta.
-6. Tocar **Listen & calibrate** y permitir micrófono. El mismo botón inicia la
-   escucha y calibra al arrancar: mantener una fuente continua al frente durante
-   unos segundos. **Recalibrate front** permite repetirlo si se mueve el soporte.
+6. Tocar **Start listening** y permitir micrófono. El reconocimiento empieza sin
+   exigir calibración. Para intentar ubicar sonidos, tocar **Calibrate front** y
+   mantener una fuente continua al frente unos segundos. Durante ese intento se
+   pausa el reconocimiento. **Recalibrate front** repite la referencia si se mueve
+   el soporte; un fallo no impide seguir reconociendo categorías.
 7. Probar sonidos desde izquierda, frente y derecha; confirmar evento, ángulo y
    vibración. La precisión física y los umbrales deben medirse en el aparato.
 
@@ -46,7 +48,9 @@ hay dirección válida. El arco e ícono alrededor del teléfono quedan como apo
 Sin medición válida aparece **DIRECTION UNAVAILABLE**, sin inventar una flecha. Una alerta usa su propio ángulo; entre alertas se muestra
 la dirección dominante reciente con un ícono genérico. Una alerta incierta no
 toma prestado otro ángulo. Los datos vencidos se retiran; **Latest alert** es
-historial, no una ubicación en vivo.
+historial, no una ubicación en vivo. La última detección queda como **RECENT SOUND**,
+con tiempo relativo y estado de envío, incluso al detenerse o recalibrar. No hereda
+la dirección de un sonido posterior y se borra al iniciar una nueva escucha.
 
 ## Reconocimiento local
 
@@ -86,6 +90,8 @@ habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
   o cambios de dirección no producen una referencia. El umbral sigue en 0.60.
 - La señal genérica en vivo usa 300 ms; cada alerta clasificada sigue usando
   su propia ventana exacta de un segundo. No se intercambian sus ángulos.
+- Solo se elige una categoría por ventana, con prioridad y umbrales. No es
+  separación de varias fuentes ni reconocimiento garantizado de cualquier sonido.
 - La vibración identifica el tipo de sonido con un ritmo aprendido. Un único motor
   no vibra físicamente de un lado u otro; la dirección aparece en pantalla.
 - El firmware nuevo permite apagar SPEECH manteniendo la home o BOOT un segundo.
@@ -106,6 +112,7 @@ habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
 | `SpatialPCM.swift` | Lectura PCM preservando W,Y,Z,X |
 | `SpatialDirection.swift` | Ángulo, calidad y calibración |
 | `SoundEvents.swift` | Mapeo Apple → eventos, prioridad y ventanas alineadas |
+| `SoundIdentity.swift` | Catálogo visual único: nombre, significado, símbolo y colores |
 | `SoundHaptics.swift` | Diez ritmos por tipo, guía y contrato con firmware |
 | `WristbandBluetooth.swift` | Servicio BLE existente, conexión, frescura y mensajes |
 | `ListenerModel.swift` | Permisos, estados, parada, prueba de vibración y envío |

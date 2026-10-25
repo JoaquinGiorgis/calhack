@@ -1,0 +1,6187 @@
+{
+  "classifier" : "Apple SoundAnalysis SNClassifierIdentifier.version1",
+  "createdAt" : "2026-10-25T11:54:05Z",
+  "datasetCommit" : "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+  "knownClassifications" : 303,
+  "limitations" : [
+    "macOS file inference, not the iPhone model\/microphone\/FOA path",
+    "14 deterministic five-second public clips, not a representative accuracy or false-positive benchmark",
+    "No negative-class set; four alert categories absent from ESC-50",
+    "No microphone, BLE, live TTL, acoustic playback, source localization, or human tactile testing",
+    "Possible model training overlap with public ESC-50\/Freesound is unknown"
+  ],
+  "method" : "SNAudioFileAnalyzer; 1-second windows, overlap 0.5; unchanged production SoundEventSelector copied beside this harness; fresh selector for each clip; mono RMS gate matches production; no gain normalization or threshold tuning.",
+  "missingClassifications" : [
+
+  ],
+  "operatingSystem" : "Version 26.5.1 (Build 25F80)",
+  "results" : [
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.05858399998396635,
+      "categoryPeakScores" : {
+        "ALARM" : 0.026950081810355186,
+        "BABY" : 0.002407389460131526,
+        "CAR_HORN" : 0.27818042039871216,
+        "DOG" : 0.0113400649279356,
+        "DOORBELL" : 0.007062130142003298,
+        "GLASS" : 0.9846101999282837,
+        "KNOCK" : 0.08065555989742279,
+        "PHONE" : 0.03068794123828411,
+        "SHOUT" : 0.006159237585961819,
+        "SPEECH" : 0.021073708310723305
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "glass_breaking",
+        "expected_event" : "GLASS",
+        "filename" : "1-20133-A-39.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-20133-A-39.wav",
+        "sha256" : "db6946133c37fbd4513fe932dbb71e0b077bf7d240beaed339eb6c88e48c903b",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-20133-A-39.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "glass_breaking",
+      "expectedPeakScore" : 0.9846101999282837,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "GLASS"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.009483706206083298,
+            "BABY" : 0.00039224777719937265,
+            "CAR_HORN" : 0.10172925144433975,
+            "DOG" : 0.0019465847872197628,
+            "DOORBELL" : 0.0011346937390044332,
+            "GLASS" : 0.14313676953315735,
+            "KNOCK" : 0.005664547439664602,
+            "PHONE" : 0.005231086630374193,
+            "SHOUT" : 0.006159237585961819,
+            "SPEECH" : 0.021073708310723305
+          },
+          "end" : 1,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.14313676953315735,
+          "rms" : 0.3356789099221916,
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.8000754117965698,
+              "identifier" : "engine_starting"
+            },
+            {
+              "confidence" : 0.7941095232963562,
+              "identifier" : "engine"
+            },
+            {
+              "confidence" : 0.7170336246490479,
+              "identifier" : "motorcycle"
+            },
+            {
+              "confidence" : 0.39519834518432617,
+              "identifier" : "engine_accelerating_revving"
+            },
+            {
+              "confidence" : 0.2927611768245697,
+              "identifier" : "engine_idling"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "GLASS"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0020842310041189194,
+            "BABY" : 8.707681263331324e-05,
+            "CAR_HORN" : 0.27818042039871216,
+            "DOG" : 0.000624787004198879,
+            "DOORBELL" : 0.0014597511617466807,
+            "GLASS" : 0.9846101999282837,
+            "KNOCK" : 0.0007638053502887487,
+            "PHONE" : 0.001810804707929492,
+            "SHOUT" : 0.000720370386261493,
+            "SPEECH" : 0.00456529064103961
+          },
+          "end" : 1.5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.9846101999282837,
+          "rms" : 0.26314040500190455,
+          "selectedEvent" : "GLASS",
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9846101999282837,
+              "identifier" : "glass_breaking"
+            },
+            {
+              "confidence" : 0.5811166167259216,
+              "identifier" : "engine"
+            },
+            {
+              "confidence" : 0.3930567502975464,
+              "identifier" : "motorcycle"
+            },
+            {
+              "confidence" : 0.3704077899456024,
+              "identifier" : "glass_clink"
+            },
+            {
+              "confidence" : 0.3240600824356079,
+              "identifier" : "engine_starting"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.026950081810355186,
+            "BABY" : 0.00018307377467863262,
+            "CAR_HORN" : 0.17774513363838196,
+            "DOG" : 0.0017311193514615297,
+            "DOORBELL" : 0.0035577386151999235,
+            "GLASS" : 0.026282047852873802,
+            "KNOCK" : 0.014767581596970558,
+            "PHONE" : 0.010924254544079304,
+            "SHOUT" : 0.002198061440140009,
+            "SPEECH" : 0.006724345963448286
+          },
+          "end" : 2,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.026282047852873802,
+          "rms" : 0.08531791988295422,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.7156676054000854,
+              "identifier" : "coin_dropping"
+            },
+            {
+              "confidence" : 0.4636104106903076,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.2733614444732666,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.17774513363838196,
+              "identifier" : "air_horn"
+            },
+            {
+              "confidence" : 0.17297719419002533,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.004307372961193323,
+            "BABY" : 0.0001313682005275041,
+            "CAR_HORN" : 0.17778512835502625,
+            "DOG" : 0.0024761257227510214,
+            "DOORBELL" : 0.001120193861424923,
+            "GLASS" : 0.002241164678707719,
+            "KNOCK" : 0.045899808406829834,
+            "PHONE" : 0.0022331252694129944,
+            "SHOUT" : 0.0012317877262830734,
+            "SPEECH" : 0.0026911126915365458
+          },
+          "end" : 2.5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.002241164678707719,
+          "rms" : 0.17088604743160551,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.4544490873813629,
+              "identifier" : "tearing"
+            },
+            {
+              "confidence" : 0.30207106471061707,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.28702476620674133,
+              "identifier" : "firecracker"
+            },
+            {
+              "confidence" : 0.25749972462654114,
+              "identifier" : "zipper"
+            },
+            {
+              "confidence" : 0.25568702816963196,
+              "identifier" : "door"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.010509828105568886,
+            "BABY" : 0.00021900958381593227,
+            "CAR_HORN" : 0.15888987481594086,
+            "DOG" : 0.001001888420432806,
+            "DOORBELL" : 0.000634694704785943,
+            "GLASS" : 0.00313230836763978,
+            "KNOCK" : 0.009400122798979282,
+            "PHONE" : 0.006587187293916941,
+            "SHOUT" : 0.0022934514563530684,
+            "SPEECH" : 0.006006997544318438
+          },
+          "end" : 3,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.00313230836763978,
+          "rms" : 0.17122099559575252,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.4994465112686157,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.18404538929462433,
+              "identifier" : "gunshot_gunfire"
+            },
+            {
+              "confidence" : 0.15888987481594086,
+              "identifier" : "air_horn"
+            },
+            {
+              "confidence" : 0.15742404758930206,
+              "identifier" : "percussion"
+            },
+            {
+              "confidence" : 0.12434519082307816,
+              "identifier" : "firecracker"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.00517883338034153,
+            "BABY" : 0.002407389460131526,
+            "CAR_HORN" : 0.034174539148807526,
+            "DOG" : 0.005365219432860613,
+            "DOORBELL" : 0.007062130142003298,
+            "GLASS" : 0.004593600053340197,
+            "KNOCK" : 0.08065555989742279,
+            "PHONE" : 0.00539629440754652,
+            "SHOUT" : 0.0012799801770597696,
+            "SPEECH" : 0.003601579926908016
+          },
+          "end" : 3.5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.004593600053340197,
+          "rms" : 0.016770967349410398,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.4409431517124176,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.33765897154808044,
+              "identifier" : "door_sliding"
+            },
+            {
+              "confidence" : 0.322038471698761,
+              "identifier" : "whoosh_swoosh_swish"
+            },
+            {
+              "confidence" : 0.23324167728424072,
+              "identifier" : "drawer_open_close"
+            },
+            {
+              "confidence" : 0.22947396337985992,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.005410419777035713,
+            "BABY" : 0.0010477113537490368,
+            "CAR_HORN" : 0.024472834542393684,
+            "DOG" : 0.0113400649279356,
+            "DOORBELL" : 0.0030390487518161535,
+            "GLASS" : 0.014370436780154705,
+            "KNOCK" : 0.014958188869059086,
+            "PHONE" : 0.03068794123828411,
+            "SHOUT" : 0.001335118431597948,
+            "SPEECH" : 0.013374118134379387
+          },
+          "end" : 4,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.014370436780154705,
+          "rms" : 0.008318169497088341,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.43994107842445374,
+              "identifier" : "whoosh_swoosh_swish"
+            },
+            {
+              "confidence" : 0.35571905970573425,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.16481266915798187,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.13906705379486084,
+              "identifier" : "synthesizer"
+            },
+            {
+              "confidence" : 0.13275748491287231,
+              "identifier" : "writing"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4.5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.002585821319371462,
+          "rms" : 0,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.002585821319371462,
+          "rms" : 0,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.0448738333361689,
+      "categoryPeakScores" : {
+        "ALARM" : 0.0254280436784029,
+        "BABY" : 0.0016292870277538896,
+        "CAR_HORN" : 0.10937479883432388,
+        "DOG" : 0.011244889348745346,
+        "DOORBELL" : 0.003850941313430667,
+        "GLASS" : 1,
+        "KNOCK" : 0.029143989086151123,
+        "PHONE" : 0.04685310274362564,
+        "SHOUT" : 0.004818669054657221,
+        "SPEECH" : 0.024013863876461983
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "glass_breaking",
+        "expected_event" : "GLASS",
+        "filename" : "1-84536-A-39.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-84536-A-39.wav",
+        "sha256" : "79efba4c0c54acadc88783e83b428fc9c430db94515b25339a6b5598e2ade0c0",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-84536-A-39.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "glass_breaking",
+      "expectedPeakScore" : 1,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "GLASS"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.016515128314495087,
+            "BABY" : 0.000137385941343382,
+            "CAR_HORN" : 0.10937479883432388,
+            "DOG" : 0.0007053033914417028,
+            "DOORBELL" : 0.0034075297880917788,
+            "GLASS" : 0.002645759144797921,
+            "KNOCK" : 0.029143989086151123,
+            "PHONE" : 0.003058731323108077,
+            "SHOUT" : 0.0025040742475539446,
+            "SPEECH" : 0.005666081327944994
+          },
+          "end" : 1,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.002645759144797921,
+          "rms" : 0.23378682406913548,
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.538098931312561,
+              "identifier" : "drill"
+            },
+            {
+              "confidence" : 0.2977902889251709,
+              "identifier" : "power_tool"
+            },
+            {
+              "confidence" : 0.2538999617099762,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.25284019112586975,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.11307291686534882,
+              "identifier" : "clock"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "GLASS"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0254280436784029,
+            "BABY" : 1.474838973081205e-05,
+            "CAR_HORN" : 0.001233909628354013,
+            "DOG" : 3.2646115869283676e-05,
+            "DOORBELL" : 9.693628817331046e-05,
+            "GLASS" : 1,
+            "KNOCK" : 1.661858186707832e-05,
+            "PHONE" : 3.2421892683487386e-05,
+            "SHOUT" : 0.00033076360705308616,
+            "SPEECH" : 0.024013863876461983
+          },
+          "end" : 1.5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 1,
+          "rms" : 0.28903602552441976,
+          "selectedEvent" : "GLASS",
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 1,
+              "identifier" : "glass_breaking"
+            },
+            {
+              "confidence" : 0.945509672164917,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.46051648259162903,
+              "identifier" : "plucked_string_instrument"
+            },
+            {
+              "confidence" : 0.44149190187454224,
+              "identifier" : "brass_instrument"
+            },
+            {
+              "confidence" : 0.36105209589004517,
+              "identifier" : "wind_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "GLASS"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.00311826029792428,
+            "BABY" : 0.00025614706100896,
+            "CAR_HORN" : 0.009858356788754463,
+            "DOG" : 0.0003555399307515472,
+            "DOORBELL" : 0.0010526467813178897,
+            "GLASS" : 0.9979339838027954,
+            "KNOCK" : 0.0008349024574272335,
+            "PHONE" : 9.201774810208008e-05,
+            "SHOUT" : 0.0005241784965619445,
+            "SPEECH" : 0.013847359456121922
+          },
+          "end" : 2,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.9979339838027954,
+          "rms" : 0.17278373760623392,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.9979339838027954,
+              "identifier" : "glass_breaking"
+            },
+            {
+              "confidence" : 0.7360674738883972,
+              "identifier" : "glass_clink"
+            },
+            {
+              "confidence" : 0.6322641968727112,
+              "identifier" : "crushing"
+            },
+            {
+              "confidence" : 0.2647267282009125,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.13739074766635895,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.007226876448839903,
+            "BABY" : 0.00015978830924723297,
+            "CAR_HORN" : 0.03680020943284035,
+            "DOG" : 0.00041373062413185835,
+            "DOORBELL" : 0.0004564003029372543,
+            "GLASS" : 0.005057183559983969,
+            "KNOCK" : 0.005064717959612608,
+            "PHONE" : 0.0003548273234628141,
+            "SHOUT" : 0.0022118883207440376,
+            "SPEECH" : 0.013528755865991116
+          },
+          "end" : 2.5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.005057183559983969,
+          "rms" : 0.031174771669725078,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.6589385867118835,
+              "identifier" : "coin_dropping"
+            },
+            {
+              "confidence" : 0.24444395303726196,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.10597316175699234,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.09313178062438965,
+              "identifier" : "zipper"
+            },
+            {
+              "confidence" : 0.0800745040178299,
+              "identifier" : "door"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.013501959852874279,
+            "BABY" : 0.0016292870277538896,
+            "CAR_HORN" : 0.029615676030516624,
+            "DOG" : 0.011244889348745346,
+            "DOORBELL" : 0.003850941313430667,
+            "GLASS" : 0.004310159012675285,
+            "KNOCK" : 0.014514495618641376,
+            "PHONE" : 0.04685310274362564,
+            "SHOUT" : 0.004818669054657221,
+            "SPEECH" : 0.00916119571775198
+          },
+          "end" : 3,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.004310159012675285,
+          "rms" : 0.0044190342858420675,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.5183902382850647,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.3517860174179077,
+              "identifier" : "water"
+            },
+            {
+              "confidence" : 0.3270183801651001,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.27884697914123535,
+              "identifier" : "synthesizer"
+            },
+            {
+              "confidence" : 0.13920286297798157,
+              "identifier" : "whoosh_swoosh_swish"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.008055397309362888,
+            "BABY" : 0.00032893873867578804,
+            "CAR_HORN" : 0.019822850823402405,
+            "DOG" : 0.004287833347916603,
+            "DOORBELL" : 0.00073729403084144,
+            "GLASS" : 0.011727899312973022,
+            "KNOCK" : 0.0197110828012228,
+            "PHONE" : 0.003180854953825474,
+            "SHOUT" : 0.0021318518556654453,
+            "SPEECH" : 0.005285235587507486
+          },
+          "end" : 3.5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.011727899312973022,
+          "rms" : 0.002880340365801129,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.32649466395378113,
+              "identifier" : "whoosh_swoosh_swish"
+            },
+            {
+              "confidence" : 0.19925262033939362,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.09988245368003845,
+              "identifier" : "writing"
+            },
+            {
+              "confidence" : 0.07738307863473892,
+              "identifier" : "water"
+            },
+            {
+              "confidence" : 0.07709163427352905,
+              "identifier" : "door"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.002585821319371462,
+          "rms" : 0,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4.5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.002585821319371462,
+          "rms" : 0,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 5,
+          "expectedAlias" : "glass_breaking",
+          "expectedScore" : 0.002585821319371462,
+          "rms" : 0,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.04113145833252929,
+      "categoryPeakScores" : {
+        "ALARM" : 0.0805635005235672,
+        "BABY" : 0.00134822737891227,
+        "CAR_HORN" : 0.5266722440719604,
+        "DOG" : 0.01008084136992693,
+        "DOORBELL" : 0.02347690239548683,
+        "GLASS" : 0.006052049808204174,
+        "KNOCK" : 0.011823401786386967,
+        "PHONE" : 0.04654736816883087,
+        "SHOUT" : 0.005807926412671804,
+        "SPEECH" : 0.010575671680271626
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "car_horn",
+        "expected_event" : "CAR_HORN",
+        "filename" : "1-17124-A-43.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-17124-A-43.wav",
+        "sha256" : "9d5e01e07a386ee36c2e73f40817d132a54d91c936eccc01414280abca5a4209",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-17124-A-43.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "car_horn",
+      "expectedPeakScore" : 0.5266722440719604,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0805635005235672,
+            "BABY" : 0.000606641813647002,
+            "CAR_HORN" : 0.5266722440719604,
+            "DOG" : 0.007596956565976143,
+            "DOORBELL" : 0.02347690239548683,
+            "GLASS" : 0.0009144054492935538,
+            "KNOCK" : 0.00829846691340208,
+            "PHONE" : 0.04654736816883087,
+            "SHOUT" : 0.005807926412671804,
+            "SPEECH" : 0.005041131749749184
+          },
+          "end" : 1,
+          "expectedAlias" : "car_horn",
+          "expectedScore" : 0.5266722440719604,
+          "rms" : 0.10506054812840182,
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.6724085211753845,
+              "identifier" : "duck_quack"
+            },
+            {
+              "confidence" : 0.6171131730079651,
+              "identifier" : "fowl"
+            },
+            {
+              "confidence" : 0.5266722440719604,
+              "identifier" : "car_horn"
+            },
+            {
+              "confidence" : 0.3477638065814972,
+              "identifier" : "air_horn"
+            },
+            {
+              "confidence" : 0.3026570975780487,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.009455591440200806,
+            "BABY" : 0.00134822737891227,
+            "CAR_HORN" : 0.02720475010573864,
+            "DOG" : 0.01008084136992693,
+            "DOORBELL" : 0.004633917473256588,
+            "GLASS" : 0.006052049808204174,
+            "KNOCK" : 0.011823401786386967,
+            "PHONE" : 0.03352077305316925,
+            "SHOUT" : 0.002201469149440527,
+            "SPEECH" : 0.010575671680271626
+          },
+          "end" : 1.5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.02720475010573864,
+          "rms" : 0.01661736070512131,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.24966785311698914,
+              "identifier" : "whoosh_swoosh_swish"
+            },
+            {
+              "confidence" : 0.21439357101917267,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14052554965019226,
+              "identifier" : "insect"
+            },
+            {
+              "confidence" : 0.12716804444789886,
+              "identifier" : "mosquito_buzz"
+            },
+            {
+              "confidence" : 0.10077016055583954,
+              "identifier" : "writing"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 2,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 2.5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 3,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 3.5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4.5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.041028333333088085,
+      "categoryPeakScores" : {
+        "ALARM" : 0.04164550080895424,
+        "BABY" : 0.0003720711392816156,
+        "CAR_HORN" : 0.9911682605743408,
+        "DOG" : 0.004356675781309605,
+        "DOORBELL" : 0.013653291389346123,
+        "GLASS" : 0.013598066754639149,
+        "KNOCK" : 0.029421962797641754,
+        "PHONE" : 0.1295737475156784,
+        "SHOUT" : 0.002604943932965398,
+        "SPEECH" : 0.004254312254488468
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "car_horn",
+        "expected_event" : "CAR_HORN",
+        "filename" : "1-19026-A-43.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-19026-A-43.wav",
+        "sha256" : "67bb2fe5cf138930eb6a6a84bedeb7284093076738cd47ef73cc8b3b8393ff40",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-19026-A-43.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "air_horn",
+      "expectedPeakScore" : 0.9911682605743408,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "CAR_HORN"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+            "CAR_HORN"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.02853975258767605,
+            "BABY" : 0.00010775056580314413,
+            "CAR_HORN" : 0.9911682605743408,
+            "DOG" : 0.0030143074691295624,
+            "DOORBELL" : 0.0064048925414681435,
+            "GLASS" : 0.0005047067534178495,
+            "KNOCK" : 0.001266005914658308,
+            "PHONE" : 0.1295737475156784,
+            "SHOUT" : 0.0006485496996901929,
+            "SPEECH" : 0.002098606200888753
+          },
+          "end" : 1,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.9911682605743408,
+          "rms" : 0.24058870919585396,
+          "selectedEvent" : "CAR_HORN",
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.9911682605743408,
+              "identifier" : "air_horn"
+            },
+            {
+              "confidence" : 0.9886479377746582,
+              "identifier" : "car_horn"
+            },
+            {
+              "confidence" : 0.9671515822410583,
+              "identifier" : "truck"
+            },
+            {
+              "confidence" : 0.25147417187690735,
+              "identifier" : "telephone"
+            },
+            {
+              "confidence" : 0.1295737475156784,
+              "identifier" : "ringtone"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "CAR_HORN"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.04164550080895424,
+            "BABY" : 0.0002665259235072881,
+            "CAR_HORN" : 0.9220134615898132,
+            "DOG" : 0.002193047199398279,
+            "DOORBELL" : 0.013653291389346123,
+            "GLASS" : 0.0013959627831354737,
+            "KNOCK" : 0.006793334614485502,
+            "PHONE" : 0.028451042249798775,
+            "SHOUT" : 0.00041652764775790274,
+            "SPEECH" : 0.0012186858803033829
+          },
+          "end" : 1.5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.9220134615898132,
+          "rms" : 0.12299278659319415,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9220134615898132,
+              "identifier" : "air_horn"
+            },
+            {
+              "confidence" : 0.8675994277000427,
+              "identifier" : "car_horn"
+            },
+            {
+              "confidence" : 0.7229575514793396,
+              "identifier" : "truck"
+            },
+            {
+              "confidence" : 0.45265305042266846,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.3583567142486572,
+              "identifier" : "wind_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.003940796013921499,
+            "BABY" : 0.00026374051230959594,
+            "CAR_HORN" : 0.18877410888671875,
+            "DOG" : 0.003532364731654525,
+            "DOORBELL" : 0.009916539303958416,
+            "GLASS" : 0.0005416402709670365,
+            "KNOCK" : 0.010718388482928276,
+            "PHONE" : 0.05480546876788139,
+            "SHOUT" : 0.0008870262536220253,
+            "SPEECH" : 0.003513612784445286
+          },
+          "end" : 2,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.18877410888671875,
+          "rms" : 0.0036052039073028964,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.6617873907089233,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.4352189600467682,
+              "identifier" : "plucked_string_instrument"
+            },
+            {
+              "confidence" : 0.4348713457584381,
+              "identifier" : "zither"
+            },
+            {
+              "confidence" : 0.33411291241645813,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.29733359813690186,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.001966385403648019,
+            "BABY" : 0.0003720711392816156,
+            "CAR_HORN" : 0.022746294736862183,
+            "DOG" : 0.004356675781309605,
+            "DOORBELL" : 0.0008262780029326677,
+            "GLASS" : 0.013598066754639149,
+            "KNOCK" : 0.029421962797641754,
+            "PHONE" : 0.0022760755382478237,
+            "SHOUT" : 0.002604943932965398,
+            "SPEECH" : 0.004254312254488468
+          },
+          "end" : 2.5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.022746294736862183,
+          "rms" : 0.002482564181613247,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.34603291749954224,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.2102746069431305,
+              "identifier" : "whoosh_swoosh_swish"
+            },
+            {
+              "confidence" : 0.1237100213766098,
+              "identifier" : "wind_instrument"
+            },
+            {
+              "confidence" : 0.11632382869720459,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.10406950861215591,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 3,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 3.5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4.5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 5,
+          "expectedAlias" : "air_horn",
+          "expectedScore" : 0.009549111127853394,
+          "rms" : 0,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.0409123333520256,
+      "categoryPeakScores" : {
+        "ALARM" : 0.8203549981117249,
+        "BABY" : 0.00866173766553402,
+        "CAR_HORN" : 0.577274739742279,
+        "DOG" : 0.014644005335867405,
+        "DOORBELL" : 0.12945516407489777,
+        "GLASS" : 0.00846407562494278,
+        "KNOCK" : 0.007490851916372776,
+        "PHONE" : 0.0008365676621906459,
+        "SHOUT" : 0.017494838684797287,
+        "SPEECH" : 0.09601820260286331
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "siren",
+        "expected_event" : "ALARM",
+        "filename" : "1-31482-A-42.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-31482-A-42.wav",
+        "sha256" : "e4c640a001c2abe808389c90b90ba7084fb1922d58235e3ec95c18c4afb4ef5c",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-31482-A-42.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "police_siren",
+      "expectedPeakScore" : 0.8203549981117249,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "ALARM"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.10995393991470337,
+            "BABY" : 3.0366109058377333e-05,
+            "CAR_HORN" : 0.08583115041255951,
+            "DOG" : 0.005480179097503424,
+            "DOORBELL" : 0.0012170601403340697,
+            "GLASS" : 0.002628874499350786,
+            "KNOCK" : 0.0011087429011240602,
+            "PHONE" : 0.0003970628313254565,
+            "SHOUT" : 0.0005104286829009652,
+            "SPEECH" : 0.038877829909324646
+          },
+          "end" : 1,
+          "expectedAlias" : "siren",
+          "expectedScore" : 0.10995393991470337,
+          "rms" : 0.23822990907617508,
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.9610424041748047,
+              "identifier" : "fly_buzz"
+            },
+            {
+              "confidence" : 0.9294208884239197,
+              "identifier" : "insect"
+            },
+            {
+              "confidence" : 0.9093981385231018,
+              "identifier" : "mosquito_buzz"
+            },
+            {
+              "confidence" : 0.5675601363182068,
+              "identifier" : "bee_buzz"
+            },
+            {
+              "confidence" : 0.2721363306045532,
+              "identifier" : "emergency_vehicle"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.02214445173740387,
+            "BABY" : 0.001454463112168014,
+            "CAR_HORN" : 0.577274739742279,
+            "DOG" : 0.014644005335867405,
+            "DOORBELL" : 0.002766624791547656,
+            "GLASS" : 4.602813351084478e-05,
+            "KNOCK" : 0.0017487177392467856,
+            "PHONE" : 0.0005364433163776994,
+            "SHOUT" : 0.010018488392233849,
+            "SPEECH" : 0.07423217594623566
+          },
+          "end" : 1.5,
+          "expectedAlias" : "ambulance_siren",
+          "expectedScore" : 0.02214445173740387,
+          "rms" : 0.09078281656227352,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.686248779296875,
+              "identifier" : "train"
+            },
+            {
+              "confidence" : 0.67936110496521,
+              "identifier" : "rail_transport"
+            },
+            {
+              "confidence" : 0.5938223004341125,
+              "identifier" : "train_horn"
+            },
+            {
+              "confidence" : 0.577274739742279,
+              "identifier" : "car_horn"
+            },
+            {
+              "confidence" : 0.3981049954891205,
+              "identifier" : "train_whistle"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.19576896727085114,
+            "BABY" : 0.00866173766553402,
+            "CAR_HORN" : 0.0065530333667993546,
+            "DOG" : 0.00522815715521574,
+            "DOORBELL" : 0.005105446558445692,
+            "GLASS" : 0.00846407562494278,
+            "KNOCK" : 0.005585166625678539,
+            "PHONE" : 0.0003889129147864878,
+            "SHOUT" : 0.017494838684797287,
+            "SPEECH" : 0.060283541679382324
+          },
+          "end" : 2,
+          "expectedAlias" : "police_siren",
+          "expectedScore" : 0.19576896727085114,
+          "rms" : 0.28676512562608814,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.8954710960388184,
+              "identifier" : "saxophone"
+            },
+            {
+              "confidence" : 0.7824090123176575,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.6686482429504395,
+              "identifier" : "wind_instrument"
+            },
+            {
+              "confidence" : 0.6290273070335388,
+              "identifier" : "brass_instrument"
+            },
+            {
+              "confidence" : 0.5567227602005005,
+              "identifier" : "theremin"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.17406436800956726,
+            "BABY" : 0.0006557807209901512,
+            "CAR_HORN" : 0.06682941317558289,
+            "DOG" : 0.002941584214568138,
+            "DOORBELL" : 0.0028768619522452354,
+            "GLASS" : 0.00106960313860327,
+            "KNOCK" : 0.0007278020493686199,
+            "PHONE" : 0.0006487036007456481,
+            "SHOUT" : 0.0008951463387347758,
+            "SPEECH" : 0.025747505947947502
+          },
+          "end" : 2.5,
+          "expectedAlias" : "siren",
+          "expectedScore" : 0.17406436800956726,
+          "rms" : 0.2831658580084205,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.7895818948745728,
+              "identifier" : "saxophone"
+            },
+            {
+              "confidence" : 0.6516105532646179,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.6478164196014404,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.5769450068473816,
+              "identifier" : "electric_guitar"
+            },
+            {
+              "confidence" : 0.543231725692749,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.019993064925074577,
+            "BABY" : 0.0007321400917135179,
+            "CAR_HORN" : 0.008871791884303093,
+            "DOG" : 0.0024103536270558834,
+            "DOORBELL" : 0.0033908593468368053,
+            "GLASS" : 0.003754125675186515,
+            "KNOCK" : 0.0032461551018059254,
+            "PHONE" : 0.00022059983166400343,
+            "SHOUT" : 0.000817523046862334,
+            "SPEECH" : 0.09601820260286331
+          },
+          "end" : 3,
+          "expectedAlias" : "siren",
+          "expectedScore" : 0.019993064925074577,
+          "rms" : 0.1815396653427757,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.4297734498977661,
+              "identifier" : "saxophone"
+            },
+            {
+              "confidence" : 0.4178142547607422,
+              "identifier" : "sneeze"
+            },
+            {
+              "confidence" : 0.4172460436820984,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.3096207082271576,
+              "identifier" : "wind_instrument"
+            },
+            {
+              "confidence" : 0.21248912811279297,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.5362378358840942,
+            "BABY" : 0.0007478861371055245,
+            "CAR_HORN" : 0.008586633950471878,
+            "DOG" : 0.006192805245518684,
+            "DOORBELL" : 0.0006445542094297707,
+            "GLASS" : 0.0029986011795699596,
+            "KNOCK" : 0.0037158539053052664,
+            "PHONE" : 7.163284317357466e-05,
+            "SHOUT" : 0.0012215350288897753,
+            "SPEECH" : 0.07042472064495087
+          },
+          "end" : 3.5,
+          "expectedAlias" : "siren",
+          "expectedScore" : 0.5362378358840942,
+          "rms" : 0.21679161235362582,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.8428683876991272,
+              "identifier" : "emergency_vehicle"
+            },
+            {
+              "confidence" : 0.6234287023544312,
+              "identifier" : "saxophone"
+            },
+            {
+              "confidence" : 0.5384889245033264,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.5362378358840942,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.46809786558151245,
+              "identifier" : "police_siren"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.5516389608383179,
+            "BABY" : 0.00037931243423372507,
+            "CAR_HORN" : 0.006821977440267801,
+            "DOG" : 0.0018491512164473534,
+            "DOORBELL" : 0.004047118127346039,
+            "GLASS" : 0.0001760343584464863,
+            "KNOCK" : 0.0013350675581023097,
+            "PHONE" : 5.2439110731938854e-05,
+            "SHOUT" : 0.0023410154972225428,
+            "SPEECH" : 0.061934057623147964
+          },
+          "end" : 4,
+          "expectedAlias" : "police_siren",
+          "expectedScore" : 0.5516389608383179,
+          "rms" : 0.16523389074947092,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.7859756946563721,
+              "identifier" : "emergency_vehicle"
+            },
+            {
+              "confidence" : 0.5516389608383179,
+              "identifier" : "police_siren"
+            },
+            {
+              "confidence" : 0.5477844476699829,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.38443875312805176,
+              "identifier" : "theremin"
+            },
+            {
+              "confidence" : 0.322147399187088,
+              "identifier" : "door"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8025038838386536,
+            "BABY" : 0.0007696019602008164,
+            "CAR_HORN" : 0.009086964651942253,
+            "DOG" : 0.0028661307878792286,
+            "DOORBELL" : 0.12945516407489777,
+            "GLASS" : 0.004025512840598822,
+            "KNOCK" : 0.007490851916372776,
+            "PHONE" : 0.0008365676621906459,
+            "SHOUT" : 0.004741091746836901,
+            "SPEECH" : 0.05327805131673813
+          },
+          "end" : 4.5,
+          "expectedAlias" : "police_siren",
+          "expectedScore" : 0.8025038838386536,
+          "rms" : 0.215663429211508,
+          "selectedEvent" : "ALARM",
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9629912972450256,
+              "identifier" : "emergency_vehicle"
+            },
+            {
+              "confidence" : 0.8025038838386536,
+              "identifier" : "police_siren"
+            },
+            {
+              "confidence" : 0.7519844174385071,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.7402122616767883,
+              "identifier" : "ambulance_siren"
+            },
+            {
+              "confidence" : 0.6204995512962341,
+              "identifier" : "door"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8203549981117249,
+            "BABY" : 0.00048520672135055065,
+            "CAR_HORN" : 0.06395459920167923,
+            "DOG" : 0.003836842253804207,
+            "DOORBELL" : 0.0029036037158221006,
+            "GLASS" : 0.0008311899146065116,
+            "KNOCK" : 0.0008570104837417603,
+            "PHONE" : 0.00019354304822627455,
+            "SHOUT" : 0.00657991785556078,
+            "SPEECH" : 0.07310636341571808
+          },
+          "end" : 5,
+          "expectedAlias" : "police_siren",
+          "expectedScore" : 0.8203549981117249,
+          "rms" : 0.2961007112392757,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.9740551710128784,
+              "identifier" : "emergency_vehicle"
+            },
+            {
+              "confidence" : 0.8203549981117249,
+              "identifier" : "police_siren"
+            },
+            {
+              "confidence" : 0.7504082322120667,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.7450456023216248,
+              "identifier" : "fire_engine_siren"
+            },
+            {
+              "confidence" : 0.43016356229782104,
+              "identifier" : "ambulance_siren"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.043163666676264256,
+      "categoryPeakScores" : {
+        "ALARM" : 0.9954838156700134,
+        "BABY" : 0.0006361790583468974,
+        "CAR_HORN" : 0.5693103075027466,
+        "DOG" : 0.014451825059950352,
+        "DOORBELL" : 0.04176577925682068,
+        "GLASS" : 0.0021486710757017136,
+        "KNOCK" : 0.012358685955405235,
+        "PHONE" : 0.005800256971269846,
+        "SHOUT" : 0.026762817054986954,
+        "SPEECH" : 0.01979006454348564
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "siren",
+        "expected_event" : "ALARM",
+        "filename" : "1-54084-A-42.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-54084-A-42.wav",
+        "sha256" : "b0ce84a3c012d144a1f97394cab2830512078d660e809eecb8abc4fa8ad0a9e1",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-54084-A-42.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "civil_defense_siren",
+      "expectedPeakScore" : 0.9954838156700134,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "ALARM"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.9954838156700134,
+            "BABY" : 0.0003783045394811779,
+            "CAR_HORN" : 0.0017740745097398758,
+            "DOG" : 0.0004921720246784389,
+            "DOORBELL" : 0.010653245262801647,
+            "GLASS" : 9.826436871662736e-05,
+            "KNOCK" : 0.0024334928020834923,
+            "PHONE" : 0.0005933568463660777,
+            "SHOUT" : 0.0013760357396677136,
+            "SPEECH" : 0.011553078889846802
+          },
+          "end" : 1,
+          "expectedAlias" : "civil_defense_siren",
+          "expectedScore" : 0.9954838156700134,
+          "rms" : 0.04368333408528783,
+          "selectedEvent" : "ALARM",
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.9954838156700134,
+              "identifier" : "civil_defense_siren"
+            },
+            {
+              "confidence" : 0.9524048566818237,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.6789177060127258,
+              "identifier" : "coyote_howl"
+            },
+            {
+              "confidence" : 0.5749025940895081,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.4821884036064148,
+              "identifier" : "theremin"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.9113014936447144,
+            "BABY" : 0.00026766269002109766,
+            "CAR_HORN" : 0.019876815378665924,
+            "DOG" : 0.0015293878968805075,
+            "DOORBELL" : 0.0047033545561134815,
+            "GLASS" : 0.0003198054910171777,
+            "KNOCK" : 0.009917312301695347,
+            "PHONE" : 0.0003238181525375694,
+            "SHOUT" : 0.010972175747156143,
+            "SPEECH" : 0.01979006454348564
+          },
+          "end" : 1.5,
+          "expectedAlias" : "civil_defense_siren",
+          "expectedScore" : 0.9113014936447144,
+          "rms" : 0.05048375539556503,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9113014936447144,
+              "identifier" : "civil_defense_siren"
+            },
+            {
+              "confidence" : 0.8096081018447876,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.5532286763191223,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.38996583223342896,
+              "identifier" : "emergency_vehicle"
+            },
+            {
+              "confidence" : 0.32517632842063904,
+              "identifier" : "synthesizer"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.5209270715713501,
+            "BABY" : 0.0001174567369162105,
+            "CAR_HORN" : 0.06434750556945801,
+            "DOG" : 0.003524461295455694,
+            "DOORBELL" : 0.0020304895006120205,
+            "GLASS" : 0.00011630642256932333,
+            "KNOCK" : 0.0018813727656379342,
+            "PHONE" : 0.0002005435962928459,
+            "SHOUT" : 0.008252503350377083,
+            "SPEECH" : 0.018368016928434372
+          },
+          "end" : 2,
+          "expectedAlias" : "civil_defense_siren",
+          "expectedScore" : 0.5209270715713501,
+          "rms" : 0.04949924858392343,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.5373764038085938,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.5209270715713501,
+              "identifier" : "civil_defense_siren"
+            },
+            {
+              "confidence" : 0.5174248218536377,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.5155375003814697,
+              "identifier" : "brass_instrument"
+            },
+            {
+              "confidence" : 0.4571378827095032,
+              "identifier" : "emergency_vehicle"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.39002716541290283,
+            "BABY" : 0.00023021198285277933,
+            "CAR_HORN" : 0.013364499434828758,
+            "DOG" : 0.008313946425914764,
+            "DOORBELL" : 0.0015638034092262387,
+            "GLASS" : 0.00023917756334412843,
+            "KNOCK" : 0.004368108231574297,
+            "PHONE" : 0.00017445180856157094,
+            "SHOUT" : 0.026762817054986954,
+            "SPEECH" : 0.0034867709036916494
+          },
+          "end" : 2.5,
+          "expectedAlias" : "civil_defense_siren",
+          "expectedScore" : 0.39002716541290283,
+          "rms" : 0.07586489348133257,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9362212419509888,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.9254612326622009,
+              "identifier" : "brass_instrument"
+            },
+            {
+              "confidence" : 0.7511029839515686,
+              "identifier" : "trumpet"
+            },
+            {
+              "confidence" : 0.7222734093666077,
+              "identifier" : "trombone"
+            },
+            {
+              "confidence" : 0.6116740703582764,
+              "identifier" : "french_horn"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.19321629405021667,
+            "BABY" : 0.0002492819621693343,
+            "CAR_HORN" : 0.11298548430204391,
+            "DOG" : 0.007094946689903736,
+            "DOORBELL" : 0.003005831502377987,
+            "GLASS" : 0.0021486710757017136,
+            "KNOCK" : 0.011933584697544575,
+            "PHONE" : 0.0004804717027582228,
+            "SHOUT" : 0.01069672405719757,
+            "SPEECH" : 0.0028347254265099764
+          },
+          "end" : 3,
+          "expectedAlias" : "siren",
+          "expectedScore" : 0.19321629405021667,
+          "rms" : 0.10151022910412848,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.9576292037963867,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.8888942003250122,
+              "identifier" : "brass_instrument"
+            },
+            {
+              "confidence" : 0.7829858660697937,
+              "identifier" : "wind_instrument"
+            },
+            {
+              "confidence" : 0.7535693049430847,
+              "identifier" : "trumpet"
+            },
+            {
+              "confidence" : 0.7039826512336731,
+              "identifier" : "trombone"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.34985843300819397,
+            "BABY" : 0.00027649328694678843,
+            "CAR_HORN" : 0.5693103075027466,
+            "DOG" : 0.014451825059950352,
+            "DOORBELL" : 0.04176577925682068,
+            "GLASS" : 0.001164663233794272,
+            "KNOCK" : 0.006283759605139494,
+            "PHONE" : 0.005800256971269846,
+            "SHOUT" : 0.001761932740919292,
+            "SPEECH" : 0.0017225786577910185
+          },
+          "end" : 3.5,
+          "expectedAlias" : "civil_defense_siren",
+          "expectedScore" : 0.34985843300819397,
+          "rms" : 0.10564416338450522,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.6086100339889526,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.5693103075027466,
+              "identifier" : "air_horn"
+            },
+            {
+              "confidence" : 0.4964098334312439,
+              "identifier" : "brass_instrument"
+            },
+            {
+              "confidence" : 0.4943044185638428,
+              "identifier" : "car_horn"
+            },
+            {
+              "confidence" : 0.42386358976364136,
+              "identifier" : "trumpet"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8090369701385498,
+            "BABY" : 4.781925963470712e-05,
+            "CAR_HORN" : 0.09863173961639404,
+            "DOG" : 0.004847240634262562,
+            "DOORBELL" : 0.03451002016663551,
+            "GLASS" : 0.00013928288535680622,
+            "KNOCK" : 0.012358685955405235,
+            "PHONE" : 0.0014394945465028286,
+            "SHOUT" : 0.0016966016264632344,
+            "SPEECH" : 0.002990628592669964
+          },
+          "end" : 4,
+          "expectedAlias" : "civil_defense_siren",
+          "expectedScore" : 0.8090369701385498,
+          "rms" : 0.10585650454949565,
+          "selectedEvent" : "ALARM",
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.8090369701385498,
+              "identifier" : "civil_defense_siren"
+            },
+            {
+              "confidence" : 0.8023642301559448,
+              "identifier" : "synthesizer"
+            },
+            {
+              "confidence" : 0.7845813035964966,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.7738530039787292,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.6546016931533813,
+              "identifier" : "siren"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.4230663776397705,
+            "BABY" : 0.00020882034732494503,
+            "CAR_HORN" : 0.024797456339001656,
+            "DOG" : 0.0009027618216350675,
+            "DOORBELL" : 0.007057116366922855,
+            "GLASS" : 0.0002681129553820938,
+            "KNOCK" : 0.0026762671768665314,
+            "PHONE" : 0.0007420469773933291,
+            "SHOUT" : 0.0056905620731413364,
+            "SPEECH" : 0.009192417375743389
+          },
+          "end" : 4.5,
+          "expectedAlias" : "civil_defense_siren",
+          "expectedScore" : 0.4230663776397705,
+          "rms" : 0.10799915756320708,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.8902255296707153,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.8461862206459045,
+              "identifier" : "synthesizer"
+            },
+            {
+              "confidence" : 0.844713032245636,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.5449144840240479,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.5109147429466248,
+              "identifier" : "theremin"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.7094826698303223,
+            "BABY" : 0.0006361790583468974,
+            "CAR_HORN" : 0.1486044079065323,
+            "DOG" : 0.0014584416057914495,
+            "DOORBELL" : 0.003523638006299734,
+            "GLASS" : 0.00020172569202259183,
+            "KNOCK" : 0.005583318416029215,
+            "PHONE" : 0.0005684317438863218,
+            "SHOUT" : 0.016034908592700958,
+            "SPEECH" : 0.009807473979890347
+          },
+          "end" : 5,
+          "expectedAlias" : "civil_defense_siren",
+          "expectedScore" : 0.7094826698303223,
+          "rms" : 0.11052165839103678,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.7094826698303223,
+              "identifier" : "civil_defense_siren"
+            },
+            {
+              "confidence" : 0.5971283316612244,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.5787881016731262,
+              "identifier" : "trombone"
+            },
+            {
+              "confidence" : 0.548950731754303,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.3917568027973175,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.04121037499862723,
+      "categoryPeakScores" : {
+        "ALARM" : 0.9305622577667236,
+        "BABY" : 0.0012897163396701217,
+        "CAR_HORN" : 0.04718611016869545,
+        "DOG" : 0.009425370953977108,
+        "DOORBELL" : 0.1356448382139206,
+        "GLASS" : 0.0021135180722922087,
+        "KNOCK" : 0.004267336800694466,
+        "PHONE" : 0.9432010054588318,
+        "SHOUT" : 0.019450390711426735,
+        "SPEECH" : 0.03679121658205986
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "clock_alarm",
+        "expected_event" : "ALARM",
+        "filename" : "1-13613-A-37.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-13613-A-37.wav",
+        "sha256" : "2e28b25e14611723cdcc0becfa36468a8d0329a0c141e4f1d894bd6bb5773f34",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-13613-A-37.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "smoke_detector",
+      "expectedPeakScore" : 0.9305622577667236,
+      "otherCategoriesAboveThreshold" : [
+        "PHONE"
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "ALARM"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.7262217402458191,
+            "BABY" : 0.00012739932572003454,
+            "CAR_HORN" : 0.02120479941368103,
+            "DOG" : 0.0013641065452247858,
+            "DOORBELL" : 0.009871370159089565,
+            "GLASS" : 0.00021433891379274428,
+            "KNOCK" : 0.0011823069071397185,
+            "PHONE" : 0.05556323751807213,
+            "SHOUT" : 0.012707131914794445,
+            "SPEECH" : 0.007814864628016949
+          },
+          "end" : 1,
+          "expectedAlias" : "smoke_detector",
+          "expectedScore" : 0.7262217402458191,
+          "rms" : 0.1119582808250813,
+          "selectedEvent" : "ALARM",
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.7262217402458191,
+              "identifier" : "smoke_detector"
+            },
+            {
+              "confidence" : 0.5839499235153198,
+              "identifier" : "beep"
+            },
+            {
+              "confidence" : 0.4903307259082794,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.34307315945625305,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.303596556186676,
+              "identifier" : "synthesizer"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.4378005564212799,
+            "BABY" : 0.0002885258581954986,
+            "CAR_HORN" : 0.04718611016869545,
+            "DOG" : 0.000819121953099966,
+            "DOORBELL" : 0.1276414841413498,
+            "GLASS" : 0.00012723810505121946,
+            "KNOCK" : 0.0025970591232180595,
+            "PHONE" : 0.009110365062952042,
+            "SHOUT" : 0.013073978014290333,
+            "SPEECH" : 0.005497806239873171
+          },
+          "end" : 1.5,
+          "expectedAlias" : "smoke_detector",
+          "expectedScore" : 0.4378005564212799,
+          "rms" : 0.11300795964043991,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.6476775407791138,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.49285149574279785,
+              "identifier" : "beep"
+            },
+            {
+              "confidence" : 0.46791669726371765,
+              "identifier" : "synthesizer"
+            },
+            {
+              "confidence" : 0.43873339891433716,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.4378005564212799,
+              "identifier" : "smoke_detector"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.916471004486084,
+            "BABY" : 0.0012897163396701217,
+            "CAR_HORN" : 0.021387552842497826,
+            "DOG" : 0.0022263149730861187,
+            "DOORBELL" : 0.0819794312119484,
+            "GLASS" : 0.0012818407267332077,
+            "KNOCK" : 0.0027860021218657494,
+            "PHONE" : 0.17551183700561523,
+            "SHOUT" : 0.010604890063405037,
+            "SPEECH" : 0.02029721811413765
+          },
+          "end" : 2,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.916471004486084,
+          "rms" : 0.12006107186313611,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.916471004486084,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.4010206162929535,
+              "identifier" : "beep"
+            },
+            {
+              "confidence" : 0.3717288076877594,
+              "identifier" : "smoke_detector"
+            },
+            {
+              "confidence" : 0.355726033449173,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.3248961865901947,
+              "identifier" : "synthesizer"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8965694308280945,
+            "BABY" : 0.0005816164193674922,
+            "CAR_HORN" : 0.02505793608725071,
+            "DOG" : 0.004205253906548023,
+            "DOORBELL" : 0.1356448382139206,
+            "GLASS" : 0.0017214465187862515,
+            "KNOCK" : 0.0013963006203994155,
+            "PHONE" : 0.4117812216281891,
+            "SHOUT" : 0.009584027342498302,
+            "SPEECH" : 0.0223994217813015
+          },
+          "end" : 2.5,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.8965694308280945,
+          "rms" : 0.13837966832852477,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.8965694308280945,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.5656632781028748,
+              "identifier" : "smoke_detector"
+            },
+            {
+              "confidence" : 0.5172445774078369,
+              "identifier" : "beep"
+            },
+            {
+              "confidence" : 0.5054897665977478,
+              "identifier" : "telephone"
+            },
+            {
+              "confidence" : 0.4117812216281891,
+              "identifier" : "telephone_bell_ringing"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.9274712204933167,
+            "BABY" : 0.0003304279234725982,
+            "CAR_HORN" : 0.01911734789609909,
+            "DOG" : 0.009425370953977108,
+            "DOORBELL" : 0.015192501246929169,
+            "GLASS" : 0.0018989832606166601,
+            "KNOCK" : 0.002738025039434433,
+            "PHONE" : 0.4903201758861542,
+            "SHOUT" : 0.019450390711426735,
+            "SPEECH" : 0.014307189732789993
+          },
+          "end" : 3,
+          "expectedAlias" : "smoke_detector",
+          "expectedScore" : 0.9274712204933167,
+          "rms" : 0.14700412792154302,
+          "selectedEvent" : "ALARM",
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.9274712204933167,
+              "identifier" : "smoke_detector"
+            },
+            {
+              "confidence" : 0.6140011548995972,
+              "identifier" : "telephone"
+            },
+            {
+              "confidence" : 0.5535010099411011,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.5183010101318359,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.490703284740448,
+              "identifier" : "beep"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.9305622577667236,
+            "BABY" : 0.0003054225817322731,
+            "CAR_HORN" : 0.018575279042124748,
+            "DOG" : 0.0023502123076468706,
+            "DOORBELL" : 0.055612962692976,
+            "GLASS" : 0.000613408163189888,
+            "KNOCK" : 0.002499460708349943,
+            "PHONE" : 0.08525104820728302,
+            "SHOUT" : 0.017414256930351257,
+            "SPEECH" : 0.011446497403085232
+          },
+          "end" : 3.5,
+          "expectedAlias" : "smoke_detector",
+          "expectedScore" : 0.9305622577667236,
+          "rms" : 0.14369281144480694,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9305622577667236,
+              "identifier" : "smoke_detector"
+            },
+            {
+              "confidence" : 0.6988810300827026,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.6402856111526489,
+              "identifier" : "beep"
+            },
+            {
+              "confidence" : 0.4877726137638092,
+              "identifier" : "siren"
+            },
+            {
+              "confidence" : 0.3440016508102417,
+              "identifier" : "synthesizer"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8729191422462463,
+            "BABY" : 0.00021873369405511767,
+            "CAR_HORN" : 0.015596139244735241,
+            "DOG" : 0.0020238293800503016,
+            "DOORBELL" : 0.08226536959409714,
+            "GLASS" : 0.00024360073439311236,
+            "KNOCK" : 0.0019296582322567701,
+            "PHONE" : 0.4547075033187866,
+            "SHOUT" : 0.015482768416404724,
+            "SPEECH" : 0.015592968091368675
+          },
+          "end" : 4,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.8729191422462463,
+          "rms" : 0.14038190590627173,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.8729191422462463,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.8381375670433044,
+              "identifier" : "smoke_detector"
+            },
+            {
+              "confidence" : 0.6815264821052551,
+              "identifier" : "beep"
+            },
+            {
+              "confidence" : 0.5774595737457275,
+              "identifier" : "telephone"
+            },
+            {
+              "confidence" : 0.4547075033187866,
+              "identifier" : "telephone_bell_ringing"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.906754195690155,
+            "BABY" : 0.00017835648031905293,
+            "CAR_HORN" : 0.00916923675686121,
+            "DOG" : 0.005751705262809992,
+            "DOORBELL" : 0.07417524605989456,
+            "GLASS" : 0.001127636875025928,
+            "KNOCK" : 0.0020778467878699303,
+            "PHONE" : 0.5776520371437073,
+            "SHOUT" : 0.013680917210876942,
+            "SPEECH" : 0.013705292716622353
+          },
+          "end" : 4.5,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.906754195690155,
+          "rms" : 0.1322789078264498,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.906754195690155,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.8252643346786499,
+              "identifier" : "smoke_detector"
+            },
+            {
+              "confidence" : 0.6746035218238831,
+              "identifier" : "telephone"
+            },
+            {
+              "confidence" : 0.5776520371437073,
+              "identifier" : "telephone_bell_ringing"
+            },
+            {
+              "confidence" : 0.5383800864219666,
+              "identifier" : "beep"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM",
+            "PHONE"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.886879026889801,
+            "BABY" : 0.0007794716511853039,
+            "CAR_HORN" : 0.003819516394287348,
+            "DOG" : 0.007711266167461872,
+            "DOORBELL" : 0.11576426029205322,
+            "GLASS" : 0.0021135180722922087,
+            "KNOCK" : 0.004267336800694466,
+            "PHONE" : 0.9432010054588318,
+            "SHOUT" : 0.01358137745410204,
+            "SPEECH" : 0.03679121658205986
+          },
+          "end" : 5,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.886879026889801,
+          "rms" : 0.1199771049209623,
+          "selectedEvent" : "ALARM",
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.9432010054588318,
+              "identifier" : "telephone_bell_ringing"
+            },
+            {
+              "confidence" : 0.9127964377403259,
+              "identifier" : "telephone"
+            },
+            {
+              "confidence" : 0.886879026889801,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.5294821858406067,
+              "identifier" : "ringtone"
+            },
+            {
+              "confidence" : 0.21885986626148224,
+              "identifier" : "music"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.041055666690226644,
+      "categoryPeakScores" : {
+        "ALARM" : 0.9966853857040405,
+        "BABY" : 0.0003326943551655859,
+        "CAR_HORN" : 0.03800162672996521,
+        "DOG" : 0.0019479442853480577,
+        "DOORBELL" : 0.3161804676055908,
+        "GLASS" : 0.002162044169381261,
+        "KNOCK" : 0.004995833616703749,
+        "PHONE" : 0.425294429063797,
+        "SHOUT" : 0.01833237148821354,
+        "SPEECH" : 0.018664393573999405
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "clock_alarm",
+        "expected_event" : "ALARM",
+        "filename" : "1-14262-A-37.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-14262-A-37.wav",
+        "sha256" : "220c3d127df2f0d8979a2edde5318aaaa3aed19d8c5d3b4a40d529f979bba453",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-14262-A-37.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "alarm_clock",
+      "expectedPeakScore" : 0.9966853857040405,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "ALARM"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.9798887968063354,
+            "BABY" : 7.23541816114448e-05,
+            "CAR_HORN" : 0.02788345143198967,
+            "DOG" : 0.00020436949853319675,
+            "DOORBELL" : 0.2320653200149536,
+            "GLASS" : 0.00019856022845488042,
+            "KNOCK" : 0.0007586656720377505,
+            "PHONE" : 0.016660500317811966,
+            "SHOUT" : 0.0033286234829574823,
+            "SPEECH" : 0.015378621406853199
+          },
+          "end" : 1,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.9798887968063354,
+          "rms" : 0.08336187515653111,
+          "selectedEvent" : "ALARM",
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.9798887968063354,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.7005804181098938,
+              "identifier" : "clock"
+            },
+            {
+              "confidence" : 0.3089190423488617,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.2320653200149536,
+              "identifier" : "door_bell"
+            },
+            {
+              "confidence" : 0.2118711918592453,
+              "identifier" : "squeak"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8960954546928406,
+            "BABY" : 0.00016876679728738964,
+            "CAR_HORN" : 0.0303993858397007,
+            "DOG" : 0.00031308826874010265,
+            "DOORBELL" : 0.017458967864513397,
+            "GLASS" : 0.0006326943985186517,
+            "KNOCK" : 0.001470749033614993,
+            "PHONE" : 0.008853198029100895,
+            "SHOUT" : 0.003978420980274677,
+            "SPEECH" : 0.014340966939926147
+          },
+          "end" : 1.5,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.8960954546928406,
+          "rms" : 0.07270283095363643,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.8960954546928406,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.24943646788597107,
+              "identifier" : "clock"
+            },
+            {
+              "confidence" : 0.19181400537490845,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.15245668590068817,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.12024180591106415,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.9687050580978394,
+            "BABY" : 6.0202339227544144e-05,
+            "CAR_HORN" : 0.024034593254327774,
+            "DOG" : 0.00039052145439200103,
+            "DOORBELL" : 0.04004988819360733,
+            "GLASS" : 0.00019490938575472683,
+            "KNOCK" : 0.0005142877344042063,
+            "PHONE" : 0.11590330302715302,
+            "SHOUT" : 0.01833237148821354,
+            "SPEECH" : 0.018664393573999405
+          },
+          "end" : 2,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.9687050580978394,
+          "rms" : 0.07899458788051973,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.9687050580978394,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.5665338039398193,
+              "identifier" : "clock"
+            },
+            {
+              "confidence" : 0.11590330302715302,
+              "identifier" : "telephone_bell_ringing"
+            },
+            {
+              "confidence" : 0.09053059667348862,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.0902109369635582,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.9796821475028992,
+            "BABY" : 0.0003326943551655859,
+            "CAR_HORN" : 0.009998096153140068,
+            "DOG" : 0.0007177598308771849,
+            "DOORBELL" : 0.05716238543391228,
+            "GLASS" : 0.00011884291598107666,
+            "KNOCK" : 0.00274180481210351,
+            "PHONE" : 0.02562711574137211,
+            "SHOUT" : 0.008017062209546566,
+            "SPEECH" : 0.01677243784070015
+          },
+          "end" : 2.5,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.9796821475028992,
+          "rms" : 0.07657453047909087,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9796821475028992,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.679787814617157,
+              "identifier" : "clock"
+            },
+            {
+              "confidence" : 0.4147675633430481,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.32274165749549866,
+              "identifier" : "drill"
+            },
+            {
+              "confidence" : 0.23247236013412476,
+              "identifier" : "bicycle_bell"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8869527578353882,
+            "BABY" : 6.044729161658324e-05,
+            "CAR_HORN" : 0.03800162672996521,
+            "DOG" : 0.00012783752754330635,
+            "DOORBELL" : 0.03447837382555008,
+            "GLASS" : 8.58335115481168e-05,
+            "KNOCK" : 0.0005009175511077046,
+            "PHONE" : 0.005605396348983049,
+            "SHOUT" : 0.0056560104712843895,
+            "SPEECH" : 0.0070135886780917645
+          },
+          "end" : 3,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.8869527578353882,
+          "rms" : 0.06909505546026769,
+          "selectedEvent" : "ALARM",
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.8869527578353882,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.32165417075157166,
+              "identifier" : "clock"
+            },
+            {
+              "confidence" : 0.18719056248664856,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.14383864402770996,
+              "identifier" : "zipper"
+            },
+            {
+              "confidence" : 0.13358081877231598,
+              "identifier" : "drill"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8863884806632996,
+            "BABY" : 0.00022027341765351593,
+            "CAR_HORN" : 0.03204485401511192,
+            "DOG" : 0.0005101251881569624,
+            "DOORBELL" : 0.017334872856736183,
+            "GLASS" : 0.00028006330830976367,
+            "KNOCK" : 0.0012498082360252738,
+            "PHONE" : 0.0038364906795322895,
+            "SHOUT" : 0.0024477329570800066,
+            "SPEECH" : 0.01186196506023407
+          },
+          "end" : 3.5,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.8863884806632996,
+          "rms" : 0.07185307184491813,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.8863884806632996,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.5721138715744019,
+              "identifier" : "drill"
+            },
+            {
+              "confidence" : 0.49432653188705444,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.4672203063964844,
+              "identifier" : "clock"
+            },
+            {
+              "confidence" : 0.24263803660869598,
+              "identifier" : "power_tool"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.8309846520423889,
+            "BABY" : 0.00022697409440297633,
+            "CAR_HORN" : 0.02769327536225319,
+            "DOG" : 0.0010798737639561296,
+            "DOORBELL" : 0.019996579736471176,
+            "GLASS" : 0.0012558283051475883,
+            "KNOCK" : 0.001000853255391121,
+            "PHONE" : 0.007006794214248657,
+            "SHOUT" : 0.006080916617065668,
+            "SPEECH" : 0.017646795138716698
+          },
+          "end" : 4,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.8309846520423889,
+          "rms" : 0.0748610079180015,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.8309846520423889,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.3650372624397278,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.36076539754867554,
+              "identifier" : "clock"
+            },
+            {
+              "confidence" : 0.3043290674686432,
+              "identifier" : "drill"
+            },
+            {
+              "confidence" : 0.26332738995552063,
+              "identifier" : "sewing_machine"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "ALARM"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.9966853857040405,
+            "BABY" : 5.424698247225024e-05,
+            "CAR_HORN" : 0.012450410053133965,
+            "DOG" : 0.000400375371100381,
+            "DOORBELL" : 0.3161804676055908,
+            "GLASS" : 0.00038290192605927587,
+            "KNOCK" : 0.0019019172759726644,
+            "PHONE" : 0.425294429063797,
+            "SHOUT" : 0.0003745894937310368,
+            "SPEECH" : 0.015064122155308723
+          },
+          "end" : 4.5,
+          "expectedAlias" : "alarm_clock",
+          "expectedScore" : 0.9966853857040405,
+          "rms" : 0.059562713370487526,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9966853857040405,
+              "identifier" : "alarm_clock"
+            },
+            {
+              "confidence" : 0.8233859539031982,
+              "identifier" : "clock"
+            },
+            {
+              "confidence" : 0.5340715050697327,
+              "identifier" : "telephone"
+            },
+            {
+              "confidence" : 0.425294429063797,
+              "identifier" : "telephone_bell_ringing"
+            },
+            {
+              "confidence" : 0.3161804676055908,
+              "identifier" : "door_bell"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.39765629172325134,
+            "BABY" : 5.8489378716330975e-05,
+            "CAR_HORN" : 0.018662523478269577,
+            "DOG" : 0.0019479442853480577,
+            "DOORBELL" : 0.14770956337451935,
+            "GLASS" : 0.002162044169381261,
+            "KNOCK" : 0.004995833616703749,
+            "PHONE" : 0.042389966547489166,
+            "SHOUT" : 0.0021400125697255135,
+            "SPEECH" : 0.010170738212764263
+          },
+          "end" : 5,
+          "expectedAlias" : "smoke_detector",
+          "expectedScore" : 0.39765629172325134,
+          "rms" : 0.026594084962061584,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.8688467741012573,
+              "identifier" : "bicycle_bell"
+            },
+            {
+              "confidence" : 0.520399272441864,
+              "identifier" : "bell"
+            },
+            {
+              "confidence" : 0.4924224615097046,
+              "identifier" : "tuning_fork"
+            },
+            {
+              "confidence" : 0.39765629172325134,
+              "identifier" : "smoke_detector"
+            },
+            {
+              "confidence" : 0.23700854182243347,
+              "identifier" : "door"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.041086458339123055,
+      "categoryPeakScores" : {
+        "ALARM" : 0.012748248875141144,
+        "BABY" : 0.9531411528587341,
+        "CAR_HORN" : 0.10395052284002304,
+        "DOG" : 0.025279339402914047,
+        "DOORBELL" : 0.008599604479968548,
+        "GLASS" : 0.004773309919983149,
+        "KNOCK" : 0.242540642619133,
+        "PHONE" : 0.036390431225299835,
+        "SHOUT" : 0.34949570894241333,
+        "SPEECH" : 0.41663965582847595
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "crying_baby",
+        "expected_event" : "BABY",
+        "filename" : "1-187207-A-20.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-187207-A-20.wav",
+        "sha256" : "ddf5bf45f73bc73d1838bf0cb6af530584f324aef513112ee15c210e83ecbd6b",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-187207-A-20.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "baby_crying",
+      "expectedPeakScore" : 0.9531411528587341,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "BABY"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0012550067622214556,
+            "BABY" : 0.6206516623497009,
+            "CAR_HORN" : 0.0002277022140333429,
+            "DOG" : 0.006073963828384876,
+            "DOORBELL" : 0.0030642994679510593,
+            "GLASS" : 0.0012613257858902216,
+            "KNOCK" : 0.017484959214925766,
+            "PHONE" : 0.0003982833295594901,
+            "SHOUT" : 0.02871263585984707,
+            "SPEECH" : 0.2688966989517212
+          },
+          "end" : 1,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.6206516623497009,
+          "rms" : 0.23015459142666686,
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.6529206037521362,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.6206516623497009,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.5810423493385315,
+              "identifier" : "baby_laughter"
+            },
+            {
+              "confidence" : 0.5675494074821472,
+              "identifier" : "babble"
+            },
+            {
+              "confidence" : 0.5145781636238098,
+              "identifier" : "laughter"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "BABY"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.003168616909533739,
+            "BABY" : 0.9531411528587341,
+            "CAR_HORN" : 0.0012304531410336494,
+            "DOG" : 0.001466043759137392,
+            "DOORBELL" : 0.003548393025994301,
+            "GLASS" : 0.0009179880144074559,
+            "KNOCK" : 0.0010945115936920047,
+            "PHONE" : 0.0010948338313028216,
+            "SHOUT" : 0.06089937686920166,
+            "SPEECH" : 0.21204516291618347
+          },
+          "end" : 1.5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.9531411528587341,
+          "rms" : 0.2749685811964312,
+          "selectedEvent" : "BABY",
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9531411528587341,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.9494951963424683,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.30530646443367004,
+              "identifier" : "babble"
+            },
+            {
+              "confidence" : 0.2746439278125763,
+              "identifier" : "baby_laughter"
+            },
+            {
+              "confidence" : 0.21204516291618347,
+              "identifier" : "speech"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.00171282805968076,
+            "BABY" : 0.08969589322805405,
+            "CAR_HORN" : 0.0013272605137899518,
+            "DOG" : 0.0020890533924102783,
+            "DOORBELL" : 0.003152670804411173,
+            "GLASS" : 0.004313885234296322,
+            "KNOCK" : 0.036110129207372665,
+            "PHONE" : 0.002197122434154153,
+            "SHOUT" : 0.015657518059015274,
+            "SPEECH" : 0.09342297911643982
+          },
+          "end" : 2,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.08969589322805405,
+          "rms" : 0.19773419092350605,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.863440990447998,
+              "identifier" : "baby_laughter"
+            },
+            {
+              "confidence" : 0.8280012011528015,
+              "identifier" : "laughter"
+            },
+            {
+              "confidence" : 0.44179898500442505,
+              "identifier" : "giggling"
+            },
+            {
+              "confidence" : 0.4287336468696594,
+              "identifier" : "belly_laugh"
+            },
+            {
+              "confidence" : 0.25571805238723755,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0006513812113553286,
+            "BABY" : 0.1036713495850563,
+            "CAR_HORN" : 0.0025650958996266127,
+            "DOG" : 0.00023224775213748217,
+            "DOORBELL" : 0.0002505584270693362,
+            "GLASS" : 0.0009667897829785943,
+            "KNOCK" : 0.00497101154178381,
+            "PHONE" : 0.0005125570460222661,
+            "SHOUT" : 0.0032346469815820456,
+            "SPEECH" : 0.07500078529119492
+          },
+          "end" : 2.5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.1036713495850563,
+          "rms" : 0.12674877862083347,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.8837023973464966,
+              "identifier" : "baby_laughter"
+            },
+            {
+              "confidence" : 0.7502835392951965,
+              "identifier" : "laughter"
+            },
+            {
+              "confidence" : 0.3377467691898346,
+              "identifier" : "giggling"
+            },
+            {
+              "confidence" : 0.2949773371219635,
+              "identifier" : "babble"
+            },
+            {
+              "confidence" : 0.2651243805885315,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "BABY"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.00809682346880436,
+            "BABY" : 0.7777921557426453,
+            "CAR_HORN" : 0.001941220136359334,
+            "DOG" : 0.025279339402914047,
+            "DOORBELL" : 0.008599604479968548,
+            "GLASS" : 0.0009281390230171382,
+            "KNOCK" : 0.007419718895107508,
+            "PHONE" : 0.0022751830983906984,
+            "SHOUT" : 0.03603653982281685,
+            "SPEECH" : 0.04117067530751228
+          },
+          "end" : 3,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.7777921557426453,
+          "rms" : 0.06405570451574649,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.7777921557426453,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.7712636590003967,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.7154939770698547,
+              "identifier" : "cat_meow"
+            },
+            {
+              "confidence" : 0.6904423832893372,
+              "identifier" : "cat"
+            },
+            {
+              "confidence" : 0.4848173260688782,
+              "identifier" : "dog_howl"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "BABY"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.005764972884207964,
+            "BABY" : 0.868476390838623,
+            "CAR_HORN" : 0.008193929679691792,
+            "DOG" : 0.003003340680152178,
+            "DOORBELL" : 0.0015252598095685244,
+            "GLASS" : 0.0003475314297247678,
+            "KNOCK" : 0.04736847057938576,
+            "PHONE" : 0.0005267189699225128,
+            "SHOUT" : 0.34949570894241333,
+            "SPEECH" : 0.2395631968975067
+          },
+          "end" : 3.5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.868476390838623,
+          "rms" : 0.14423119734668838,
+          "selectedEvent" : "BABY",
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.868476390838623,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.8619521260261536,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.34949570894241333,
+              "identifier" : "screaming"
+            },
+            {
+              "confidence" : 0.2395631968975067,
+              "identifier" : "speech"
+            },
+            {
+              "confidence" : 0.23493874073028564,
+              "identifier" : "door"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.004310527350753546,
+            "BABY" : 0.09883341193199158,
+            "CAR_HORN" : 0.10395052284002304,
+            "DOG" : 0.0037469384260475636,
+            "DOORBELL" : 0.006968215107917786,
+            "GLASS" : 0.004773309919983149,
+            "KNOCK" : 0.01604616828262806,
+            "PHONE" : 0.00893456395715475,
+            "SHOUT" : 0.20396241545677185,
+            "SPEECH" : 0.1959468275308609
+          },
+          "end" : 4,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.09883341193199158,
+          "rms" : 0.13629305340070896,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.5424680113792419,
+              "identifier" : "mosquito_buzz"
+            },
+            {
+              "confidence" : 0.48098474740982056,
+              "identifier" : "insect"
+            },
+            {
+              "confidence" : 0.3372422456741333,
+              "identifier" : "laughter"
+            },
+            {
+              "confidence" : 0.32349902391433716,
+              "identifier" : "fly_buzz"
+            },
+            {
+              "confidence" : 0.22529947757720947,
+              "identifier" : "baby_laughter"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.012748248875141144,
+            "BABY" : 0.5548314452171326,
+            "CAR_HORN" : 0.01622660458087921,
+            "DOG" : 0.006109985988587141,
+            "DOORBELL" : 0.006810859311372042,
+            "GLASS" : 0.00039299108902923763,
+            "KNOCK" : 0.009727254509925842,
+            "PHONE" : 0.036390431225299835,
+            "SHOUT" : 0.18618883192539215,
+            "SPEECH" : 0.12698696553707123
+          },
+          "end" : 4.5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.5548314452171326,
+          "rms" : 0.07198761964930578,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.6261393427848816,
+              "identifier" : "fowl"
+            },
+            {
+              "confidence" : 0.5616409182548523,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.5548314452171326,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.46030110120773315,
+              "identifier" : "chicken"
+            },
+            {
+              "confidence" : 0.3894313871860504,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0005795184406451881,
+            "BABY" : 0.5109632611274719,
+            "CAR_HORN" : 0.0001741254236549139,
+            "DOG" : 0.004391239490360022,
+            "DOORBELL" : 0.0034528556279838085,
+            "GLASS" : 0.003919914364814758,
+            "KNOCK" : 0.242540642619133,
+            "PHONE" : 0.0006361754494719207,
+            "SHOUT" : 0.05426422879099846,
+            "SPEECH" : 0.41663965582847595
+          },
+          "end" : 5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.5109632611274719,
+          "rms" : 0.11138219626471772,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.5550076961517334,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.5278549790382385,
+              "identifier" : "baby_laughter"
+            },
+            {
+              "confidence" : 0.5109632611274719,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.47396403551101685,
+              "identifier" : "laughter"
+            },
+            {
+              "confidence" : 0.4417402446269989,
+              "identifier" : "babble"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.039559500000905246,
+      "categoryPeakScores" : {
+        "ALARM" : 0.01419132575392723,
+        "BABY" : 0.9911214709281921,
+        "CAR_HORN" : 0.09607650339603424,
+        "DOG" : 0.023935485631227493,
+        "DOORBELL" : 0.006024766713380814,
+        "GLASS" : 0.004958559293299913,
+        "KNOCK" : 0.07048477232456207,
+        "PHONE" : 0.003151774639263749,
+        "SHOUT" : 0.2158297449350357,
+        "SPEECH" : 0.26347509026527405
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "crying_baby",
+        "expected_event" : "BABY",
+        "filename" : "1-211527-A-20.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-211527-A-20.wav",
+        "sha256" : "3cbcd59a0db21f0ed8c252c74ea1bc193117d2c13ed99821885c46c564010b3e",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-211527-A-20.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "baby_crying",
+      "expectedPeakScore" : 0.9911214709281921,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "BABY"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+            "BABY"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0013081420911476016,
+            "BABY" : 0.9827701449394226,
+            "CAR_HORN" : 0.01074914913624525,
+            "DOG" : 0.0011710134567692876,
+            "DOORBELL" : 0.001987461233511567,
+            "GLASS" : 0.0022816185373812914,
+            "KNOCK" : 0.0005580093129538,
+            "PHONE" : 0.0011021123500540853,
+            "SHOUT" : 0.002026703441515565,
+            "SPEECH" : 0.0562797412276268
+          },
+          "end" : 1,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.9827701449394226,
+          "rms" : 0.023260867727864475,
+          "selectedEvent" : "BABY",
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.9827701449394226,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.9821863174438477,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.42124179005622864,
+              "identifier" : "laughter"
+            },
+            {
+              "confidence" : 0.2924720346927643,
+              "identifier" : "baby_laughter"
+            },
+            {
+              "confidence" : 0.17287839949131012,
+              "identifier" : "babble"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0052904547192156315,
+            "BABY" : 0.010974560864269733,
+            "CAR_HORN" : 0.09607650339603424,
+            "DOG" : 0.00873316079378128,
+            "DOORBELL" : 0.004497965797781944,
+            "GLASS" : 0.001961315283551812,
+            "KNOCK" : 0.006969400215893984,
+            "PHONE" : 0.00102718616835773,
+            "SHOUT" : 0.043383173644542694,
+            "SPEECH" : 0.12850289046764374
+          },
+          "end" : 1.5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.010974560864269733,
+          "rms" : 0.0385389912696293,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.2961207628250122,
+              "identifier" : "cat"
+            },
+            {
+              "confidence" : 0.29438313841819763,
+              "identifier" : "cat_meow"
+            },
+            {
+              "confidence" : 0.2538781762123108,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.23907282948493958,
+              "identifier" : "brass_instrument"
+            },
+            {
+              "confidence" : 0.12850289046764374,
+              "identifier" : "speech"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "BABY"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.013962694443762302,
+            "BABY" : 0.7862521409988403,
+            "CAR_HORN" : 0.0042555262334644794,
+            "DOG" : 0.023935485631227493,
+            "DOORBELL" : 0.006024766713380814,
+            "GLASS" : 0.004958559293299913,
+            "KNOCK" : 0.006073427386581898,
+            "PHONE" : 0.0030337003991007805,
+            "SHOUT" : 0.07093200832605362,
+            "SPEECH" : 0.13758166134357452
+          },
+          "end" : 2,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.7862521409988403,
+          "rms" : 0.07375122342086529,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.7862521409988403,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.7850021123886108,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.3150506615638733,
+              "identifier" : "singing"
+            },
+            {
+              "confidence" : 0.23854638636112213,
+              "identifier" : "dog"
+            },
+            {
+              "confidence" : 0.2069457769393921,
+              "identifier" : "dog_howl"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.001196201192215085,
+            "BABY" : 0.10645590722560883,
+            "CAR_HORN" : 0.0103980153799057,
+            "DOG" : 0.012883507646620274,
+            "DOORBELL" : 0.0003887837228830904,
+            "GLASS" : 0.0017005006084218621,
+            "KNOCK" : 0.01824495755136013,
+            "PHONE" : 0.00020661661983467638,
+            "SHOUT" : 0.19644935429096222,
+            "SPEECH" : 0.05971193313598633
+          },
+          "end" : 2.5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.10645590722560883,
+          "rms" : 0.07765783112475719,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.8517444133758545,
+              "identifier" : "cat"
+            },
+            {
+              "confidence" : 0.8043966889381409,
+              "identifier" : "cat_meow"
+            },
+            {
+              "confidence" : 0.31537991762161255,
+              "identifier" : "fowl"
+            },
+            {
+              "confidence" : 0.22884760797023773,
+              "identifier" : "chicken"
+            },
+            {
+              "confidence" : 0.21047751605510712,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.003324337536469102,
+            "BABY" : 0.12545998394489288,
+            "CAR_HORN" : 0.0016505576204508543,
+            "DOG" : 0.002117771189659834,
+            "DOORBELL" : 0.003925537224858999,
+            "GLASS" : 0.0015686608385294676,
+            "KNOCK" : 0.07048477232456207,
+            "PHONE" : 0.0027938929852098227,
+            "SHOUT" : 0.19281303882598877,
+            "SPEECH" : 0.1204032227396965
+          },
+          "end" : 3,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.12545998394489288,
+          "rms" : 0.13457069806526362,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.9815277457237244,
+              "identifier" : "sheep_bleat"
+            },
+            {
+              "confidence" : 0.41598355770111084,
+              "identifier" : "shofar"
+            },
+            {
+              "confidence" : 0.4145132005214691,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.39473164081573486,
+              "identifier" : "thump_thud"
+            },
+            {
+              "confidence" : 0.32787808775901794,
+              "identifier" : "door_slam"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "BABY"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.00742724072188139,
+            "BABY" : 0.9819619059562683,
+            "CAR_HORN" : 0.005317625589668751,
+            "DOG" : 0.00029720296151936054,
+            "DOORBELL" : 0.004249975550919771,
+            "GLASS" : 0.004789292812347412,
+            "KNOCK" : 0.003431374207139015,
+            "PHONE" : 0.003151774639263749,
+            "SHOUT" : 0.2158297449350357,
+            "SPEECH" : 0.26347509026527405
+          },
+          "end" : 3.5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.9819619059562683,
+          "rms" : 0.13852478347510108,
+          "selectedEvent" : "BABY",
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9819619059562683,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.9806016683578491,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.26347509026527405,
+              "identifier" : "speech"
+            },
+            {
+              "confidence" : 0.2158297449350357,
+              "identifier" : "screaming"
+            },
+            {
+              "confidence" : 0.1215844377875328,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "BABY"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.001574391033500433,
+            "BABY" : 0.9911214709281921,
+            "CAR_HORN" : 0.002120704622939229,
+            "DOG" : 8.298287139041349e-05,
+            "DOORBELL" : 0.0009038171265274286,
+            "GLASS" : 0.0019129725405946374,
+            "KNOCK" : 0.0010089902207255363,
+            "PHONE" : 0.0006084953784011304,
+            "SHOUT" : 0.09971919655799866,
+            "SPEECH" : 0.11676996201276779
+          },
+          "end" : 4,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.9911214709281921,
+          "rms" : 0.0558982066705973,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.9911214709281921,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.989814043045044,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.28393054008483887,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.11676996201276779,
+              "identifier" : "speech"
+            },
+            {
+              "confidence" : 0.09971919655799866,
+              "identifier" : "screaming"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "BABY"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.01419132575392723,
+            "BABY" : 0.9431666135787964,
+            "CAR_HORN" : 0.0037932302802801132,
+            "DOG" : 0.0006448423955589533,
+            "DOORBELL" : 0.0022208369337022305,
+            "GLASS" : 0.0017442154930904508,
+            "KNOCK" : 0.010341041721403599,
+            "PHONE" : 0.0007964727119542658,
+            "SHOUT" : 0.14939722418785095,
+            "SPEECH" : 0.07950175553560257
+          },
+          "end" : 4.5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.9431666135787964,
+          "rms" : 0.03881958944590624,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9431666135787964,
+              "identifier" : "baby_crying"
+            },
+            {
+              "confidence" : 0.9372552037239075,
+              "identifier" : "crying_sobbing"
+            },
+            {
+              "confidence" : 0.3791765868663788,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.32846295833587646,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.25062131881713867,
+              "identifier" : "shofar"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0006366892484948039,
+            "BABY" : 0.11197294294834137,
+            "CAR_HORN" : 0.011645045131444931,
+            "DOG" : 0.0016902287025004625,
+            "DOORBELL" : 0.00033510723733343184,
+            "GLASS" : 0.0013295644894242287,
+            "KNOCK" : 0.01814395934343338,
+            "PHONE" : 0.0008557726396247745,
+            "SHOUT" : 0.055836696177721024,
+            "SPEECH" : 0.040599092841148376
+          },
+          "end" : 5,
+          "expectedAlias" : "baby_crying",
+          "expectedScore" : 0.11197294294834137,
+          "rms" : 0.04174912398155645,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.5747942328453064,
+              "identifier" : "sheep_bleat"
+            },
+            {
+              "confidence" : 0.35925784707069397,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.26664549112319946,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.18623580038547516,
+              "identifier" : "cat"
+            },
+            {
+              "confidence" : 0.16112597286701202,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.04013583334744908,
+      "categoryPeakScores" : {
+        "ALARM" : 0.005628612358123064,
+        "BABY" : 0.0031718986574560404,
+        "CAR_HORN" : 0.01758907362818718,
+        "DOG" : 0.005200136918574572,
+        "DOORBELL" : 0.005782052408903837,
+        "GLASS" : 0.002439123811200261,
+        "KNOCK" : 0.9996729493141174,
+        "PHONE" : 0.0015454288804903626,
+        "SHOUT" : 0.005369033198803663,
+        "SPEECH" : 0.010561973787844181
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "door_wood_knock",
+        "expected_event" : "KNOCK",
+        "filename" : "1-101336-A-30.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-101336-A-30.wav",
+        "sha256" : "e738266e395e378102f74e0920b05ff5937543788420d5b2a6b8d3df8bdb3910",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-101336-A-30.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "knock",
+      "expectedPeakScore" : 0.9996729493141174,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "KNOCK"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+            "KNOCK"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0004064581880811602,
+            "BABY" : 0.0031718986574560404,
+            "CAR_HORN" : 0.0026035159826278687,
+            "DOG" : 0.0043591707944869995,
+            "DOORBELL" : 0.0028710642363876104,
+            "GLASS" : 0.001462787389755249,
+            "KNOCK" : 0.9875950813293457,
+            "PHONE" : 0.0005256247241050005,
+            "SHOUT" : 0.005158791318535805,
+            "SPEECH" : 0.010561973787844181
+          },
+          "end" : 1,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.9875950813293457,
+          "rms" : 0.16619212298655064,
+          "selectedEvent" : "KNOCK",
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.9875950813293457,
+              "identifier" : "knock"
+            },
+            {
+              "confidence" : 0.9228547811508179,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.3357200026512146,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.31667324900627136,
+              "identifier" : "hammer"
+            },
+            {
+              "confidence" : 0.17155209183692932,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "KNOCK"
+          ],
+          "categoryScores" : {
+            "ALARM" : 4.162066397839226e-05,
+            "BABY" : 0.0013106487458571792,
+            "CAR_HORN" : 0.005118242930620909,
+            "DOG" : 0.0035189564805477858,
+            "DOORBELL" : 0.001021249103359878,
+            "GLASS" : 8.086724847089499e-05,
+            "KNOCK" : 0.9995778799057007,
+            "PHONE" : 2.8683552955044433e-05,
+            "SHOUT" : 0.002883416134864092,
+            "SPEECH" : 0.008091280236840248
+          },
+          "end" : 1.5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.9995778799057007,
+          "rms" : 0.13279028131154416,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9995778799057007,
+              "identifier" : "knock"
+            },
+            {
+              "confidence" : 0.9871300458908081,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.2074744701385498,
+              "identifier" : "fly_buzz"
+            },
+            {
+              "confidence" : 0.17906329035758972,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.17472463846206665,
+              "identifier" : "mosquito_buzz"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.005628612358123064,
+            "BABY" : 0.0006386656314134598,
+            "CAR_HORN" : 0.003086949698626995,
+            "DOG" : 0.0036276718601584435,
+            "DOORBELL" : 0.0017269437666982412,
+            "GLASS" : 0.0014942849520593882,
+            "KNOCK" : 0.2729550004005432,
+            "PHONE" : 0.000985647551715374,
+            "SHOUT" : 0.005369033198803663,
+            "SPEECH" : 0.005694240797311068
+          },
+          "end" : 2,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.2729550004005432,
+          "rms" : 0.11126849646062602,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.5926790833473206,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.4985356330871582,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.2729550004005432,
+              "identifier" : "knock"
+            },
+            {
+              "confidence" : 0.2482236921787262,
+              "identifier" : "trombone"
+            },
+            {
+              "confidence" : 0.2420654445886612,
+              "identifier" : "brass_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "KNOCK"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.00010370774543844163,
+            "BABY" : 0.0011205673217773438,
+            "CAR_HORN" : 0.002326390938833356,
+            "DOG" : 0.005200136918574572,
+            "DOORBELL" : 0.005782052408903837,
+            "GLASS" : 0.00047232149518094957,
+            "KNOCK" : 0.9973568916320801,
+            "PHONE" : 0.00034734662040136755,
+            "SHOUT" : 0.0016540121287107468,
+            "SPEECH" : 0.008116320706903934
+          },
+          "end" : 2.5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.9973568916320801,
+          "rms" : 0.12170596723333568,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9973568916320801,
+              "identifier" : "knock"
+            },
+            {
+              "confidence" : 0.9861281514167786,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.8244693279266357,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.30390942096710205,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.2844700813293457,
+              "identifier" : "synthesizer"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "KNOCK"
+          ],
+          "categoryScores" : {
+            "ALARM" : 2.3856300686020404e-05,
+            "BABY" : 0.00012718873040284961,
+            "CAR_HORN" : 0.01758907362818718,
+            "DOG" : 0.0012458200799301267,
+            "DOORBELL" : 0.0009160807239823043,
+            "GLASS" : 3.587751416489482e-05,
+            "KNOCK" : 0.9996729493141174,
+            "PHONE" : 5.725239134335425e-06,
+            "SHOUT" : 0.00028249240131117404,
+            "SPEECH" : 0.0018294365145266056
+          },
+          "end" : 3,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.9996729493141174,
+          "rms" : 0.11490079827639364,
+          "selectedEvent" : "KNOCK",
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.9996729493141174,
+              "identifier" : "knock"
+            },
+            {
+              "confidence" : 0.9968026876449585,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.4947080612182617,
+              "identifier" : "squeak"
+            },
+            {
+              "confidence" : 0.31157785654067993,
+              "identifier" : "fly_buzz"
+            },
+            {
+              "confidence" : 0.17888467013835907,
+              "identifier" : "mosquito_buzz"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0017616171389818192,
+            "BABY" : 0.00015554792480543256,
+            "CAR_HORN" : 0.009544575586915016,
+            "DOG" : 0.002134074689820409,
+            "DOORBELL" : 0.002734777284786105,
+            "GLASS" : 0.002439123811200261,
+            "KNOCK" : 0.40024980902671814,
+            "PHONE" : 0.0015454288804903626,
+            "SHOUT" : 0.0006673659663647413,
+            "SPEECH" : 0.00347670866176486
+          },
+          "end" : 3.5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.40024980902671814,
+          "rms" : 0.06409459059098563,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.5248204469680786,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.40024980902671814,
+              "identifier" : "knock"
+            },
+            {
+              "confidence" : 0.1961125284433365,
+              "identifier" : "mosquito_buzz"
+            },
+            {
+              "confidence" : 0.19197016954421997,
+              "identifier" : "hammer"
+            },
+            {
+              "confidence" : 0.15970751643180847,
+              "identifier" : "door_slam"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4.5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.04115420833113603,
+      "categoryPeakScores" : {
+        "ALARM" : 0.0013642520643770695,
+        "BABY" : 0.000824158894829452,
+        "CAR_HORN" : 0.02618544176220894,
+        "DOG" : 0.005954946391284466,
+        "DOORBELL" : 0.02987584099173546,
+        "GLASS" : 0.03452133759856224,
+        "KNOCK" : 0.9980586171150208,
+        "PHONE" : 0.003772510914131999,
+        "SHOUT" : 0.00032282035681419075,
+        "SPEECH" : 0.0038706976920366287
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "door_wood_knock",
+        "expected_event" : "KNOCK",
+        "filename" : "1-103995-A-30.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-103995-A-30.wav",
+        "sha256" : "1c1d3e65b7a58658766180d2faeeb9bdd1fe7405119bf100d9cd2f671a6e2b11",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-103995-A-30.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "knock",
+      "expectedPeakScore" : 0.9980586171150208,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "KNOCK"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+            "KNOCK"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0007970789447426796,
+            "BABY" : 0.000824158894829452,
+            "CAR_HORN" : 0.02446996420621872,
+            "DOG" : 0.003124019829556346,
+            "DOORBELL" : 0.02987584099173546,
+            "GLASS" : 0.0003310661413706839,
+            "KNOCK" : 0.9980586171150208,
+            "PHONE" : 0.0015152142150327563,
+            "SHOUT" : 0.00028412597021088004,
+            "SPEECH" : 0.001164277782663703
+          },
+          "end" : 1,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.9980586171150208,
+          "rms" : 0.10162942042763391,
+          "selectedEvent" : "KNOCK",
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.9980586171150208,
+              "identifier" : "knock"
+            },
+            {
+              "confidence" : 0.9961601495742798,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.8772334456443787,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.3673801124095917,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.3409056067466736,
+              "identifier" : "synthesizer"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "KNOCK"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.00048447970766574144,
+            "BABY" : 0.0003719998348969966,
+            "CAR_HORN" : 0.02618544176220894,
+            "DOG" : 0.0025183246470987797,
+            "DOORBELL" : 0.0010218847310170531,
+            "GLASS" : 0.0022440548054873943,
+            "KNOCK" : 0.9674269556999207,
+            "PHONE" : 0.0005060637486167252,
+            "SHOUT" : 0.0002066339657176286,
+            "SPEECH" : 0.0008425183477811515
+          },
+          "end" : 1.5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.9674269556999207,
+          "rms" : 0.057466873899243445,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9674269556999207,
+              "identifier" : "knock"
+            },
+            {
+              "confidence" : 0.8912516236305237,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.7866875529289246,
+              "identifier" : "hammer"
+            },
+            {
+              "confidence" : 0.5559118986129761,
+              "identifier" : "mosquito_buzz"
+            },
+            {
+              "confidence" : 0.32345592975616455,
+              "identifier" : "insect"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0013642520643770695,
+            "BABY" : 0.00010924346133833751,
+            "CAR_HORN" : 0.009543035179376602,
+            "DOG" : 0.005954946391284466,
+            "DOORBELL" : 0.0028063743375241756,
+            "GLASS" : 0.03452133759856224,
+            "KNOCK" : 0.15055915713310242,
+            "PHONE" : 0.003772510914131999,
+            "SHOUT" : 0.00032282035681419075,
+            "SPEECH" : 0.0038706976920366287
+          },
+          "end" : 2,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.15055915713310242,
+          "rms" : 0.011736664395868764,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.548902690410614,
+              "identifier" : "whoosh_swoosh_swish"
+            },
+            {
+              "confidence" : 0.38688671588897705,
+              "identifier" : "door"
+            },
+            {
+              "confidence" : 0.2514643669128418,
+              "identifier" : "door_slam"
+            },
+            {
+              "confidence" : 0.23186825215816498,
+              "identifier" : "mosquito_buzz"
+            },
+            {
+              "confidence" : 0.23161382973194122,
+              "identifier" : "music"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 2.5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 3,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 3.5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4.5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 5,
+          "expectedAlias" : "knock",
+          "expectedScore" : 0.008878753520548344,
+          "rms" : 0,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.042755708331242204,
+      "categoryPeakScores" : {
+        "ALARM" : 0.01390458270907402,
+        "BABY" : 0.0016097273910418153,
+        "CAR_HORN" : 0.034567441791296005,
+        "DOG" : 0.9561248421669006,
+        "DOORBELL" : 0.04949471727013588,
+        "GLASS" : 0.007191815879195929,
+        "KNOCK" : 0.00602325052022934,
+        "PHONE" : 0.022157778963446617,
+        "SHOUT" : 0.025408603250980377,
+        "SPEECH" : 0.026436911895871162
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "dog",
+        "expected_event" : "DOG",
+        "filename" : "1-100032-A-0.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-100032-A-0.wav",
+        "sha256" : "f40a849a2375c8c63312a73dd2dd6c74007301fcc21b4be2ece29a642831e3d8",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-100032-A-0.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "dog_bark",
+      "expectedPeakScore" : 0.9561248421669006,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "DOG"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 1,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 1.5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 2,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "DOG"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.004595150239765644,
+            "BABY" : 0.00043081160401925445,
+            "CAR_HORN" : 0.0035560165997594595,
+            "DOG" : 0.9404873847961426,
+            "DOORBELL" : 0.04949471727013588,
+            "GLASS" : 0.0026442622765898705,
+            "KNOCK" : 0.00602325052022934,
+            "PHONE" : 0.0031836850102990866,
+            "SHOUT" : 0.025408603250980377,
+            "SPEECH" : 0.026436911895871162
+          },
+          "end" : 2.5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.9404873847961426,
+          "rms" : 0.09283720393228458,
+          "selectedEvent" : "DOG",
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.9404873847961426,
+              "identifier" : "dog_bark"
+            },
+            {
+              "confidence" : 0.8915204405784607,
+              "identifier" : "dog"
+            },
+            {
+              "confidence" : 0.8283299207687378,
+              "identifier" : "coyote_howl"
+            },
+            {
+              "confidence" : 0.8162649869918823,
+              "identifier" : "dog_bow_wow"
+            },
+            {
+              "confidence" : 0.6080939173698425,
+              "identifier" : "rooster_crow"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+            "DOG"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.007550299167633057,
+            "BABY" : 0.0004078671627212316,
+            "CAR_HORN" : 0.01998070813715458,
+            "DOG" : 0.9561248421669006,
+            "DOORBELL" : 0.003206286346539855,
+            "GLASS" : 0.0025060151237994432,
+            "KNOCK" : 0.00352828879840672,
+            "PHONE" : 0.0066214557737112045,
+            "SHOUT" : 0.004357869736850262,
+            "SPEECH" : 0.017502209171652794
+          },
+          "end" : 3,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.9561248421669006,
+          "rms" : 0.09285217599545725,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.9561248421669006,
+              "identifier" : "dog_bark"
+            },
+            {
+              "confidence" : 0.9502933025360107,
+              "identifier" : "dog"
+            },
+            {
+              "confidence" : 0.8048076033592224,
+              "identifier" : "dog_bow_wow"
+            },
+            {
+              "confidence" : 0.5156631469726562,
+              "identifier" : "dog_growl"
+            },
+            {
+              "confidence" : 0.24337492883205414,
+              "identifier" : "dog_whimper"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.01390458270907402,
+            "BABY" : 0.0016097273910418153,
+            "CAR_HORN" : 0.034567441791296005,
+            "DOG" : 0.020349111407995224,
+            "DOORBELL" : 0.003459890140220523,
+            "GLASS" : 0.007191815879195929,
+            "KNOCK" : 0.003092095721513033,
+            "PHONE" : 0.022157778963446617,
+            "SHOUT" : 0.003306203754618764,
+            "SPEECH" : 0.00985847320407629
+          },
+          "end" : 3.5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.020349111407995224,
+          "rms" : 0.0016673791190892164,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.2902976870536804,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.13418236374855042,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.126443549990654,
+              "identifier" : "fowl"
+            },
+            {
+              "confidence" : 0.11020740866661072,
+              "identifier" : "whoosh_swoosh_swish"
+            },
+            {
+              "confidence" : 0.09615655988454819,
+              "identifier" : "writing"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4.5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "actualWindowDuration" : 1,
+      "analysisSeconds" : 0.050756750017171726,
+      "categoryPeakScores" : {
+        "ALARM" : 0.0007248969050124288,
+        "BABY" : 6.348833994707093e-05,
+        "CAR_HORN" : 0.012474887073040009,
+        "DOG" : 0.9799386262893677,
+        "DOORBELL" : 0.0022851089015603065,
+        "GLASS" : 0.001114711631089449,
+        "KNOCK" : 0.0008845447446219623,
+        "PHONE" : 0.013233414851129055,
+        "SHOUT" : 0.0002108374028466642,
+        "SPEECH" : 0.004509488586336374
+      },
+      "channels" : 1,
+      "classificationCallbacks" : 9,
+      "clip" : {
+        "category" : "dog",
+        "expected_event" : "DOG",
+        "filename" : "1-110389-A-0.wav",
+        "path" : "\/tmp\/fortwatch-sound-benchmark\/1-110389-A-0.wav",
+        "sha256" : "4a18f3f834eb184b9f02595ac74c7de37ef8048a3da92f58f27018fec580b36a",
+        "url" : "https:\/\/raw.githubusercontent.com\/karolpiczak\/ESC-50\/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6\/audio\/1-110389-A-0.wav"
+      },
+      "completeWindows" : 9,
+      "duration" : 5,
+      "expectedPeakAlias" : "dog_bark",
+      "expectedPeakScore" : 0.9799386262893677,
+      "otherCategoriesAboveThreshold" : [
+
+      ],
+      "otherSelectedEvents" : [
+
+      ],
+      "requestedWindowDuration" : 1,
+      "sampleRate" : 44100,
+      "selectedEvents" : [
+        "DOG"
+      ],
+      "windows" : [
+        {
+          "categoriesAboveThreshold" : [
+            "DOG"
+          ],
+          "categoryScores" : {
+            "ALARM" : 0.0007248969050124288,
+            "BABY" : 6.348833994707093e-05,
+            "CAR_HORN" : 0.012474887073040009,
+            "DOG" : 0.9799386262893677,
+            "DOORBELL" : 0.0022851089015603065,
+            "GLASS" : 0.001114711631089449,
+            "KNOCK" : 0.0008845447446219623,
+            "PHONE" : 0.013233414851129055,
+            "SHOUT" : 0.0002108374028466642,
+            "SPEECH" : 0.004509488586336374
+          },
+          "end" : 1,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.9799386262893677,
+          "rms" : 0.0774055613391212,
+          "selectedEvent" : "DOG",
+          "start" : 0,
+          "topFive" : [
+            {
+              "confidence" : 0.9851341843605042,
+              "identifier" : "dog"
+            },
+            {
+              "confidence" : 0.9799386262893677,
+              "identifier" : "dog_bark"
+            },
+            {
+              "confidence" : 0.9173977375030518,
+              "identifier" : "dog_bow_wow"
+            },
+            {
+              "confidence" : 0.8058504462242126,
+              "identifier" : "dog_growl"
+            },
+            {
+              "confidence" : 0.23611973226070404,
+              "identifier" : "dog_whimper"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 1.5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007438670843839645,
+          "rms" : 5.583289299482475e-05,
+          "start" : 0.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3286125361919403,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.13556219637393951,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.09652867913246155,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.08981884270906448,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.08943890035152435,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 2,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 1,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 2.5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 1.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 3,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 2,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 3.5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 2.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 3,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 4.5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 3.5,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        },
+        {
+          "categoriesAboveThreshold" : [
+
+          ],
+          "categoryScores" : {
+            "ALARM" : 0,
+            "BABY" : 0,
+            "CAR_HORN" : 0,
+            "DOG" : 0,
+            "DOORBELL" : 0,
+            "GLASS" : 0,
+            "KNOCK" : 0,
+            "PHONE" : 0,
+            "SHOUT" : 0,
+            "SPEECH" : 0
+          },
+          "end" : 5,
+          "expectedAlias" : "dog_bark",
+          "expectedScore" : 0.007369424682110548,
+          "rms" : 0,
+          "start" : 4,
+          "topFive" : [
+            {
+              "confidence" : 0.3362356722354889,
+              "identifier" : "music"
+            },
+            {
+              "confidence" : 0.14815200865268707,
+              "identifier" : "keyboard_musical"
+            },
+            {
+              "confidence" : 0.1083722859621048,
+              "identifier" : "piano"
+            },
+            {
+              "confidence" : 0.09620142728090286,
+              "identifier" : "guitar"
+            },
+            {
+              "confidence" : 0.09613434225320816,
+              "identifier" : "plucked_string_instrument"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

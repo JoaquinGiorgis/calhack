@@ -18,6 +18,7 @@ final class ListenerModel {
     private(set) var level = 0
     private(set) var lastEvent: String?
     private(set) var lastEventSent = false
+    private(set) var recentSound: RecentSound?
     private(set) var microphoneDenied = false
     @ObservationIgnored private var capture: SpatialCapture?
     @ObservationIgnored private var generation = UUID()
@@ -58,6 +59,7 @@ final class ListenerModel {
         clearDirection()
         lastEvent = nil
         lastEventSent = false
+        recentSound = nil
         generation = UUID()
         let run = generation
         Task { [weak self] in
@@ -210,6 +212,7 @@ final class ListenerModel {
                 lastEventSent = bluetooth.sendAlert(event: alert.event, score: alert.score,
                                                      angle: alert.angle, quality: alert.quality,
                                                      validUntil: alert.expiresAt)
+                recentSound = RecentSound(event: alert.event, observedAt: Date(), sent: lastEventSent)
             }
             refreshDirectionCue()
             if now - lastLevelSent >= 0.25 {

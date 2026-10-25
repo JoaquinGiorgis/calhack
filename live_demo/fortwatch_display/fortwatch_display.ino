@@ -14,7 +14,7 @@
 // messages are newline-terminated. Both paths feed the same handler.
 //
 // Screens use the original Figma backgrounds (docs/design, exported to screens.h).
-// Alerts overlay a live confidence bar and a compact captured-direction strip;
+// Alerts overlay a readable vibration rhythm and a captured-direction strip;
 // unknown event names use a plain text fallback.
 //
 // The alert stays up for ALERT_MS or until the screen is tapped / BOOT is pressed.
@@ -438,11 +438,20 @@ void drawAlertDirection(const fortwatch::AlertMessage &message, const uint16_t *
   }
   if (bg) {
     drawText(F_TITLE, bg, 54, 172, label);
-    drawText(F_TINY, bg, 54, 183, "Captured dominant sound / phone", 0.80f);
+    // This is the dominant sound captured with the alert, not live tracking or
+    // a source isolated to the sound category. Unknown never implies a bearing.
+    drawText(F_BODY, bg, 54, 184, hasDirection ? "CAPTURED / RELATIVE TO PHONE" :
+                                              "NO RELIABLE DIRECTION");
   } else {
     drawCentered(label, 154, 2, C_WHITE);
-    drawCentered("Captured sound / phone", 178, 1, C_WHITE);
+    drawCentered(hasDirection ? "CAPTURED / RELATIVE TO PHONE" : "NO RELIABLE DIRECTION",
+                  178, 1, C_WHITE);
   }
+}
+
+void drawAlertBrand(const uint16_t *bg, uint16_t fallback) {
+  // Original priority and VIB pills leave this top-center gap free.
+  drawText(F_SMALL, bg, 125, 29, "fortwatch", 0.95f, 255, 255, 255, fallback);
 }
 
 uint16_t alertPillColour(const uint16_t *bg, uint16_t fallback) {
@@ -470,6 +479,16 @@ void drawAlertVibration(const fortwatch::HapticPattern &pattern, const uint16_t 
   }
 }
 
+void drawAlertRhythm(const fortwatch::HapticPattern &pattern, const uint16_t *bg,
+                      uint16_t fallback) {
+  // Deliberately replace the tiny, uncalibrated confidence visualization with
+  // the learnable motor rhythm. The classification score still reaches analytics.
+  const uint16_t pill = alertPillColour(bg, fallback);
+  gfx->fillRoundRect(13, 190, 294, 18, 5, pill);
+  drawText(F_SMALL, nullptr, 23, 202, "VIBRATION", 0.90f, 255, 255, 255, pill);
+  drawText(F_BODY, nullptr, 99, 202, pattern.label, 1.0f, 255, 255, 255, pill);
+}
+
 void drawPatternTest(const fortwatch::HapticPattern &pattern, const uint16_t *bg,
                       uint16_t fallback) {
   const uint16_t pill = alertPillColour(bg, fallback);
@@ -477,14 +496,14 @@ void drawPatternTest(const fortwatch::HapticPattern &pattern, const uint16_t *bg
   drawText(F_BODY, nullptr, 34, 30, "TEST", 1.0f, 255, 255, 255, pill);
   if (bg) {
     drawText(F_TITLE, bg, 16, 172, "PATTERN TEST");
-    drawText(F_TINY, bg, 16, 183, pattern.label, 0.90f);
+    drawText(F_BODY, bg, 16, 183, pattern.label);
   } else {
     drawCentered("PATTERN TEST", 154, 2, C_WHITE);
     drawCentered(pattern.label, 178, 1, C_WHITE);
   }
   // Hide both the baked CONFIDENCE text and score track on manual tests.
-  gfx->fillRoundRect(13, 190, 294, 16, 4, pill);
-  drawText(F_TINY, nullptr, 76, 201, "Manual test - no sound detected", 1.0f,
+  gfx->fillRoundRect(13, 190, 294, 18, 5, pill);
+  drawText(F_BODY, nullptr, 60, 203, "Manual test - no sound detected", 1.0f,
            255, 255, 255, pill);
 }
 
@@ -524,26 +543,18 @@ void showAlert(const fortwatch::AlertMessage &message, bool isTest = false) {
   const uint16_t *img = style->image ? screenImage(style->image) : nullptr;
   if (img) {
     gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
-    // Live score over the original empty Figma confidence track.
-    if (!isTest) {
-      const int w = constrain(int(219 * score), 0, 219);
-      if (w > 0) gfx->fillRoundRect(85, 196, w, 6, 3, C_WHITE);
-      drawAlertDirection(message, img);
-    }
+    if (!isTest) drawAlertDirection(message, img);
   } else {
     gfx->fillScreen(style->colour);
     drawCentered(style->title, 60, 6, C_WHITE);
     drawCentered(style->hint, 125, 2, C_WHITE);
-    if (!isTest) {
-      drawAlertDirection(message, nullptr);
-      char detail[32];
-      snprintf(detail, sizeof(detail), "confidence %d%%", int(score * 100));
-      drawCentered(detail, 199, 2, C_WHITE);
-    }
+    if (!isTest) drawAlertDirection(message, nullptr);
     drawCentered("Tap screen or press BOOT to dismiss", 225, 1, C_WHITE);
   }
+  drawAlertBrand(img, style->colour);
   drawAlertVibration(pattern, img, style->colour);
   if (isTest) drawPatternTest(pattern, img, style->colour);
+  else drawAlertRhythm(pattern, img, style->colour);
   vibrate(pattern);
 }
 

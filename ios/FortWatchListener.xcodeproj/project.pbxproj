@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		284D44BB986ADCB754250D87 /* SoundPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0988CC68A3F26586AAA8FC32 /* SoundPresentationTests.swift */; };
+		32CC6912E09BEBB630824F2A /* SoundCatalogTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FC565AED48A5673D461B5C4 /* SoundCatalogTests.swift */; };
 		567D0DCC0D68A9D98C9AAC5A /* SoundHaptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3271B2C9C5D33E3C3B6608A /* SoundHaptics.swift */; };
 		607F8F680668A89FEDACEBA0 /* WristbandBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8FB76E80A337969FC58559 /* WristbandBluetooth.swift */; };
 		6164488E31758E19F513FC93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF05D430F0A02CC326E11988 /* Assets.xcassets */; };
@@ -23,6 +25,7 @@
 		BC5710B0367A064E977DC149 /* Gabarito.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0F6F4148F05EC95B0C1C738D /* Gabarito.ttf */; };
 		D77BDF6AA306670790B9162C /* SoundEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20293B3AA4FEDAACDEDBDA0 /* SoundEvents.swift */; };
 		E2B4DF45FFFAD7B84903C34A /* SpatialBandProbeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A5CD1069A40F304AE977EBC /* SpatialBandProbeTests.swift */; };
+		E6EDA4BF881FE592BE21004F /* SoundIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39EDFB75ED74CA5DFF24E99 /* SoundIdentity.swift */; };
 		EFF3B65DE5F56EE641C8BBC4 /* SpatialCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */; };
 		FBC141F6111AFBF7649E1A43 /* SpatialDirectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 998B1AF7CE5543DE5C2466DB /* SpatialDirectionTests.swift */; };
 /* End PBXBuildFile section */
@@ -39,6 +42,7 @@
 
 /* Begin PBXFileReference section */
 		007848FE177F9C4945A00E94 /* FortWatchListenerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FortWatchListenerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0988CC68A3F26586AAA8FC32 /* SoundPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPresentationTests.swift; sourceTree = "<group>"; };
 		0F6F4148F05EC95B0C1C738D /* Gabarito.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Gabarito.ttf; sourceTree = "<group>"; };
 		2A5CD1069A40F304AE977EBC /* SpatialBandProbeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialBandProbeTests.swift; sourceTree = "<group>"; };
 		34C0A0301EC9650DA508C5CB /* gabarito-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "gabarito-OFL.txt"; sourceTree = "<group>"; };
@@ -46,12 +50,14 @@
 		4808734C41A990345CD7D93A /* FortWatchListener.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FortWatchListener.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66F91122FF50C471490BB797 /* SpatialPCMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialPCMTests.swift; sourceTree = "<group>"; };
 		78C236BB0A23C62FF12BD281 /* AtkinsonHyperlegibleNext.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AtkinsonHyperlegibleNext.ttf; sourceTree = "<group>"; };
+		7FC565AED48A5673D461B5C4 /* SoundCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundCatalogTests.swift; sourceTree = "<group>"; };
 		998B1AF7CE5543DE5C2466DB /* SpatialDirectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialDirectionTests.swift; sourceTree = "<group>"; };
 		9AC919E602B5C1CE83392205 /* SpatialPCM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialPCM.swift; sourceTree = "<group>"; };
 		A20293B3AA4FEDAACDEDBDA0 /* SoundEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEvents.swift; sourceTree = "<group>"; };
 		A254EC61992BFAFEA5A7027F /* SpatialDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialDirection.swift; sourceTree = "<group>"; };
 		A8B8DBF96216160D8BB68AAC /* WristbandProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WristbandProtocolTests.swift; sourceTree = "<group>"; };
 		AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortWatchListenerApp.swift; sourceTree = "<group>"; };
+		B39EDFB75ED74CA5DFF24E99 /* SoundIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundIdentity.swift; sourceTree = "<group>"; };
 		B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialCapture.swift; sourceTree = "<group>"; };
 		BF8FB76E80A337969FC58559 /* WristbandBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WristbandBluetooth.swift; sourceTree = "<group>"; };
 		CF05D430F0A02CC326E11988 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -94,7 +100,9 @@
 		7340E68DFCA929448E28DAAC /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				7FC565AED48A5673D461B5C4 /* SoundCatalogTests.swift */,
 				3E5A2EBA72A64ECA95DC2646 /* SoundEventsTests.swift */,
+				0988CC68A3F26586AAA8FC32 /* SoundPresentationTests.swift */,
 				2A5CD1069A40F304AE977EBC /* SpatialBandProbeTests.swift */,
 				998B1AF7CE5543DE5C2466DB /* SpatialDirectionTests.swift */,
 				66F91122FF50C471490BB797 /* SpatialPCMTests.swift */,
@@ -112,6 +120,7 @@
 				D76DDFEE03C4BF254149188E /* ListenerModel.swift */,
 				A20293B3AA4FEDAACDEDBDA0 /* SoundEvents.swift */,
 				D3271B2C9C5D33E3C3B6608A /* SoundHaptics.swift */,
+				B39EDFB75ED74CA5DFF24E99 /* SoundIdentity.swift */,
 				B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */,
 				A254EC61992BFAFEA5A7027F /* SpatialDirection.swift */,
 				9AC919E602B5C1CE83392205 /* SpatialPCM.swift */,
@@ -217,7 +226,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32CC6912E09BEBB630824F2A /* SoundCatalogTests.swift in Sources */,
 				9E4246BEFC34CCAE2A2B148B /* SoundEventsTests.swift in Sources */,
+				284D44BB986ADCB754250D87 /* SoundPresentationTests.swift in Sources */,
 				E2B4DF45FFFAD7B84903C34A /* SpatialBandProbeTests.swift in Sources */,
 				FBC141F6111AFBF7649E1A43 /* SpatialDirectionTests.swift in Sources */,
 				A73649D9CD5DA342BD44A4AE /* SpatialPCMTests.swift in Sources */,
@@ -233,6 +244,7 @@
 				6A90B3B699D6AD2D5A8EBD4E /* ListenerModel.swift in Sources */,
 				D77BDF6AA306670790B9162C /* SoundEvents.swift in Sources */,
 				567D0DCC0D68A9D98C9AAC5A /* SoundHaptics.swift in Sources */,
+				E6EDA4BF881FE592BE21004F /* SoundIdentity.swift in Sources */,
 				EFF3B65DE5F56EE641C8BBC4 /* SpatialCapture.swift in Sources */,
 				88FA673A93B127B0B7EE9C76 /* SpatialDirection.swift in Sources */,
 				69A9E7E836BEE4272DE4F6EC /* SpatialPCM.swift in Sources */,

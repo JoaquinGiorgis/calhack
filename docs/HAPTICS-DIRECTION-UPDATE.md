@@ -1,5 +1,8 @@
 # Ritmos por sonido y dirección visible
 
+**Revisión posterior instalada:** [identidad de sonidos](design/SOUND-IDENTITY.md).
+Este documento conserva la verificación de la revisión anterior.
+
 25/10/2026. Continúa el [diagnóstico previo](DIRECTION-DESIGN-UPDATE.md).
 
 ## Qué cambió
