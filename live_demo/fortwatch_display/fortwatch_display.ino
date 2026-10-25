@@ -29,7 +29,9 @@
 #include <BLEServer.h>
 #include <BLEUtils.h>
 #include <Wire.h>
-#include "screens.h"  // generated: python ../screen_preview/png_to_rgb565.py ../../docs/design/firmware_screens screens.h
+#include "screens.h"
+#include "fonts.h"
+#include "icons.h"    // generated: python ../fonts/make_icons.py icons.h (alert icons from Figma)    // generated: python ../fonts/make_font_atlas.py fonts.h (Inter, SIL OFL)  // generated: python ../screen_preview/png_to_rgb565.py ../../docs/design/firmware_screens screens.h
 
 #define PIN_LCD_SCLK 39
 #define PIN_LCD_MOSI 38
@@ -195,37 +197,83 @@ void restoreRegion(const uint16_t *img, int x, int y, int w, int h) {
   }
 }
 
-// Live level meter on the Listening screen (region from Figma: x16 y69 288x96).
-const int METER_BARS = 36, METER_X = 17, METER_BOTTOM = 165, METER_H = 96, BAR_W = 5, BAR_STEP = 8;
-const uint16_t C_METER_GREEN = 0x262B;  // #22C55E
-const uint16_t C_METER_AMBER = 0xF4E1;  // #F59E0B
-uint8_t barHeight[METER_BARS];
+// ---- Text: Inter glyph atlases (fonts.h), alpha-blended over the background image ----
+uint16_t glyphBuffer[64 * 64];
+
+inline uint16_t blend565(uint16_t bg, uint8_t r, uint8_t g, uint8_t b, uint16_t a /*0..256*/) {
+  uint8_t br = (bg >> 11) << 3, bgg = ((bg >> 5) & 0x3F) << 2, bb = (bg & 0x1F) << 3;
+  uint8_t R = br + (((int)r - br) * a >> 8), G = bgg + (((int)g - bgg) * a >> 8), B = bb + (((int)b - bb) * a >> 8);
+  return ((R & 0xF8) << 8) | ((G & 0xFC) << 3) | (B >> 3);
+}
+
+// Draws text with its left edge at x and its baseline at y; returns the x after the text.
+int drawText(const AtlasFont &f, const uint16_t *bg, int x, int y, const char *text,
+             float opacity = 1.0f, uint8_t r = 255, uint8_t g = 255, uint8_t b = 255) {
+  uint16_t op = uint16_t(opacity * 256);
+  for (const char *p = text; *p; p++) {
+    uint8_t code = (uint8_t)*p;
+    if (code < f.first || code > f.last) continue;
+    const Glyph &gl = f.glyphs[code - f.first];
+    int gx = x + gl.xoff, gy = y + gl.yoff;
+    if (gl.w && gl.h && gl.w * gl.h <= (int)sizeof(glyphBuffer) / 2 && gx >= 0 && gy >= 0 && gx + gl.w <= 320 && gy + gl.h <= 240) {
+      for (int j = 0; j < gl.h; j++) {
+        for (int i = 0; i < gl.w; i++) {
+          uint16_t a = (f.alpha[gl.offset + j * gl.w + i] * op) >> 8;
+          glyphBuffer[j * gl.w + i] = blend565(bg[(gy + j) * 320 + gx + i], r, g, b, a);
+        }
+      }
+      gfx->draw16bitRGBBitmap(gx, gy, glyphBuffer, gl.w, gl.h);
+    }
+    x += gl.adv + f.tracking;
+  }
+  return x;
+}
+
+// ---- Home screen (iOS-style Liquid Glass, designed in Figma: docs/design/firmware_screens/home.png) ----
+// Live parts drawn on top: clock + date (from the Mac's T message), level bars, status, last alert.
+char clockText[8] = "";
+char dateText[32] = "";
+char lastAlertTitle[16] = "";
+const char *lastAlertIcon = nullptr;  // icon name in icons.h (same as the screen name)
+uint32_t lastAlertMs = 0;
+uint32_t lastAgoDrawMs = 0;
+
+const int BARS = 14, BAR_X = 24, BAR_BOTTOM = 200, BAR_MAX = 36, BAR_W = 6, BAR_STEP = 9;
+uint8_t barHeight[BARS];
 int meterLevel = 0;
 uint32_t lastMeterMs = 0;
-uint16_t columnBuffer[BAR_W * METER_H];
+uint16_t columnBuffer[BAR_W * BAR_MAX];
+
+const uint16_t *homeBg() { return screenImage("home"); }
 
 void drawBar(const uint16_t *bg, int i, int h) {
-  int x = METER_X + i * BAR_STEP, top = METER_BOTTOM - METER_H;
-  uint16_t colour = h > 60 ? C_METER_AMBER : C_METER_GREEN;
-  for (int r = 0; r < METER_H; r++) {
-    bool on = r >= METER_H - h;
+  int x = BAR_X + i * BAR_STEP, top = BAR_BOTTOM - BAR_MAX;
+  bool hot = meterLevel > 60;
+  uint8_t r = 255, g = hot ? 191 : 255, b = hot ? 36 : 255;  // white, amber (#FFBF24) when loud
+  for (int row = 0; row < BAR_MAX; row++) {
+    int fromBottom = BAR_MAX - 1 - row;
     for (int c = 0; c < BAR_W; c++) {
-      columnBuffer[r * BAR_W + c] = on ? colour : bg[(top + r) * 320 + x + c];
+      bool on = fromBottom < h;
+      // round the top and bottom corners: drop the outer pixels of the first/last two rows
+      int edge = min(h - 1 - fromBottom, fromBottom);
+      if (on && edge < 2 && (c == 0 || c == BAR_W - 1)) on = false;
+      uint16_t px = bg[(top + row) * 320 + x + c];
+      columnBuffer[row * BAR_W + c] = on ? blend565(px, r, g, b, 230) : px;
     }
   }
-  gfx->draw16bitRGBBitmap(x, top, columnBuffer, BAR_W, METER_H);
+  gfx->draw16bitRGBBitmap(x, top, columnBuffer, BAR_W, BAR_MAX);
 }
 
 void updateMeter() {
-  const uint16_t *bg = screenImage("listening");
+  const uint16_t *bg = homeBg();
   if (screen != Screen::Listening || bg == nullptr || millis() - lastMeterMs < 50) return;
   lastMeterMs = millis();
   float t = millis() * 0.004f;
-  for (int i = 0; i < METER_BARS; i++) {
-    float x = i / float(METER_BARS - 1);
-    float env = expf(-powf((x - 0.5f) / 0.3f, 2));
+  for (int i = 0; i < BARS; i++) {
+    float x = i / float(BARS - 1);
+    float env = expf(-powf((x - 0.5f) / 0.32f, 2));
     float wob = 0.55f + 0.45f * fabsf(sinf(t + i * 1.7f));
-    int target = 4 + int(88 * (meterLevel / 100.0f) * env * wob);
+    int target = 4 + int((BAR_MAX - 4) * (meterLevel / 100.0f) * env * wob);
     int h = barHeight[i] + (target - barHeight[i]) / 2;  // ease towards the target
     if (h != barHeight[i]) {
       barHeight[i] = h;
@@ -236,21 +284,57 @@ void updateMeter() {
 
 void drawLevelBar(int level) { meterLevel = level; }
 
-void drawListeningFooter() {
-  const uint16_t *bg = screenImage("listening");
-  if (bg == nullptr) return;
-  restoreRegion(bg, 16, 197, 288, 31);  // caption region from Figma
-  restoreRegion(bg, 228, 19, 76, 13);   // link label region
-  gfx->setTextSize(1);
-  gfx->setTextColor(0x9D15);  // muted grey
-  gfx->setCursor(240, 22);
-  gfx->print(linkName);
-  gfx->setTextColor(C_WHITE);
-  gfx->setCursor(16, 202);
-  gfx->print(meterLevel > 60 ? "Hearing sound - below alert" : "Quiet room");
-  gfx->setTextColor(0x9D15);
-  gfx->setCursor(16, 216);
-  gfx->printf("Alerts: %lu", (unsigned long)alertCount);
+void drawClock() {
+  const uint16_t *bg = homeBg();
+  if (!bg) return;
+  restoreRegion(bg, 10, 24, 220, 62);   // clock
+  restoreRegion(bg, 14, 90, 220, 20);   // date
+  drawText(F_CLOCK, bg, 14, 80, clockText[0] ? clockText : "--:--", clockText[0] ? 1.0f : 0.35f);
+  if (dateText[0]) drawText(F_BODY, bg, 18, 105, dateText, 0.85f);
+}
+
+void drawStatus() {
+  const uint16_t *bg = homeBg();
+  if (!bg) return;
+  restoreRegion(bg, 20, 206, 134, 16);
+  char status[40];
+  snprintf(status, sizeof(status), "%s \x7f %s", linkName[0] ? linkName : "Phone", meterLevel > 60 ? "hearing sound" : "quiet");
+  drawText(F_TINY, bg, 24, 218, status, 0.7f);
+}
+
+// Alert icon (alpha mask from icons.h) blended over the background.
+void drawIcon(const uint16_t *bg, const char *name, int x, int y, float opacity = 1.0f) {
+  const uint8_t *mask = nullptr;
+  for (int i = 0; i < ICON_COUNT; i++) if (strcmp(ICONS[i].name, name) == 0) mask = ICONS[i].alpha;
+  if (!mask) return;
+  uint16_t op = uint16_t(opacity * 256);
+  for (int j = 0; j < ICON_SIZE; j++)
+    for (int i = 0; i < ICON_SIZE; i++)
+      glyphBuffer[j * ICON_SIZE + i] = blend565(bg[(y + j) * 320 + x + i], 255, 255, 255, (mask[j * ICON_SIZE + i] * op) >> 8);
+  gfx->draw16bitRGBBitmap(x, y, glyphBuffer, ICON_SIZE, ICON_SIZE);
+}
+
+void drawLastAlert() {
+  const uint16_t *bg = homeBg();
+  if (!bg) return;
+  restoreRegion(bg, 170, 156, 134, 66);
+  char ago[24], count[24];
+  if (lastAlertTitle[0]) {
+    uint32_t mins = (millis() - lastAlertMs) / 60000;
+    if (mins == 0) snprintf(ago, sizeof(ago), "just now");
+    else if (mins < 60) snprintf(ago, sizeof(ago), "%lu min ago", (unsigned long)mins);
+    else snprintf(ago, sizeof(ago), "%lu h ago", (unsigned long)(mins / 60));
+    int tx = 174;
+    if (lastAlertIcon) { drawIcon(bg, lastAlertIcon, 174, 162); tx = 200; }
+    drawText(F_TITLE, bg, tx, 179, lastAlertTitle);
+  } else {
+    snprintf(ago, sizeof(ago), "Nothing yet");
+    drawText(F_TITLE, bg, 174, 179, "All quiet", 0.9f);
+  }
+  snprintf(count, sizeof(count), "%lu alert%s so far", (unsigned long)alertCount, alertCount == 1 ? "" : "s");
+  drawText(F_SMALL, bg, 174, 197, ago, 0.8f);
+  drawText(F_TINY, bg, 174, 218, count, 0.6f);
+  lastAgoDrawMs = millis();
 }
 
 void showWaiting() {
@@ -270,11 +354,13 @@ void showWaiting() {
 void showListening() {
   screen = Screen::Listening;
   lastLevel = -1;
-  const uint16_t *img = screenImage("listening");
+  const uint16_t *img = homeBg();
   if (img) {
     gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
     memset(barHeight, 0, sizeof(barHeight));
-    drawListeningFooter();
+    drawClock();
+    drawStatus();
+    drawLastAlert();
     return;
   }
   gfx->fillScreen(C_BLACK);
@@ -305,6 +391,10 @@ void showAlert(const char *eventName, float score) {
   screen = Screen::Alert;
   alertStartedMs = millis();
   alertCount++;
+  strncpy(lastAlertTitle, style->title, sizeof(lastAlertTitle) - 1);
+  lastAlertTitle[sizeof(lastAlertTitle) - 1] = '\0';
+  lastAlertMs = millis();
+  lastAlertIcon = style->image;
   const uint16_t *img = style->image ? screenImage(style->image) : nullptr;
   if (img) {
     gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
@@ -333,8 +423,17 @@ void handleLine(char *text) {
       bool crossed = (level > 60) != (lastLevel > 60);
       drawLevelBar(level);
       lastLevel = level;
-      if (crossed && screenImage("listening")) drawListeningFooter();
+      if (crossed && homeBg()) drawStatus();
     }
+  } else if (text[0] == 'T' && text[1] == ',') {
+    // T,HH:MM,<date>  — local time from the Mac (the board has no clock of its own)
+    char *time = text + 2;
+    char *comma = strchr(time, ',');
+    if (comma) *comma = '\0';
+    bool changed = strcmp(clockText, time) != 0 || (comma && strcmp(dateText, comma + 1) != 0);
+    strncpy(clockText, time, sizeof(clockText) - 1);
+    if (comma) strncpy(dateText, comma + 1, sizeof(dateText) - 1);
+    if (changed && screen == Screen::Listening) drawClock();
   } else if (text[0] == 'E' && text[1] == ',') {
     char *eventName = text + 2;
     char *comma = strchr(eventName, ',');
@@ -430,6 +529,7 @@ void loop() {
   updateVibration();
   updateMeter();
   uint32_t now = millis();
+  if (screen == Screen::Listening && lastAlertTitle[0] && now - lastAgoDrawMs > 30000) drawLastAlert();
 
   static bool wasTouched = false;
   bool touched = screenTouched();

@@ -7,6 +7,7 @@ Audio never leaves the Mac. The ESP32 only receives short text messages:
 
     L,<0-100>            sound level, sent every hop (for the level bar)
     E,<EVENT>,<score>    detected event, e.g. "E,KNOCK,0.62"
+    T,<HH:MM>,<date>     local time for the home-screen clock, every 10 s
 
 Examples:
     .venv/bin/python live_demo/mac_listener.py                  # Bluetooth (default)
@@ -16,12 +17,15 @@ Examples:
     .venv/bin/python live_demo/mac_listener.py --device iPhone  # use the iPhone mic
     .venv/bin/python live_demo/mac_listener.py --set KNOCK=0.25 --set SPEECH=0.6
 
-Optional analytics: set FORTWATCH_ANALYTICS_URL and
-FORTWATCH_ANALYTICS_KEY, or pass --analytics-url/--analytics-key. Only alert names,
-scores and the 0-100 level are uploaded, never audio.
+Optional analytics: put FORTWATCH_ANALYTICS_URL=... and FORTWATCH_ANALYTICS_KEY=...
+in live_demo/analytics.env (git-ignored), or set them as environment variables, or pass
+--analytics-url/--analytics-key. Only alert names, scores and the 0-100 level are
+uploaded, never audio.
 """
 
 from __future__ import annotations
+
+from datetime import datetime
 
 import argparse
 import asyncio
@@ -105,7 +109,18 @@ EVENTS = {
 }
 
 
+def load_env_file(path: Path) -> None:
+    """Read KEY=VALUE lines (the analytics secrets) without overriding the real environment."""
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        key, sep, value = line.strip().partition("=")
+        if sep and not key.startswith("#"):
+            os.environ.setdefault(key.removeprefix("export ").strip(), value.strip().strip("'\""))
+
+
 def parse_args() -> argparse.Namespace:
+    load_env_file(Path(__file__).with_name("analytics.env"))
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--list-devices", action="store_true", help="list microphones and exit")
     parser.add_argument("--device", help="microphone index or part of its name (default: system input)")
@@ -343,20 +358,21 @@ class Analytics:
     def _warn(self, message: str) -> None:
         if time.monotonic() - self.last_warning > 30:
             self.last_warning = time.monotonic()
-            print(f"  Analytics: {message} (alerts are kept and retried)")
+            print(f"  Analytics: {message}")
 
     def _run(self) -> None:
         next_heartbeat = 0.0
         while True:
             self.wake.wait(timeout=0.5)
             self.wake.clear()
+            # Take the batch out of the queue while it's in flight, so alert() trimming
+            # the queue can't drop alerts that haven't been sent yet.
+            with self.lock:
+                batch, self.pending = self.pending[:200], self.pending[200:]
             try:
-                with self.lock:
-                    batch = self.pending[:200]
                 if batch:
                     self._post("alert", {"deviceId": self.device_id, "alerts": batch})
-                    with self.lock:
-                        del self.pending[:len(batch)]
+                    batch = []
                 if time.monotonic() >= next_heartbeat:
                     next_heartbeat = time.monotonic() + self.HEARTBEAT_SECONDS
                     self._post("heartbeat", {
@@ -365,13 +381,21 @@ class Analytics:
                     })
             except urllib.error.HTTPError as error:
                 if error.code == 401:
-                    self._warn("server rejected the device key; check FORTWATCH_ANALYTICS_KEY")
+                    self._warn("server rejected the device key; check FORTWATCH_ANALYTICS_KEY"
+                               " (alerts are kept and retried)")
+                elif 400 <= error.code < 500 and error.code not in (408, 429):
+                    # The server will never accept this batch; retrying would block the queue.
+                    self._warn(f"server refused {len(batch)} alert(s) with error {error.code}; dropped")
+                    batch = []
                 else:
-                    self._warn(f"server error {error.code}")
+                    self._warn(f"server error {error.code} (alerts are kept and retried)")
                 time.sleep(5)
             except (urllib.error.URLError, OSError) as error:
-                self._warn(f"can't reach the server ({error})")
+                self._warn(f"can't reach the server ({error}) (alerts are kept and retried)")
                 time.sleep(5)
+            if batch:
+                with self.lock:
+                    self.pending = (batch + self.pending)[-self.MAX_BUFFER:]
 
 
 def main() -> None:
@@ -408,6 +432,7 @@ def main() -> None:
     hop_samples = int(MODEL_RATE * args.hop)
     pending = np.zeros(0, np.float32)
     silent_hops = 0
+    next_clock = 0.0  # the wristband has no clock of its own: send it the time
 
     print(f"Microphone: {info['name']} ({mic_rate} Hz, resampled to {MODEL_RATE} Hz)")
     print(f"ESP32 link: {link_type}")
@@ -430,6 +455,9 @@ def main() -> None:
             db = 20 * np.log10(rms + 1e-10)
             level = int(np.clip((db + 60) / 60 * 100, 0, 100))  # -60 dBFS..0 dBFS -> 0..100
             link.send(f"L,{level}")
+            if time.monotonic() >= next_clock:
+                next_clock = time.monotonic() + 10
+                link.send("T," + datetime.now().strftime("%H:%M,%A, %b %-d"))
             wristband_connected = bool(getattr(link, "connected", False))
             if analytics:
                 analytics.update(level, wristband_connected)

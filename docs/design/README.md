@@ -7,6 +7,7 @@ Archivo Figma: https://www.figma.com/design/cH0vUVYbWNC08hdZPzTIaw
 | **Cover** | Foto (IA) de la **carcasa v3.1** (4,2 × 9,2 cm) con el **power bank atravesado en la muñeca y pegado a la punta**, y la **pantalla KNOCK real** en el área activa 4:3 del display |
 | **Scenarios** | 5 escenas (puerta, alarma, bocina, bebé, vidrio): foto + texto "oye → muestra → vibra" + pulsera con la alerta correcta |
 | **Prototype** | Flujo navegable (▶ Present): Waiting → Listening → Hearing → KNOCK → ALARM, toque para descartar |
+| **Home screen (Liquid Glass)** | Pantalla principal estilo iOS: wallpaper fotográfico, reloj, widgets de vidrio *Listening* (barras en vivo) y *Last alert* (ícono + nombre + hace cuánto). La variante *Home (firmware)* es el fondo que usa la pulsera; el resto lo dibuja el firmware con Inter |
 | **Components** | `Alert screen` (10 variantes, 320×240), `System screen` (Waiting/Listening/Hearing), `Vibration pattern` (Safety/Attention/Low), `Wristband device` (mockup), íconos |
 | Variables `SoundSense` (nombre viejo, sigue así en Figma) | Colores por alerta (contraste AA con texto blanco) |
 

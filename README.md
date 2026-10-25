@@ -152,6 +152,15 @@ The terminal prints YAMNet's top three guesses with scores twice a second. To tu
 threshold, make the sound a few times, note its typical score, and set the threshold
 a bit below it.
 
+### Live analytics dashboard (optional)
+
+`mac_listener.py` can also upload every alert (name, score, level, whether the
+wristband got it; never audio) plus the live level to the team's analytics dashboard.
+Copy `live_demo/analytics.env.example` to `live_demo/analytics.env` and fill in the URL
+and device key (ask the team; the file is git-ignored so the secrets never get
+committed). On start the terminal says `Analytics: on, as <name>`. Without the file it
+stays off.
+
 ## Troubleshooting
 
 | Symptom | Fix |
@@ -171,6 +180,7 @@ The same text messages go over Bluetooth LE or USB:
 |---|---|
 | `L,<0-100>` | Sound level, every 0.5 s (drives the level bar) |
 | `E,<EVENT>,<score>` | Detected alert, e.g. `E,KNOCK,0.62`. Unknown names still display |
+| `T,<HH:MM>,<date>` | Local time for the home-screen clock, every 10 s (the wristband has no clock) |
 
 - **Bluetooth:** the wristband advertises as `FortWatch` with service
   `6b1a0001-5d1e-4c3b-9a7e-50554e445345`. Each write to characteristic

@@ -48,7 +48,9 @@ def main(src: str, dst: str) -> None:
     names = []
     for f in files:
         img = Image.open(f)
-        assert img.size == (320, 240), f"{f.name} is {img.size}, expected 320x240"
+        if img.size != (320, 240):
+            print(f"{f.name} is {img.size[0]}x{img.size[1]}, not a 320x240 screen; skipped")
+            continue
         px = to_rgb565(img).flatten()
         ident = "SCREEN_" + f.stem.upper()
         names.append((ident, f.stem))
