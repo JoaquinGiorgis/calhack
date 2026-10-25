@@ -36,6 +36,7 @@ golpe azul, timbre violeta, teléfono gris azulado, perro marrón y voz verde.
 | Diez categorías con identidad y ritmo propios | PASS: catálogo/selector/hápticos coinciden; símbolos y textos distintos |
 | Los 22 alias existen y se asignan a su categoría | PASS: clasificador Apple instalado y pruebas de selección aisladas |
 | Contraste de paleta | PASS: blanco sobre los diez colores ≥6:1; señal sobre tinta ≥8.7:1 |
+| Biblioteca real | PASS: abre desde inicio; árbol accesible contiene las diez categorías y Test deshabilitado sin conexión |
 | Datos recientes sin dirección prestada | PASS: 4 pruebas específicas de presentación |
 | Suite iOS | PASS: 47 tests, cero fallos |
 | Pantallas normales de los diez sonidos | PASS: renders nativos aislados, etiquetados como simulación, inspeccionados |
@@ -65,3 +66,10 @@ Evidencia de esta revisión: `/tmp/fortwatch-identity-update/identity-tests.xcre
 ![Diez tarjetas de la pulsera, render de software con datos sintéticos](wristband-sound-identities.png)
 
 ![Diez identidades de la app, vistas simuladas](ios/sound-identities.png)
+
+La revisión de píxeles detectó texto secundario con contraste 3.91–4.17:1 en
+zonas de las tarjetas neutras. Se cambió su capa blanca por tinta al 45%; las
+mismas cuatro muestras quedaron entre 8.45 y 11.53:1. No es una auditoría de
+cada píxel de la pantalla. La corrección compiló para simulador/iPhone y se
+instaló (`contrast-iphone-install.log`). La captura actual de la biblioteca es
+de la app real del simulador, sin detecciones ni conexión BLE.

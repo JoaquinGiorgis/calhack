@@ -281,7 +281,7 @@ private struct FrostedSurface: ViewModifier {
                     .background(.ultraThinMaterial, in: .rect(cornerRadius: radius))
             } else {
                 content
-                    .background(.white.opacity(0.14), in: .rect(cornerRadius: radius))
+                    .background(ListenerStyle.ink.opacity(0.45), in: .rect(cornerRadius: radius))
                     .background(.ultraThinMaterial, in: .rect(cornerRadius: radius))
             }
         }

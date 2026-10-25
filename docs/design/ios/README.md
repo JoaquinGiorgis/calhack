@@ -41,6 +41,6 @@ Estado funcional y pruebas físicas: [identidad de sonidos](../SOUND-IDENTITY.md
 
 ![Vista de diseño con KNOCK simulado, no una medición](knock-preview.png)
 
-![Guía de ritmos, vista de diseño sin pruebas físicas](vibration-guide-preview.png)
+![Biblioteca de la app real en simulador, sin conexión con pulsera](vibration-guide-preview.png)
 
 ![Los diez tipos en vistas simuladas de la interfaz](sound-identities.png)
