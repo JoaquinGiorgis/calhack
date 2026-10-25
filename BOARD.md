@@ -50,11 +50,12 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | S3 | DONE | Vibración por prioridad en el firmware (seguridad 3 largas · atención 2 cortas · baja 1 corta · autotest al encender) | Joaquin | — | Compila; falta probar con el motor (H6) |
 | S4 | DOING | Probar en vivo cada alerta con sonidos reales y ajustar con `--set`. ✅ Mic iPhone + USB: CAR_HORN 0.57–0.87, SPEECH 0.90–0.98 llegan a la pulsera. ❌ Golpes en la mesa → "Basketball bounce", no KNOCK (probar con una puerta) | Joaquin | S1 | Tabla alerta → score típico |
 | S5 | TODO | Modo ensayo: pasar una grabación fija por el mismo pipeline (demo reproducible) | | S1 | Demo idéntica cada vez |
-| S6 | DOING | (Implementado, falta probar) Descartar alerta tocando la pantalla (touch CST816 en I2C SDA 48 / SCL 47) — dentro de la carcasa el BOOT queda en la ranura del USB | | S2 | Toque descarta |
+| S6 | DONE | Táctil CST816 (I2C SDA 48 / SCL 47): tocar descarta la alerta; en la home, mantener 1 s (o BOOT) prende/apaga SPEECH (ícono On/Off junto al reloj, guardado en flash) | Joaquin | S2 | ✅ 25/10: probado en la placa |
 | S7 | DONE | Diseño Figma de las 13 pantallas + escenarios + prototipo ([docs/design](docs/design/README.md)) y **slider** en la pulsera (`live_demo/screen_preview`) para verlas en el display real | Joaquin | — | Slider corriendo en la placa |
 | S8 | DONE | Pantallas de Figma en el firmware real (`fortwatch_display`): imagen de cada alerta + barra de confianza real, ecualizador en vivo, nº de alertas | Joaquin | S7 | Alertas en vivo con el diseño nuevo |
 | S9 | DONE | Home estilo iOS *Liquid Glass*: wallpaper real, reloj (hora desde la Mac), widgets Listening/Last alert con ícono, texto Inter con antialias | Joaquin | S8 | ✅ Cargado en la placa (24/10); falta confirmar visualmente |
 | S10 | DONE | Analytics en vivo (dashboard de Mana): la **pulsera sube cada alerta por WiFi** ella misma (`wifi_analytics.h`, secretos en `secrets.h` git-ignorado); el ícono de SPEECH es una persona hablando. El WiFi de Cal Hacks es solo 5/6 GHz y la ESP32-S3 solo usa 2,4 GHz → usa el hotspot del iPhone ("Maximizar compatibilidad") | Joaquin, Nico | S2 | ✅ 24/10: conectada al hotspot, serial dice `Analytics: uploaded`; la Mac ya no sube (sin duplicados) |
+| S11 | DONE | Golpes en la puerta se confundían con GLASS: KNOCK suma clases de golpe en madera (Door, Wood, Chop, Hammer…) y GLASS se descarta cuando esas ganan. WiFi de la pulsera sin escaneo continuo (ya no se reinicia si se corta el hotspot); listener reconecta si se apaga el Bluetooth | Joaquin | S1 | Golpes salen como KNOCK en vivo |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |

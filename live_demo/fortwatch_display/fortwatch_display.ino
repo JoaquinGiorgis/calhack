@@ -528,15 +528,22 @@ void startBluetooth() {
   Serial.printf("BLE advertising as %s (%s)\n", BLE_NAME, BLEDevice::getAddress().toString().c_str());
 }
 
-// CST816 touch: register 0x02 = number of fingers on the screen.
+// CST816 touch: registers 0x02 = number of fingers, 0x03-0x06 = X/Y (12-bit, raw panel
+// coordinates in portrait). touchX/touchY hold the last raw point while a finger is down.
 bool touchReady = false;
+int touchX = -1, touchY = -1;
 bool screenTouched() {
   if (!touchReady) return false;
   Wire.beginTransmission(TOUCH_ADDR);
   Wire.write(0x02);
   if (Wire.endTransmission(false) != 0) return false;
-  if (Wire.requestFrom(TOUCH_ADDR, 1) != 1) return false;
-  return (Wire.read() & 0x0F) > 0;
+  if (Wire.requestFrom(TOUCH_ADDR, 5) != 5) return false;
+  uint8_t fingers = Wire.read() & 0x0F;
+  uint8_t xh = Wire.read(), xl = Wire.read(), yh = Wire.read(), yl = Wire.read();
+  if (fingers == 0) return false;
+  touchX = ((xh & 0x0F) << 8) | xl;
+  touchY = ((yh & 0x0F) << 8) | yl;
+  return true;
 }
 
 void setup() {
@@ -551,6 +558,8 @@ void setup() {
   pinMode(PIN_LCD_BL, OUTPUT);
   digitalWrite(PIN_LCD_BL, HIGH);
   touchReady = Wire.begin(PIN_TOUCH_SDA, PIN_TOUCH_SCL, 400000);
+  Wire.beginTransmission(TOUCH_ADDR);
+  Serial.printf("Touch controller %s\n", Wire.endTransmission() == 0 ? "found" : "not answering (asleep until touched?)");
   prefs.begin("fortwatch", false);
   speechEnabled = prefs.getBool("speech", true);
   startBluetooth();
@@ -571,6 +580,7 @@ void loop() {
   bool touched = screenTouched();
   bool tap = touched && !wasTouched;
   wasTouched = touched;
+  if (tap) Serial.printf("Touch: raw x=%d y=%d\n", touchX, touchY);  // for mapping the panel
 
   // Hold the home screen (or BOOT) for 1 s to turn SPEECH alerts on/off. Only presses that
   // start on the home screen count, so the tap that dismisses an alert can't toggle it.
