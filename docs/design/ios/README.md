@@ -2,8 +2,8 @@
 
 **Diseño vigente:** [Orbit redesign](../ORBIT-REDESIGN.md). Círculo grande con
 creciente lima, nombre destacado, dirección debajo y superficies smoke. Las
-capturas `orbit-*.png` corresponden a esta revisión. Software compilado y probado;
-instalación en ambos dispositivos pendiente. La franja lima y las capturas de
+capturas `orbit-*.png` corresponden a esta revisión. Software compilado, probado e
+instalado en ambos dispositivos; validación física de sonidos/dirección pendiente. La franja lima y las capturas de
 la sección siguiente documentan el diseño anterior.
 
 ## Revisión anterior

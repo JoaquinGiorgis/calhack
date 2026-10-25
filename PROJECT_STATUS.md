@@ -5,7 +5,7 @@
 > Apple SoundAnalysis and ten-category iPhone notes below describe the earlier revision.
 > The [Orbit screen redesign](docs/design/ORBIT-REDESIGN.md) now matches the website
 > across native iPhone and firmware alerts. Builds and software checks pass;
-> installing this revision and physical direction validation remain pending.
+> revision `1e782dc` is installed on both devices. Physical direction validation remains pending.
 
 *Last updated: 2026-10-25, during Cal Hacks 13.0 (Palace of Fine Arts, San Francisco).*
 

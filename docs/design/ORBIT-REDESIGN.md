@@ -43,7 +43,7 @@ geometry and preserve all existing state and freshness guards.
 
 ## Verification
 
-Software ready; installation and physical validation pending. The design changes
+Software installed; physical sound/direction validation pending. The design changes
 do not alter the model, BLE contract, pulse arrays or analytics compatibility.
 
 - iOS full suite: 69 tests passed (66 production tests plus three opt-in visual
@@ -61,9 +61,26 @@ do not alter the model, BLE contract, pulse arrays or analytics compatibility.
 - The interactive preview compares **Orbit** and **Focus**. Orbit informs the
   native implementation; Focus is an alternative mockup, not a shipped app mode.
   Both preview variants use simulated inputs.
-- The iPhone remains unavailable in CoreDevice and there is no wristband USB
-  port. Neither new design has been installed on physical hardware this pass.
-  Physical direction/calibration quality remains unresolved from earlier work.
+- On the following user-requested installation pass, both devices became available.
+  The signed app installed and launched successfully; CoreDevice confirmed its
+  process remained running. ESP32-S3 app0 was written and its hash verified, then
+  the board rebooted and advertised the FortWatch BLE service. Physical screen,
+  microphone, motor and direction/calibration checks remain pending.
+
+### Device installation — 25 October 2026
+
+Revision `1e782dc`. Current partition table matched the build before writing
+3,712,992 bytes only at app0 (`0x10000`). No NVS, partition table or credential
+file was changed. Dashboard configuration is preserved; this pass did not test
+an actual dashboard upload. No synthetic alert was sent as a real detection.
+
+- Firmware SHA-256: `9b3edd3baeebaa095c6d2a150fa88b639feca90c9be400a952ee3eb33a2331ab`.
+- iPhone executable SHA-256: `c0e823f2a62f97deb66607a0e25e86aafa72d6acc14d48d187cf77e7b1e8baa7`.
+- Installation evidence: `/tmp/fortwatch-orbit-install.json`,
+  `/tmp/fortwatch-orbit-launch.json`, `/tmp/fortwatch-orbit-processes.json`,
+  `/tmp/fortwatch-orbit-partition-read.log`, `/tmp/fortwatch-orbit-flash.log`.
+- BLE scan detected the actual FortWatch advertisement after reboot. Opening the
+  serial port later yielded no startup messages; no boot-log claim is made.
 
 ## Evidence
 

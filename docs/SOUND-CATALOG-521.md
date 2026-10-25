@@ -61,7 +61,7 @@ Weaker guesses cannot become alerts merely because the winner is cooling down. T
 | New model inference on connected iPhone | PASS, 3 runtime tests | All 521 synthetic score parity, six source-rate conversion checks, window scheduling; predictions 5.07–8.76ms |
 | New visual render review | PASS within software scope | Native SwiftUI cards, three sample library rows and largest accessibility text size inspected; 521 firmware titles checked. Actual Simulator search returned Piano/Electric piano; Nature filter returned 17 classes; no-results state and search dismissal verified. Physical screen review remains pending |
 | New firmware build | PASS | Orbit composition and Gabarito/Atkinson atlases; analytics enabled, RAM 84,108 B, flash 3,712,625 B; no credentials changed |
-| Final app + firmware installation | PENDING | Both USB devices became unavailable after the model runtime test; final D-support pair not installed |
+| Final app + firmware installation | PASS | Orbit revision `1e782dc`: iPhone installation/launch/process verified; ESP32-S3 app0 hash verified and FortWatch BLE advertisement detected after reboot. Physical sound/direction validation remains pending |
 | Expanded dashboard vocabulary | NOT VERIFIED | Mana project requires access; never send unknown IDs into legacy batch until contract is verified |
 
 Detailed model reproducibility, version hashes, original conversion failure and
