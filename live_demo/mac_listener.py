@@ -7,6 +7,7 @@ Audio never leaves the Mac. The ESP32 only receives short text messages:
 
     L,<0-100>            sound level, sent every hop (for the level bar)
     E,<EVENT>,<score>    detected event, e.g. "E,KNOCK,0.62"
+    T,<HH:MM>,<date>     local time for the home-screen clock, every 10 s
 
 Examples:
     .venv/bin/python live_demo/mac_listener.py                  # Bluetooth (default)
@@ -18,6 +19,8 @@ Examples:
 """
 
 from __future__ import annotations
+
+from datetime import datetime
 
 import argparse
 import asyncio
@@ -299,6 +302,7 @@ def main() -> None:
     hop_samples = int(MODEL_RATE * args.hop)
     pending = np.zeros(0, np.float32)
     silent_hops = 0
+    next_clock = 0.0  # the wristband has no clock of its own: send it the time
 
     print(f"Microphone: {info['name']} ({mic_rate} Hz, resampled to {MODEL_RATE} Hz)")
     print(f"ESP32 link: {link_type}")
@@ -320,6 +324,9 @@ def main() -> None:
             db = 20 * np.log10(rms + 1e-10)
             level = int(np.clip((db + 60) / 60 * 100, 0, 100))  # -60 dBFS..0 dBFS -> 0..100
             link.send(f"L,{level}")
+            if time.monotonic() >= next_clock:
+                next_clock = time.monotonic() + 10
+                link.send("T," + datetime.now().strftime("%H:%M,%A, %b %-d"))
 
             silent_hops = silent_hops + 1 if rms == 0.0 else 0
             if silent_hops == int(3 / args.hop):
