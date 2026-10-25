@@ -12,9 +12,9 @@
 // Over BLE, each write to the RX characteristic is one message; over USB,
 // messages are newline-terminated. Both paths feed the same handler.
 //
-// Home and waiting use the Figma backgrounds (docs/design, exported to screens.h).
-// Alerts use the same category colours, Inter type and icons on a dark layout,
-// with a circular cue for the dominant sound direction captured with the alert.
+// Screens use the original Figma backgrounds (docs/design, exported to screens.h).
+// Alerts overlay a live confidence bar and a compact captured-direction strip;
+// unknown event names use a plain text fallback.
 //
 // The alert stays up for ALERT_MS or until the screen is tapped / BOOT is pressed.
 // Each alert also vibrates (130 motor on GPIO17 through a PN2222 + 1N4007,
@@ -405,189 +405,48 @@ void showListening() {
   drawCentered(footer, 205, 2, C_GREY);
 }
 
-// Alert drawing reuses glyphBuffer; no full-screen RAM or PSRAM buffer is needed.
-const uint16_t ALERT_BASE = 0x0862;  // charcoal under the original category tint
-const uint16_t ALERT_MUTED = 0xC638;
-uint16_t alertBackground = ALERT_BASE;
-uint16_t alertRule = 0x2126;
-
-int alertTextWidth(const AtlasFont &font, const char *text) {
-  int width = 0;
-  for (const char *p = text; *p; p++) {
-    const uint8_t code = uint8_t(*p);
-    if (code >= font.first && code <= font.last)
-      width += font.glyphs[code - font.first].adv + font.tracking;
-  }
-  return width;
-}
-
-// Scaled Inter glyphs on a solid surface. Text positions are baselines, as above.
-void drawAlertText(const AtlasFont &font, uint16_t bg, int x, int y,
-                   const char *text, uint16_t colour, float scale = 1.0f) {
-  float pen = x;
-  const uint8_t r = (colour >> 11) << 3;
-  const uint8_t g = ((colour >> 5) & 0x3F) << 2, b = (colour & 0x1F) << 3;
-  for (const char *p = text; *p; p++) {
-    const uint8_t code = uint8_t(*p);
-    if (code < font.first || code > font.last) continue;
-    const Glyph &gl = font.glyphs[code - font.first];
-    const int gx = int(roundf(pen + gl.xoff * scale));
-    const int gy = y + int(roundf(gl.yoff * scale));
-    const int w = int(roundf(gl.w * scale)), h = int(roundf(gl.h * scale));
-    if (w && h && w * h <= int(sizeof(glyphBuffer) / 2) &&
-        gx >= 0 && gy >= 0 && gx + w <= 320 && gy + h <= 240) {
-      for (int row = 0; row < h; row++) {
-        const int sourceY = min(int(row / scale), int(gl.h) - 1);
-        for (int col = 0; col < w; col++) {
-          const int sourceX = min(int(col / scale), int(gl.w) - 1);
-          const uint8_t a = font.alpha[gl.offset + sourceY * gl.w + sourceX];
-          glyphBuffer[row * w + col] = blend565(bg, r, g, b, a);
-        }
-      }
-      gfx->draw16bitRGBBitmap(gx, gy, glyphBuffer, w, h);
-    }
-    pen += (gl.adv + font.tracking) * scale;
-  }
-}
-
-void drawAlertWrapped(const AtlasFont &font, const char *text, int x, int baseline,
-                      int width, int lineHeight, uint16_t colour) {
-  // Event names are at most 23 characters; known hints are short, static strings.
-  char part[48];
-  while (*text) {
-    int count = 0, lastSpace = -1;
-    while (text[count] && count < int(sizeof(part)) - 1) {
-      part[count] = text[count];
-      part[count + 1] = '\0';
-      if (alertTextWidth(font, part) > width && count > 0) break;
-      if (text[count] == ' ') lastSpace = count;
-      count++;
-    }
-    if (text[count] && lastSpace > 0) count = lastSpace;
-    part[count] = '\0';
-    drawAlertText(font, alertBackground, x, baseline, part, colour);
-    text += count;
-    while (*text == ' ') text++;
-    baseline += lineHeight;
-  }
-}
-
-void drawAlertBadge(const char *iconName, int cx, int cy, uint16_t accent) {
-  const uint16_t badge = blend565(alertBackground, (accent >> 11) << 3,
-                                ((accent >> 5) & 0x3F) << 2,
-                                (accent & 0x1F) << 3, 100);
-  gfx->fillCircle(cx, cy, 17, alertBackground);
-  gfx->fillCircle(cx, cy, 15, badge);
-  gfx->drawCircle(cx, cy, 15, accent);
-  const uint8_t *alpha = nullptr;
-  for (int i = 0; iconName && i < ICON_COUNT; i++) {
-    if (strcmp(ICONS[i].name, iconName) == 0) alpha = ICONS[i].alpha;
-  }
-  if (alpha) {
-    for (int i = 0; i < ICON_SIZE * ICON_SIZE; i++)
-      glyphBuffer[i] = blend565(badge, 255, 255, 255, alpha[i]);
-    gfx->draw16bitRGBBitmap(cx - ICON_SIZE / 2, cy - ICON_SIZE / 2,
-                          glyphBuffer, ICON_SIZE, ICON_SIZE);
-  } else {
-    gfx->fillCircle(cx, cy, 4, C_WHITE);
-  }
-}
-
-void drawAlertDirection(const fortwatch::AlertMessage &message,
-                        const EventStyle &style, uint16_t accent) {
-  const int cx = 227, cy = 119, radius = 54;
-  gfx->drawCircle(cx, cy, radius, alertRule);
-  gfx->drawCircle(cx, cy, radius - 10, alertRule);
-  // Reticle marks the phone reference; it is not a second sound source.
-  gfx->drawLine(cx - 12, cy, cx - 5, cy, ALERT_MUTED);
-  gfx->drawLine(cx + 5, cy, cx + 12, cy, ALERT_MUTED);
-  gfx->drawLine(cx, cy - 12, cx, cy - 5, ALERT_MUTED);
-  gfx->drawLine(cx, cy + 5, cx, cy + 12, ALERT_MUTED);
-  gfx->drawCircle(cx, cy, 2, C_WHITE);
-
+void drawAlertDirection(const fortwatch::AlertMessage &message, const uint16_t *bg) {
+  // Keep the original Figma title, icon, gradient and score track intact. Only
+  // this previously empty y153..185 strip carries captured direction metadata.
+  const int cx = 28, cy = 170, radius = 13;
+  const bool hasDirection = fortwatch::hasUsableDirection(message);
   char label[32];
-  if (fortwatch::hasUsableDirection(message)) {
-    // A single fixed-width, tapered cue: its width does not claim an error bound.
-    // Zero points up/front, positive angles clockwise/right. Captured at alert
-    // time, not continuously tracked and not isolated to the classified source.
-    for (int offset = -33; offset <= 33; offset++) {
-      const float a = (message.angleDegrees + offset) * 0.01745329252f;
-      const int thickness = 1 + (33 - abs(offset)) * 4 / 33;
-      gfx->fillCircle(cx + int(roundf(sinf(a) * radius)),
-                      cy - int(roundf(cosf(a) * radius)), thickness, accent);
-    }
-    const float a = message.angleDegrees * 0.01745329252f;
-    drawAlertBadge(style.image, cx + int(roundf(sinf(a) * radius)),
-                   cy - int(roundf(cosf(a) * radius)), accent);
+  if (hasDirection) {
     const int degrees = int(roundf(fabsf(message.angleDegrees)));
     const char *side = degrees == 0 ? "AHEAD" : degrees == 180 ? "BEHIND" :
                        message.angleDegrees < 0 ? "LEFT" : "RIGHT";
     snprintf(label, sizeof(label), "%d deg %s", degrees, side);
+
+    const uint16_t ring = bg ? blend565(bg[cy * 320 + cx], 255, 255, 255, 65) : C_GREY;
+    gfx->drawCircle(cx, cy, radius, ring);
+    gfx->drawLine(cx - 3, cy, cx + 3, cy, C_WHITE);
+    gfx->drawLine(cx, cy - 3, cx, cy + 3, C_WHITE);
+    // One compact tapered arc, with 0 up/front and positive angles right. Its
+    // width is visual styling, not a calibrated error bound or a second source.
+    for (int offset = -40; offset <= 40; offset += 2) {
+      const float a = (message.angleDegrees + offset) * 0.01745329252f;
+      const int thickness = abs(offset) < 20 ? 2 : 1;
+      gfx->fillCircle(cx + int(roundf(sinf(a) * radius)),
+                      cy - int(roundf(cosf(a) * radius)), thickness, C_WHITE);
+    }
   } else {
-    // No arc or perimeter badge without a usable measurement.
-    gfx->fillCircle(cx, cy, 17, alertBackground);
-    drawAlertText(F_TITLE, alertBackground, cx - alertTextWidth(F_TITLE, "?") / 2,
-                   cy + 7, "?", ALERT_MUTED);
     strcpy(label, "Direction uncertain");
+    // An unavailable measurement never draws an arc at an invented angle.
+    if (bg) drawText(F_TITLE, bg, 22, 178, "?", 0.85f);
+    else {
+      gfx->setTextSize(2);
+      gfx->setTextColor(C_WHITE);
+      gfx->setCursor(22, 162);
+      gfx->print("?");
+    }
   }
-  drawAlertText(F_TINY, alertBackground, cx - alertTextWidth(F_TINY, "PHONE") / 2,
-                 cy + 31, "PHONE", ALERT_MUTED);
-  drawAlertText(F_SMALL, alertBackground, cx - alertTextWidth(F_SMALL, label) / 2,
-                 200, label, C_WHITE);
-}
-
-void drawAlertScreen(const fortwatch::AlertMessage &message, const EventStyle &style) {
-  // The original category colour supplies the whole card's dark, saturated tint.
-  alertBackground = blend565(ALERT_BASE, (style.colour >> 11) << 3,
-                             ((style.colour >> 5) & 0x3F) << 2,
-                             (style.colour & 0x1F) << 3, 96);
-  alertRule = blend565(alertBackground, 255, 255, 255, 28);
-  // Lift the existing category colours so even low-priority colours read on dark.
-  const uint16_t accent = blend565(style.colour, 255, 255, 255, 64);
-  const uint16_t pill = blend565(alertBackground, (accent >> 11) << 3,
-                               ((accent >> 5) & 0x3F) << 2,
-                               (accent & 0x1F) << 3, 55);
-  const bool safety = style.vibration == VIB_SAFETY;
-  const bool attention = style.vibration == VIB_ATTENTION;
-  const char *priority = safety ? "SAFETY" : attention ? "ATTENTION" : "LOW PRIORITY";
-  const int pillWidth = alertTextWidth(F_TINY, priority) + 29;
-  gfx->fillScreen(alertBackground);
-  gfx->fillRoundRect(16, 14, pillWidth, 24, 12, pill);
-  gfx->fillCircle(25, 26, 2, accent);
-  drawAlertText(F_TINY, pill, 33, 30, priority, C_WHITE);
-  drawAlertText(F_TINY, alertBackground, 218, 29, "VIB", ALERT_MUTED);
-  const int pulseCount = safety ? 3 : attention ? 2 : 1;
-  for (int i = 0; i < pulseCount; i++)
-    gfx->fillRoundRect(247 + i * 20, 22, safety ? 14 : 8, 5, 2, accent);
-  gfx->drawFastHLine(16, 46, 288, alertRule);
-
-  const int titleWidth = alertTextWidth(F_TITLE, style.title);
-  if (titleWidth <= 134) {
-    const float scale = min(1.5f, 134.0f / max(titleWidth, 1));
-    drawAlertText(F_TITLE, alertBackground, 16, 90, style.title, C_WHITE, scale);
+  if (bg) {
+    drawText(F_BODY, bg, 54, 168, label);
+    drawText(F_TINY, bg, 54, 183, "Captured dominant sound / phone", 0.80f);
   } else {
-    // Keep arbitrary valid protocol names visible, including a 23-character name.
-    drawAlertWrapped(F_SMALL, style.title, 16, 77, 134, 14, C_WHITE);
+    drawCentered(label, 154, 2, C_WHITE);
+    drawCentered("Captured sound / phone", 178, 1, C_WHITE);
   }
-  drawAlertWrapped(F_BODY, style.hint, 16, 129, 132, 16, ALERT_MUTED);
-  drawAlertDirection(message, style, accent);
-
-  char scoreText[8];
-  snprintf(scoreText, sizeof(scoreText), "%d%%", int(message.score * 100));
-  drawAlertText(F_TINY, alertBackground, 16, 172, "CONFIDENCE", ALERT_MUTED);
-  drawAlertText(F_TINY, alertBackground, 148 - alertTextWidth(F_TINY, scoreText),
-                 172, scoreText, C_WHITE);
-  gfx->fillRoundRect(16, 181, 132, 4, 2, alertRule);
-  const int scoreWidth = constrain(int(roundf(132 * message.score)), 0, 132);
-  if (scoreWidth > 0) gfx->fillRect(16, 181, scoreWidth, 4, accent);
-
-  const char *reference = "Captured dominant sound / phone";
-  drawAlertText(F_TINY, alertBackground, (320 - alertTextWidth(F_TINY, reference)) / 2,
-                 215, reference, ALERT_MUTED);
-  gfx->drawFastHLine(16, 222, 288, alertRule);
-  const char *dismiss = "Tap screen or press BOOT to dismiss";
-  drawAlertText(F_TINY, alertBackground, (320 - alertTextWidth(F_TINY, dismiss)) / 2,
-                 236, dismiss, ALERT_MUTED);
 }
 
 void showAlert(const fortwatch::AlertMessage &message) {
@@ -618,7 +477,23 @@ void showAlert(const fortwatch::AlertMessage &message) {
   lastAlertMs = millis();
   lastAlertIcon = style->image;
   analyticsAlert(eventName, score);
-  drawAlertScreen(message, *style);
+  const uint16_t *img = style->image ? screenImage(style->image) : nullptr;
+  if (img) {
+    gfx->draw16bitRGBBitmap(0, 0, img, 320, 240);
+    // Live score over the original empty Figma confidence track.
+    const int w = constrain(int(219 * score), 0, 219);
+    if (w > 0) gfx->fillRoundRect(85, 196, w, 6, 3, C_WHITE);
+    drawAlertDirection(message, img);
+  } else {
+    gfx->fillScreen(style->colour);
+    drawCentered(style->title, 60, 6, C_WHITE);
+    drawCentered(style->hint, 125, 2, C_WHITE);
+    drawAlertDirection(message, nullptr);
+    char detail[32];
+    snprintf(detail, sizeof(detail), "confidence %d%%", int(score * 100));
+    drawCentered(detail, 199, 2, C_WHITE);
+    drawCentered("Tap screen or press BOOT to dismiss", 225, 1, C_WHITE);
+  }
   vibrate(style->vibration);
 }
 

@@ -34,7 +34,7 @@ realizadas de nuevo durante esta revisión.
 |---|---|---|
 | Demo Mac | YAMNet, 10 alertas, prioridades, BLE/USB, reconexión | Pruebas reales por categoría incompletas; métricas anteriores no validan el nuevo veto |
 | App iPhone local | Apple SoundAnalysis en el teléfono, BLE directo, prueba de vibración, hora/nivel/eventos | Captura FOA probada en el iPhone; usuario confirma prueba BLE/KNOCK/motor. Precisión angular pendiente |
-| Dirección | Un ángulo dominante de la misma ventana del evento; calibración; arco con ícono en app y firmware | No asocia una dirección independiente a cada fuente; otra fuente puede desviar el ángulo incluso con calidad alta |
+| Dirección | Un ángulo dominante de la misma ventana del evento; calibración móvil de un segundo; arco en app y firmware | Calibración física aún no validada; últimos intentos ambientales rechazados. No localiza cada fuente por separado |
 | Pulsera | Pantallas de alerta, motor por prioridad, touch/BOOT, SPEECH On/Off persistente | Un solo motor; no produce vibración física izquierda/derecha ni reconoce audio por sí misma |
 | Analytics | Subida opcional de metadatos desde la pulsera por Wi-Fi | Requiere configuración privada, red y servicio externo; no garantiza guardar cada alerta |
 | Carcasa | Diseño/STLs y piezas reportadas como impresas | Autonomía, sujeción y prueba de uso prolongado pendientes |

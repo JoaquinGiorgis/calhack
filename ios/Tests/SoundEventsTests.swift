@@ -34,6 +34,44 @@ final class SoundEventsTests: XCTestCase {
         XCTAssertNil(outcome.error, outcome.error ?? "")
 #endif
     }
+
+    /// Exercises the calibration workload on real audio. A deliberate rejection
+    /// is a completed result, not proof of acoustic accuracy or a known front.
+    @MainActor
+    func testPhysicalCalibrationReachesResultWithoutCaptureFailure() async throws {
+#if targetEnvironment(simulator)
+        throw XCTSkip("Requires a physical iPhone with spatial capture.")
+#else
+        guard await AVCaptureDevice.requestAccess(for: .audio) else {
+            XCTFail("Microphone permission was not granted.")
+            return
+        }
+        let outcome = CaptureProbeOutcome()
+        let finished = expectation(description: "Calibration result without capture failure")
+        let stopOutcome = CaptureProbeOutcome()
+        let stopped = expectation(description: "Capture stopped after calibration probe")
+        weak var weakCapture: SpatialCapture?
+        let capture = SpatialCapture { event in
+            switch event {
+            case .started:
+                weakCapture?.calibrateFront()
+            case .update(let update):
+                if update.calibrated || update.calibrationFailed {
+                    if outcome.finish(error: nil) { finished.fulfill() }
+                }
+            case .stopped(let message):
+                if outcome.finish(error: message) { finished.fulfill() }
+                if stopOutcome.finish(error: nil) { stopped.fulfill() }
+            }
+        }
+        weakCapture = capture
+        capture.start()
+        await fulfillment(of: [finished], timeout: 20)
+        capture.stop(message: "Physical calibration workload probe finished.")
+        await fulfillment(of: [stopped], timeout: 5)
+        XCTAssertNil(outcome.error, outcome.error ?? "")
+#endif
+    }
 #endif
     func testDirectionMarkerStaysWithItsOwnClassificationWindow() {
         let alert = SoundEventDetection(event: "ALARM", score: 0.9, angle: -70, quality: 0.8, expiresAt: 101)

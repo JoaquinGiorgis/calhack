@@ -143,18 +143,28 @@ enum SpatialDirection {
     }
 }
 
-/// A one-second continuous, coherent front reference. Use a monotonic clock.
+/// A coherent rolling second defines the front; one weak chunk does not erase it.
 /// Reset on capture gaps, route changes, rotation, and every new recording session.
 struct FrontCalibration: Sendable {
     private(set) var zero: Double?
     private(set) var calibrating = false
     private(set) var failed = false
     private(set) var lastResult: SpatialDirectionResult?
+    private(set) var lastRejectionReason: String?
+    /// Attempt-only statistics remain available after success or failure.
+    private(set) var attemptedDuration: TimeInterval = 0
+    private(set) var candidateWindows = 0
+    private(set) var acceptedWindows = 0
+    private(set) var bestQuality = 0.0
+    private(set) var bufferedDuration: TimeInterval = 0
+
     private var startedAt: TimeInterval = 0
     private var lastTime: TimeInterval = 0
-    private var duration = 0.0
-    private var x = 0.0
-    private var y = 0.0
+    private var rate: Int?
+    private var samples: [Float] = []
+    private var writeIndex = 0
+    private var storedSamples = 0
+    private var quietDuration: TimeInterval = 0
 
     mutating func start(now: TimeInterval) {
         reset()
@@ -173,12 +183,18 @@ struct FrontCalibration: Sendable {
         calibrating = false
         failed = false
         lastResult = nil
+        lastRejectionReason = nil
+        attemptedDuration = 0
+        candidateWindows = 0
+        acceptedWindows = 0
+        bestQuality = 0
         startedAt = 0
         lastTime = 0
-        clearAccumulation()
+        rate = nil
+        clearBuffer()
     }
 
-    mutating func consume(samples: [Float], sampleRate: Int, now: TimeInterval) {
+    mutating func consume(samples incoming: [Float], sampleRate: Int, now: TimeInterval) {
         guard calibrating else { return }
         guard now.isFinite, now >= lastTime else {
             fail("calibration_invalid_time")
@@ -189,50 +205,144 @@ struct FrontCalibration: Sendable {
             return
         }
         guard SpatialDirection.supportedSampleRates.contains(sampleRate),
-              !samples.isEmpty, samples.count.isMultiple(of: 4),
-              samples.count / 4 <= sampleRate / 4 else {
+              !incoming.isEmpty, incoming.count.isMultiple(of: 4),
+              incoming.count / 4 <= sampleRate / 4 else {
+            fail("invalid_input")
+            return
+        }
+        guard rate == nil || rate == sampleRate else {
+            fail("calibration_rate_changed")
+            return
+        }
+        let observation = SpatialDirection.estimate(samples: incoming, sampleRate: sampleRate)
+        lastResult = observation
+        guard observation.reason != "invalid_input" else {
             fail("invalid_input")
             return
         }
         lastTime = now
-        let result = SpatialDirection.estimate(samples: samples, sampleRate: sampleRate)
+        let seconds = Double(incoming.count / 4) / Double(sampleRate)
+        attemptedDuration += seconds
+        rate = sampleRate
+        quietDuration = observation.reason == "quiet" ? quietDuration + seconds : 0
+        if quietDuration > 0.2 + 1e-8 {
+            lastRejectionReason = "calibration_insufficient_activity"
+            clearBuffer()
+            return
+        }
+        append(incoming, sampleRate: sampleRate)
+        guard storedSamples == sampleRate * 4 else { return }
+
+        candidateWindows += 1
+        let window = orderedSamples()
+        let result = SpatialDirection.estimate(samples: window, sampleRate: sampleRate)
         lastResult = result
-        if result.reason == "invalid_input" {
-            fail("invalid_input")
+        bestQuality = max(bestQuality, result.metrics?.quality ?? 0)
+        // A short loud burst surrounded by silence can have perfect coherence.
+        // Require at least 800 ms of active audio in this actual one-second window.
+        guard activeFrames(in: window, sampleRate: sampleRate) >= Int(Double(sampleRate) * 0.8) else {
+            reject("calibration_insufficient_activity", metrics: result.metrics)
             return
         }
         guard let angle = result.angle else {
-            clearAccumulation()
+            lastRejectionReason = result.reason
             return
         }
-        if duration > 0 {
-            let previousAngle = atan2(y, x) * 180 / .pi
-            if abs(SpatialDirection.wrapAngle(angle - previousAngle)) > 15 {
-                clearAccumulation()
+
+        // The same .60 quality, horizontal and silence gates apply to both halves.
+        // Opposing or moving sources must not become a plausible averaged front.
+        let midpoint = window.count / 2
+        let first = SpatialDirection.estimate(samples: Array(window[..<midpoint]), sampleRate: sampleRate)
+        let second = SpatialDirection.estimate(samples: Array(window[midpoint...]), sampleRate: sampleRate)
+        guard let firstAngle = first.angle, let secondAngle = second.angle else {
+            reject("calibration_halves_uncertain", metrics: result.metrics)
+            return
+        }
+        guard abs(SpatialDirection.wrapAngle(firstAngle - secondAngle)) <= 15 else {
+            reject("calibration_direction_changed", metrics: result.metrics)
+            return
+        }
+        // Half-window means alone can hide alternating directions. Only clear
+        // short-window estimates can veto; uncertain chunks do not reset progress.
+        let step = sampleRate / 10 * 4
+        for start in stride(from: 0, to: window.count, by: step) {
+            let end = min(start + step, window.count)
+            let part = SpatialDirection.estimate(samples: Array(window[start..<end]), sampleRate: sampleRate)
+            if let partAngle = part.angle, abs(SpatialDirection.wrapAngle(partAngle - angle)) > 15 {
+                reject("calibration_direction_changed", metrics: result.metrics)
+                return
             }
         }
-        let seconds = Double(samples.count / 4) / Double(sampleRate)
-        let radians = angle * .pi / 180
-        x += cos(radians) * seconds
-        y += sin(radians) * seconds
-        duration += seconds
-        if duration + 1e-8 >= 1 {
-            zero = SpatialDirection.wrapAngle(atan2(y, x) * 180 / .pi)
-            calibrating = false
-            clearAccumulation()
-        }
+        zero = angle
+        acceptedWindows += 1
+        calibrating = false
+        clearBuffer()
     }
 
-    private mutating func clearAccumulation() {
-        duration = 0
-        x = 0
-        y = 0
+    /// A fixed-size circular buffer keeps storage bounded and appends linear in
+    /// the incoming chunk, without shifting a growing array on every callback.
+    private mutating func append(_ incoming: [Float], sampleRate: Int) {
+        let capacity = sampleRate * 4
+        if samples.count != capacity {
+            samples = [Float](repeating: 0, count: capacity)
+            writeIndex = 0
+            storedSamples = 0
+        }
+        for value in incoming {
+            samples[writeIndex] = value
+            writeIndex += 1
+            if writeIndex == capacity { writeIndex = 0 }
+        }
+        storedSamples = min(capacity, storedSamples + incoming.count)
+        bufferedDuration = Double(storedSamples / 4) / Double(sampleRate)
+    }
+
+    private func orderedSamples() -> [Float] {
+        guard writeIndex != 0 else { return samples }
+        return Array(samples[writeIndex...]) + samples[..<writeIndex]
+    }
+
+    private func activeFrames(in window: [Float], sampleRate: Int) -> Int {
+        let frames = window.count / 4
+        let block = max(1, Int(Double(sampleRate) * 0.025))
+        var active = 0
+        for start in stride(from: 0, to: frames, by: block) {
+            let end = min(start + block, frames)
+            var power = 0.0
+            for frame in start..<end {
+                let w = Double(window[frame * 4])
+                power += w * w
+            }
+            if power / Double(end - start) >= SpatialDirection.minimumRMS * SpatialDirection.minimumRMS {
+                active += end - start
+            }
+        }
+        return active
+    }
+
+    private mutating func clearBuffer() {
+        samples.removeAll(keepingCapacity: false)
+        writeIndex = 0
+        storedSamples = 0
+        bufferedDuration = 0
+        quietDuration = 0
+    }
+
+    private mutating func reject(_ reason: String, metrics: SpatialDirectionMetrics?) {
+        lastRejectionReason = reason
+        lastResult = SpatialDirectionResult(angle: nil, quality: nil, reason: reason, metrics: metrics)
     }
 
     private mutating func fail(_ reason: String) {
         let metrics = lastResult?.metrics
-        reset()
+        zero = nil
+        calibrating = false
         failed = true
+        startedAt = 0
+        lastTime = 0
+        rate = nil
+        clearBuffer()
+        if reason != "calibration_timeout" { lastRejectionReason = reason }
         lastResult = SpatialDirectionResult(angle: nil, quality: nil, reason: reason, metrics: metrics)
     }
 }

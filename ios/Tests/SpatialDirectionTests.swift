@@ -127,7 +127,7 @@ final class SpatialDirectionTests: XCTestCase {
         XCTAssertEqual(abs(zero), 180, accuracy: 0.0001)
     }
 
-    func testMovementAndQuietRestartCalibrationAccumulation() {
+    func testMovementAndLongQuietCannotCalibrate() {
         var calibration = FrontCalibration()
         calibration.start(now: 0)
         for index in 0..<20 {
@@ -136,13 +136,152 @@ final class SpatialDirectionTests: XCTestCase {
         }
         XCTAssertNil(calibration.zero)
         XCTAssertTrue(calibration.calibrating)
-        for index in 0..<9 {
+        for index in 0..<6 {
             calibration.consume(samples: plane(0), sampleRate: rate, now: 2 + Double(index) * 0.1)
         }
-        calibration.consume(samples: [Float](repeating: 0, count: 6400), sampleRate: rate, now: 2.9)
-        calibration.consume(samples: plane(0), sampleRate: rate, now: 3)
+        // More than 200 ms without signal clears the rolling evidence.
+        for index in 0..<3 {
+            calibration.consume(samples: [Float](repeating: 0, count: 6400), sampleRate: rate,
+                                now: 2.6 + Double(index) * 0.1)
+        }
+        calibration.consume(samples: plane(0), sampleRate: rate, now: 2.9)
         XCTAssertNil(calibration.zero)
         XCTAssertTrue(calibration.calibrating)
+    }
+
+    func testWeakChunkDoesNotEraseAnOtherwiseCoherentSecond() throws {
+        var calibration = FrontCalibration()
+        calibration.start(now: 0)
+        // Same front source; one short interval has no directional component.
+        // It cannot pass the per-chunk gate, but the complete second and halves can.
+        var weak = plane(35)
+        for frame in 0..<(weak.count / 4) {
+            weak[frame * 4 + 1] = 0
+            weak[frame * 4 + 2] = 0
+            weak[frame * 4 + 3] = 0
+        }
+        XCTAssertNil(SpatialDirection.estimate(samples: weak, sampleRate: rate).angle)
+        for index in 0..<10 {
+            calibration.consume(samples: index == 4 ? weak : plane(35), sampleRate: rate,
+                                now: Double(index) * 0.1)
+            if index < 9 { XCTAssertNil(calibration.zero) }
+        }
+        XCTAssertEqual(try XCTUnwrap(calibration.zero), 35, accuracy: 0.0001)
+        XCTAssertEqual(calibration.attemptedDuration, 1, accuracy: 1e-8)
+        XCTAssertEqual(calibration.candidateWindows, 1)
+        XCTAssertEqual(calibration.acceptedWindows, 1)
+        XCTAssertGreaterThanOrEqual(calibration.bestQuality, SpatialDirection.minimumQuality)
+        XCTAssertFalse(calibration.calibrating)
+    }
+
+    func testBriefSilenceCanPassButLoudShortBurstCannot() throws {
+        var calibration = FrontCalibration()
+        calibration.start(now: 0)
+        for index in 0..<10 {
+            calibration.consume(samples: index == 4 ? [Float](repeating: 0, count: 6400) : plane(20),
+                                sampleRate: rate, now: Double(index) * 0.1)
+        }
+        XCTAssertEqual(try XCTUnwrap(calibration.zero), 20, accuracy: 0.0001)
+
+        calibration.start(now: 10)
+        // Repeated 100 ms bursts keep the buffer from seeing >200 ms continuous
+        // silence, but still supply far less than 800 ms of active audio per second.
+        let loud = plane(20).map { $0 * 50 }
+        for index in 0..<30 {
+            calibration.consume(samples: index.isMultiple(of: 3) ? loud : [Float](repeating: 0, count: 6400),
+                                sampleRate: rate, now: 10 + Double(index) * 0.1)
+        }
+        XCTAssertNil(calibration.zero)
+        XCTAssertTrue(calibration.calibrating)
+        XCTAssertEqual(calibration.acceptedWindows, 0)
+        XCTAssertEqual(calibration.lastRejectionReason, "calibration_insufficient_activity")
+    }
+
+    func testWholeWindowAverageCannotHideChangingOrAlternatingDirections() {
+        for alternating in [false, true] {
+            var calibration = FrontCalibration()
+            calibration.start(now: 0)
+            for index in 0..<10 {
+                let angle: Double = alternating ? (index.isMultiple(of: 2) ? -30 : 30) : (index < 5 ? -20 : 20)
+                calibration.consume(samples: plane(angle), sampleRate: rate, now: Double(index) * 0.1)
+            }
+            XCTAssertGreaterThan(calibration.bestQuality, SpatialDirection.minimumQuality)
+            XCTAssertNil(calibration.zero)
+            XCTAssertEqual(calibration.lastRejectionReason, "calibration_direction_changed")
+        }
+    }
+
+    func testUncertainHalfCannotBorrowTheOtherHalfsDirection() {
+        var calibration = FrontCalibration()
+        calibration.start(now: 0)
+        for index in 0..<10 {
+            // Three of the first five chunks have no directional component;
+            // the full second is acceptable, but its first half is not.
+            var samples = plane(0)
+            if index < 3 {
+                for frame in 0..<(samples.count / 4) {
+                    samples[frame * 4 + 1] = 0
+                    samples[frame * 4 + 2] = 0
+                    samples[frame * 4 + 3] = 0
+                }
+            }
+            calibration.consume(samples: samples, sampleRate: rate, now: Double(index) * 0.1)
+        }
+        XCTAssertGreaterThan(calibration.bestQuality, SpatialDirection.minimumQuality)
+        XCTAssertNil(calibration.zero)
+        XCTAssertEqual(calibration.lastRejectionReason, "calibration_halves_uncertain")
+    }
+
+    func testRollingWindowRecoversAndAttemptStatisticsEndAtTimeout() throws {
+        var calibration = FrontCalibration()
+        calibration.start(now: 0)
+        for index in 0..<20 {
+            calibration.consume(samples: plane(index.isMultiple(of: 2) ? -30 : 30), sampleRate: rate,
+                                now: Double(index) * 0.1)
+        }
+        XCTAssertNil(calibration.zero)
+        XCTAssertEqual(calibration.bufferedDuration, 1, accuracy: 1e-8)
+        for index in 0..<10 {
+            calibration.consume(samples: plane(0), sampleRate: rate, now: 2 + Double(index) * 0.1)
+        }
+        XCTAssertEqual(try XCTUnwrap(calibration.zero), 0, accuracy: 0.0001)
+        XCTAssertEqual(calibration.acceptedWindows, 1)
+
+        calibration.start(now: 10)
+        for index in 0..<10 {
+            calibration.consume(samples: plane(index.isMultiple(of: 2) ? -30 : 30), sampleRate: rate,
+                                now: 10 + Double(index) * 0.1)
+        }
+        let duration = calibration.attemptedDuration
+        let candidates = calibration.candidateWindows
+        let peak = calibration.bestQuality
+        calibration.consume(samples: plane(0), sampleRate: rate, now: 20.1)
+        XCTAssertTrue(calibration.failed)
+        XCTAssertEqual(calibration.lastResult?.reason, "calibration_timeout")
+        XCTAssertEqual(calibration.lastRejectionReason, "calibration_direction_changed")
+        calibration.consume(samples: plane(0), sampleRate: rate, now: 21)
+        XCTAssertEqual(calibration.attemptedDuration, duration)
+        XCTAssertEqual(calibration.candidateWindows, candidates)
+        XCTAssertEqual(calibration.bestQuality, peak)
+        XCTAssertEqual(calibration.acceptedWindows, 0)
+        calibration.start(now: 22)
+        XCTAssertEqual(calibration.attemptedDuration, 0)
+        XCTAssertEqual(calibration.candidateWindows, 0)
+        XCTAssertEqual(calibration.acceptedWindows, 0)
+        XCTAssertEqual(calibration.bestQuality, 0)
+        XCTAssertNil(calibration.lastRejectionReason)
+        XCTAssertEqual(calibration.bufferedDuration, 0)
+    }
+
+    func testRateChangeCannotMixCalibrationEvidence() {
+        var calibration = FrontCalibration()
+        calibration.start(now: 0)
+        calibration.consume(samples: plane(0), sampleRate: rate, now: 0.1)
+        calibration.consume(samples: plane(0), sampleRate: 48_000, now: 0.2)
+        XCTAssertTrue(calibration.failed)
+        XCTAssertNil(calibration.zero)
+        XCTAssertEqual(calibration.lastResult?.reason, "calibration_rate_changed")
+        XCTAssertEqual(calibration.bufferedDuration, 0)
     }
 
     func testTimeoutAndInvalidInputFailWithoutKeepingOldZero() {

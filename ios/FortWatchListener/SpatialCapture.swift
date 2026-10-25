@@ -54,6 +54,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
     private var lastResultEndFrame: Int64 = -1
     private var currentLevel = 0
     private var currentDirection = SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
+    private var directionSamples: [Float] = []
     private var currentExpiry: TimeInterval = 0
     private var lastDiagnosticWrite = -Double.infinity
     private var diagnosticWindows = 0
@@ -133,6 +134,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             invalidateAnalysis()
             pendingSamples.removeAll(keepingCapacity: true)
             pendingPTS = nil
+            directionSamples.removeAll(keepingCapacity: true)
             let now = ProcessInfo.processInfo.systemUptime
             calibration.start(now: now)
             calibrationStartedAt = now
@@ -163,6 +165,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         watchdog = nil
         pendingSamples.removeAll(keepingCapacity: false)
         pendingPTS = nil
+        directionSamples.removeAll(keepingCapacity: false)
         calibration.reset()
         invalidateAnalysis()
         Self.inferenceQueue.async { [self] in
@@ -280,7 +283,16 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             publish(status: status)
             return
         }
-        let measured = SpatialDirection.estimate(samples: samples, sampleRate: rate, zero: calibration.zero ?? 0)
+        // A short rolling window reduces single-buffer flicker. Classified
+        // alerts still use their own exact audio window in receive(_:...).
+        let directionSampleCount = rate * 4 * 3 / 10
+        directionSamples.append(contentsOf: samples)
+        if directionSamples.count > directionSampleCount {
+            directionSamples.removeFirst(directionSamples.count - directionSampleCount)
+        }
+        let measured = directionSamples.count == directionSampleCount
+            ? SpatialDirection.estimate(samples: directionSamples, sampleRate: rate, zero: calibration.zero ?? 0)
+            : SpatialDirectionResult(angle: nil, quality: nil, reason: "warming_up")
         currentDirection = calibration.zero != nil ? measured
             : SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
         recordSpatialDiagnostics(measured, capturedEnd: capturedEnd, now: now)
@@ -435,6 +447,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         nextExpectedPTS = nil
         calibration.reset()
         calibrationStartedAt = nil
+        directionSamples.removeAll(keepingCapacity: true)
         currentDirection = SpatialDirectionResult(angle: nil, quality: nil, reason: "audio_gap")
         invalidateAnalysis()
     }
@@ -453,17 +466,24 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         diagnosticWindows += 1
         if result?.angle != nil { diagnosticValidWindows += 1 }
         diagnosticPeakQuality = max(diagnosticPeakQuality, result?.metrics?.quality ?? 0)
-        guard now - lastDiagnosticWrite >= 1 else { return }
+        let calibrationFinished = !calibration.calibrating && lastDiagnosticSnapshot["calibrating"] as? Bool == true
+        guard now - lastDiagnosticWrite >= 1 || calibrationFinished else { return }
         lastDiagnosticWrite = now
         var snapshot: [String: Any] = [
             "capturing": running, "sampledAt": Date().timeIntervalSince1970,
             "calibrated": calibration.zero != nil, "calibrating": calibration.calibrating,
             "calibrationFailed": calibration.failed, "windows": diagnosticWindows,
             "validDirectionWindows": diagnosticValidWindows, "peakQuality": diagnosticPeakQuality,
+            "calibrationAttemptSeconds": calibration.attemptedDuration,
+            "calibrationCandidateWindows": calibration.candidateWindows,
+            "calibrationAcceptedWindows": calibration.acceptedWindows,
+            "calibrationBestQuality": calibration.bestQuality,
+            "calibrationBufferedSeconds": calibration.bufferedDuration,
             "reason": result?.reason ?? "waiting_for_audio", "inputLevel": currentLevel,
             "audioAgeMs": max(0, now - capturedEnd) * 1000
         ]
         if let last = calibration.lastResult { snapshot["calibrationReason"] = last.reason }
+        if let rejection = calibration.lastRejectionReason { snapshot["calibrationRejectionReason"] = rejection }
         if let angle = result?.angle { snapshot["rawAngle"] = angle }
         if let metrics = result?.metrics {
             snapshot["rms"] = metrics.rms

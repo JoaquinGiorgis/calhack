@@ -1,40 +1,34 @@
 # FortWatch Listener — interfaz iPhone
 
-Herramienta de escucha para usar el iPhone junto a la pulsera: fondo carbón,
-tipografía blanca fuerte y colores por categoría, siguiendo las pantallas
-originales. Implementación nativa en SwiftUI, iOS 26. Toda la interfaz está en inglés.
+La referencia vigente es la landing FortWatch mostrada por el usuario el 25/10:
+foto de fondo oscurecida, paneles translúcidos, marca `fortwatch` en minúsculas,
+tipografía blanca y acciones lima. Se reutilizan la foto de `docs/landing/` y
+sus colores; Gabarito y Atkinson Hyperlegible Next se incluyen con sus licencias OFL.
+Toda la interfaz está en inglés y usa SwiftUI nativo, iOS 26.
 
-Variación visual 5/10, movimiento 1/10, densidad 5/10. Sin animación decorativa.
+Lectura de diseño: herramienta accesible de escucha, funcional y compacta, con el
+estilo fotográfico de la marca. Variación 4/10, movimiento 1/10, densidad 6/10.
 
-- Base `#15171D`, superficie `#20232B`, texto secundario `#B8C0CF`.
-- Azul `#244BCE` para conectar/iniciar; rojo para detener. Colores propios de las
-  diez categorías en las alertas. Conexión Bluetooth confirmada en verde.
-- Dirección: arco parcial afilado y un ícono alrededor del retículo del teléfono.
-  La anchura del arco es diseño; no representa una precisión angular medida.
-- Una guía circular neutral queda visible sin una dirección válida. La pantalla
-  distingue calibración pendiente, fallo de calibración y dirección incierta.
-- Una categoría usa el ángulo de su misma ventana. Entre alertas puede aparecer
-  una señal genérica del sonido dominante. Dirección incierta no muestra marcador.
-- **Latest alert** mantiene el historial separado de la dirección reciente.
-- **Listen & calibrate** inicia micrófono y calibración en una acción; el círculo
-  aparece antes del nivel/estado. Inicio/parada visible abajo. Con tamaños de accesibilidad se integra al contenido
-  desplazable. Texto con Dynamic Type, controles de al menos 44 pt y nombres VoiceOver.
-- Conserva conexión, cancelación, desconexión, prueba de vibración, calibración,
-  permisos y acceso a Settings. Audio procesado en el iPhone, sin grabarlo.
+- Acento `#8FD63D`, texto de botón `#12141F`, borde glass blanco al 38%.
+- Cabecera pequeña, conexión visible, un panel de sonido y acción inferior.
+- El arco e ícono aparecen únicamente con una medición utilizable; una alerta
+  usa el ángulo de su propia ventana. La anchura del arco no expresa precisión.
+- Inicio, permisos, calibración, rechazo e incertidumbre tienen estados explícitos.
+- Test vibration, ayuda, Settings y Disconnect están en el menú **…**.
+- Colores por categoría en el badge; historial separado de la dirección reciente.
+- Dynamic Type, objetivos de 44 pt o más, nombres VoiceOver, reflujo vertical en
+  accesibilidad y panel opaco con Reduce Transparency. Sin animación decorativa.
 
-## Verificación, 25 de octubre de 2026
+## Verificación
 
-- Compilación en simulador y iPhone físico: PASS.
-- 30 pruebas de audio, dirección, eventos y contrato BLE: PASS.
-- Inspección visual de pantalla inicial normal y texto de accesibilidad máximo:
-  contenido visible y reflujo; el tamaño máximo requiere desplazamiento.
-- Árbol de accesibilidad contiene controles y estado. VoiceOver manual y
-  desplazamiento completo con texto máximo no verificados.
-- Instalación y apertura automática en iPhone físico: PASS.
-- Usuario confirma conexión BLE, KNOCK con el diseño nuevo y dos pulsos de vibración.
-- Captura FOA probada en el iPhone real: 50 actualizaciones válidas en la prueba optativa.
-- Signo y precisión angular: pendientes de confirmar con sonidos desde cada lado.
+- Build de simulador y de iPhone físico: PASS; instalada y abierta en el teléfono.
+- 36 pruebas de audio, calibración, eventos y protocolo: PASS.
+- Pantalla inicial y fixtures de KNOCK/calibración fallida inspeccionados en simulador.
+- El fixture de abajo está etiquetado **SIMULATED STATE** y no usa micrófono/BLE.
+- VoiceOver manual, precisión angular y aprobación visual del usuario: pendientes.
 
-Estado detallado: [actualización](../../DIRECTION-DESIGN-UPDATE.md).
+Estado funcional y pruebas físicas: [actualización](../../DIRECTION-DESIGN-UPDATE.md).
 
-![Pantalla inicial real de la app en el simulador](listener.png)
+![Pantalla inicial de la app en el simulador](listener.png)
+
+![Vista de diseño con KNOCK simulado, no una medición](knock-preview.png)

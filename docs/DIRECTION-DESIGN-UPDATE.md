@@ -108,3 +108,51 @@ Evidencia local: `direction-diagnostic-retry.xcresult`,
 `automatic-session-probe.xcresult`, `spatial-diagnostic.json`,
 `spatial-automatic.json` y `spatial-input-fix-{build,install,launch}.log`,
 todos bajo `/tmp/fortwatch-design-update/`.
+
+## Revisión según la referencia visual explícita
+
+El usuario volvió a informar que no calibraba y rechazó el diseño. Luego indicó
+la landing FortWatch como referencia exacta: fotografía, glass, marca minúscula
+y lima. La app ahora reutiliza esa foto, Gabarito/Atkinson y los colores de
+`docs/landing/index.html`; todos los recursos están incluidos localmente.
+La pulsera recupera sus tarjetas Figma originales y conserva la dirección
+en la franja libre, sin reemplazar los títulos ni fondos por dibujos pequeños.
+
+Se corrigió una fragilidad del algoritmo: antes exigía diez bloques de 100 ms
+aceptados consecutivamente y borraba todo ante uno dudoso. Ahora evalúa una
+ventana móvil de un segundo; mantiene calidad mínima 0.60, comprueba sus dos
+mitades y rechaza cambios claros de dirección y actividad insuficiente.
+La señal en vivo usa 300 ms para reducir parpadeo; las alertas siguen vinculadas
+a su propia ventana de clasificación. No se implementaron separación de fuentes,
+comando Fortnite ni vibración que codifique el lado.
+
+| Comprobación | Resultado |
+|---|---|
+| Suite iOS | PASS: 36 pruebas; incluye interrupciones breves, movimiento, silencio, ráfagas y timeout |
+| Procesamiento de calibración en iPhone | PASS de ejecución: termina y se detiene sin fallo de captura; no demuestra calibración acústica |
+| Resultado acústico del probe de ambiente | Rechazado: timeout, mejor calidad agregada 0.592, 0/89 candidatos aceptados, `diffuse_or_moving` |
+| Diseño iPhone | Build e instalación/apertura PASS; inicial y fixtures de alerta/error inspeccionados en simulador |
+| Restauración de tarjetas de pulsera | PASS: 3,641 renders ASan/UBSan; píxeles originales conservados fuera de dirección/score |
+| Firmware final con dashboard | PASS: RAM 84,100 B, flash 3,620,189 B; configuración privada conservada |
+| Carga firmware | La escritura perdió el puerto al finalizar; una verificación independiente posterior confirmó digest coincidente en app0 y reinició la placa |
+| Dirección física con fuente frontal conocida | PENDING: se pidió probar la nueva versión; no equivale a los tests sintéticos |
+
+Un intento posterior en la app normal también terminó en timeout: mejor calidad
+0.586, cero de 90 candidatos aceptados (`brand-style-latest-state.json`). No se
+considera resuelta la calibración. Falta confirmar fuente/posición y medir el
+ángulo con estímulos conocidos antes de modificar otros criterios de aceptación.
+
+La revisión visual con texto de accesibilidad máximo detectó una fila de conexión
+demasiado apretada. Se cambió a estado y botón en filas separadas; se recompiló,
+inspeccionó y reinstaló esa corrección. La prueba de VoiceOver y recorrido completo
+con desplazamiento siguen pendientes.
+
+El diagnóstico conserva estadísticas exclusivas del intento y escribe el estado
+final al terminar la calibración. La prueba física espera también la parada para
+no confundir un archivo anterior con escucha activa.
+
+Evidencia local nueva: `rolling-calibration-tests.xcresult`,
+`rolling-calibration-terminal-probe.xcresult`,
+`rolling-calibration-terminal-metrics.json`, `brand-style-*.log`,
+`restored-wristband-build.log`, `restored-wristband-flash.log` y
+`restored-wristband-verify.log` en `/tmp/fortwatch-design-update/`.

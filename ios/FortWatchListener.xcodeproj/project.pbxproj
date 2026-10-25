@@ -8,13 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		607F8F680668A89FEDACEBA0 /* WristbandBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8FB76E80A337969FC58559 /* WristbandBluetooth.swift */; };
+		6164488E31758E19F513FC93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CF05D430F0A02CC326E11988 /* Assets.xcassets */; };
 		69A9E7E836BEE4272DE4F6EC /* SpatialPCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC919E602B5C1CE83392205 /* SpatialPCM.swift */; };
 		6A90B3B699D6AD2D5A8EBD4E /* ListenerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76DDFEE03C4BF254149188E /* ListenerModel.swift */; };
 		7AF87E26553035B1F8591E2B /* WristbandProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B8DBF96216160D8BB68AAC /* WristbandProtocolTests.swift */; };
 		88FA673A93B127B0B7EE9C76 /* SpatialDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A254EC61992BFAFEA5A7027F /* SpatialDirection.swift */; };
+		994C042BD8FF732E3F7A433E /* atkinsonhyperlegiblenext-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = D552E2EF0E391905C91BEC42 /* atkinsonhyperlegiblenext-OFL.txt */; };
 		9E4246BEFC34CCAE2A2B148B /* SoundEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5A2EBA72A64ECA95DC2646 /* SoundEventsTests.swift */; };
+		A507A4C440EE103DA4048170 /* AtkinsonHyperlegibleNext.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 78C236BB0A23C62FF12BD281 /* AtkinsonHyperlegibleNext.ttf */; };
 		A73649D9CD5DA342BD44A4AE /* SpatialPCMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F91122FF50C471490BB797 /* SpatialPCMTests.swift */; };
 		AE005FCDF9BEA5F880193A3B /* FortWatchListenerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */; };
+		AF8E6695619F338CBF6F6BCA /* gabarito-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 34C0A0301EC9650DA508C5CB /* gabarito-OFL.txt */; };
+		BC5710B0367A064E977DC149 /* Gabarito.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0F6F4148F05EC95B0C1C738D /* Gabarito.ttf */; };
 		D77BDF6AA306670790B9162C /* SoundEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20293B3AA4FEDAACDEDBDA0 /* SoundEvents.swift */; };
 		EFF3B65DE5F56EE641C8BBC4 /* SpatialCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */; };
 		FBC141F6111AFBF7649E1A43 /* SpatialDirectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 998B1AF7CE5543DE5C2466DB /* SpatialDirectionTests.swift */; };
@@ -32,9 +37,12 @@
 
 /* Begin PBXFileReference section */
 		007848FE177F9C4945A00E94 /* FortWatchListenerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FortWatchListenerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F6F4148F05EC95B0C1C738D /* Gabarito.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Gabarito.ttf; sourceTree = "<group>"; };
+		34C0A0301EC9650DA508C5CB /* gabarito-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "gabarito-OFL.txt"; sourceTree = "<group>"; };
 		3E5A2EBA72A64ECA95DC2646 /* SoundEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEventsTests.swift; sourceTree = "<group>"; };
-		4808734C41A990345CD7D93A /* FortWatchListener.app */ = {isa = PBXFileReference; includeInIndex = 0; explicitFileType = wrapper.application; path = FortWatchListener.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4808734C41A990345CD7D93A /* FortWatchListener.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FortWatchListener.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		66F91122FF50C471490BB797 /* SpatialPCMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialPCMTests.swift; sourceTree = "<group>"; };
+		78C236BB0A23C62FF12BD281 /* AtkinsonHyperlegibleNext.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AtkinsonHyperlegibleNext.ttf; sourceTree = "<group>"; };
 		998B1AF7CE5543DE5C2466DB /* SpatialDirectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialDirectionTests.swift; sourceTree = "<group>"; };
 		9AC919E602B5C1CE83392205 /* SpatialPCM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialPCM.swift; sourceTree = "<group>"; };
 		A20293B3AA4FEDAACDEDBDA0 /* SoundEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEvents.swift; sourceTree = "<group>"; };
@@ -43,6 +51,8 @@
 		AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortWatchListenerApp.swift; sourceTree = "<group>"; };
 		B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialCapture.swift; sourceTree = "<group>"; };
 		BF8FB76E80A337969FC58559 /* WristbandBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WristbandBluetooth.swift; sourceTree = "<group>"; };
+		CF05D430F0A02CC326E11988 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D552E2EF0E391905C91BEC42 /* atkinsonhyperlegiblenext-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "atkinsonhyperlegiblenext-OFL.txt"; sourceTree = "<group>"; };
 		D76DDFEE03C4BF254149188E /* ListenerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenerModel.swift; sourceTree = "<group>"; };
 		E92B8B3995967D0D39982576 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -55,6 +65,17 @@
 				7340E68DFCA929448E28DAAC /* Tests */,
 				51FFC301E1E2599C26BF7B2C /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		2CB5D0116D2DDADF3D1CD321 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				D552E2EF0E391905C91BEC42 /* atkinsonhyperlegiblenext-OFL.txt */,
+				78C236BB0A23C62FF12BD281 /* AtkinsonHyperlegibleNext.ttf */,
+				34C0A0301EC9650DA508C5CB /* gabarito-OFL.txt */,
+				0F6F4148F05EC95B0C1C738D /* Gabarito.ttf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 		51FFC301E1E2599C26BF7B2C /* Products */ = {
@@ -80,6 +101,7 @@
 		DEB5FCCFE04B816D1704FA23 /* FortWatchListener */ = {
 			isa = PBXGroup;
 			children = (
+				CF05D430F0A02CC326E11988 /* Assets.xcassets */,
 				AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */,
 				E92B8B3995967D0D39982576 /* Info.plist */,
 				D76DDFEE03C4BF254149188E /* ListenerModel.swift */,
@@ -88,6 +110,7 @@
 				A254EC61992BFAFEA5A7027F /* SpatialDirection.swift */,
 				9AC919E602B5C1CE83392205 /* SpatialPCM.swift */,
 				BF8FB76E80A337969FC58559 /* WristbandBluetooth.swift */,
+				2CB5D0116D2DDADF3D1CD321 /* Fonts */,
 			);
 			path = FortWatchListener;
 			sourceTree = "<group>";
@@ -100,6 +123,7 @@
 			buildConfigurationList = D959E26B3F4EB8C210F0D65B /* Build configuration list for PBXNativeTarget "FortWatchListener" */;
 			buildPhases = (
 				96C0A07CC72D27C836E25BE6 /* Sources */,
+				741F1A7CA7AFA3E9A1EE4DDF /* Resources */,
 			);
 			buildRules = (
 			);
@@ -166,6 +190,21 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		741F1A7CA7AFA3E9A1EE4DDF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6164488E31758E19F513FC93 /* Assets.xcassets in Resources */,
+				A507A4C440EE103DA4048170 /* AtkinsonHyperlegibleNext.ttf in Resources */,
+				BC5710B0367A064E977DC149 /* Gabarito.ttf in Resources */,
+				994C042BD8FF732E3F7A433E /* atkinsonhyperlegiblenext-OFL.txt in Resources */,
+				AF8E6695619F338CBF6F6BCA /* gabarito-OFL.txt in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		84B4F2A54FFA292ACD8D13A5 /* Sources */ = {
@@ -290,7 +329,7 @@
 		382B98D49D58E648D7CEF5D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FortWatchListener/Info.plist;
@@ -389,7 +428,7 @@
 		F2856763747558FF4ED08C94 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = "";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FortWatchListener/Info.plist;
