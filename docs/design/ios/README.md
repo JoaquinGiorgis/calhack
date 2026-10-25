@@ -1,39 +1,38 @@
 # FortWatch Listener — interfaz iPhone
 
-Lectura del diseño: una herramienta de escucha accesible para usar el iPhone
-junto a la pulsera, con fondo carbón, tarjetas azules, tipografía blanca e íconos
-de línea. Conserva FortWatch y toma la referencia de las pantallas existentes de
-la pulsera, sin añadir alertas ni mediciones ficticias.
+Herramienta de escucha para usar el iPhone junto a la pulsera: fondo carbón,
+tipografía blanca fuerte y colores por categoría, siguiendo las pantallas
+originales. Implementación nativa en SwiftUI, iOS 26. Toda la interfaz está en inglés.
 
-Implementación nativa en SwiftUI para el proyecto iOS 26 existente.
-Variación visual 5/10, movimiento 1/10, densidad 5/10. No hay animación decorativa.
+Variación visual 5/10, movimiento 1/10, densidad 5/10. Sin animación decorativa.
 
-- Base `#12141A`, superficie `#1C1F26`, texto secundario `#BAC2D1`.
-- Panel de dirección y acción principal: azul `#294FD1` a `#122461`.
-- Verde identifica la confirmación real de la pulsera; rojo, detener la captura.
-- Tarjetas de 20 pt de radio y acciones principales de 14 pt.
-- Jerarquía: conexión Bluetooth → dirección → estado → último sonido → instrucciones.
-- El inicio/parada queda visible abajo. Con letra de accesibilidad se integra
-  al contenido desplazable para no cubrir la mayor parte de la pantalla.
-- Se quitaron los campos IP/código: hay conexión BLE directa y prueba de vibración.
-  El texto crece con Dynamic Type; los controles tienen al menos 44 pt.
-- Se conservan los estados de espera, captura, calibración, dirección incierta,
-  permiso denegado con acceso a Configuración y pulsera sin confirmar.
-- Captura y clasificación corren en el iPhone. Se conservan los mensajes del firmware
-  y la caducidad del ángulo; no se muestran resultados sintéticos como alertas reales.
+- Base `#15171D`, superficie `#20232B`, texto secundario `#B8C0CF`.
+- Azul `#244BCE` para conectar/iniciar; rojo para detener. Colores propios de las
+  diez categorías en las alertas. Conexión Bluetooth confirmada en verde.
+- Dirección: arco parcial afilado y un ícono alrededor del retículo del teléfono.
+  La anchura del arco es diseño; no representa una precisión angular medida.
+- Una categoría usa el ángulo de su misma ventana. Entre alertas puede aparecer
+  una señal genérica del sonido dominante. Dirección incierta no muestra marcador.
+- **Latest alert** mantiene el historial separado de la dirección reciente.
+- **Listen & calibrate** inicia micrófono y calibración en una acción; el estado
+  aparece arriba. Inicio/parada visible abajo. Con tamaños de accesibilidad se integra al contenido
+  desplazable. Texto con Dynamic Type, controles de al menos 44 pt y nombres VoiceOver.
+- Conserva conexión, cancelación, desconexión, prueba de vibración, calibración,
+  permisos y acceso a Settings. Audio procesado en el iPhone, sin grabarlo.
 
-## Verificación, 24 de octubre de 2026
+## Verificación, 25 de octubre de 2026
 
-- Compilación para simulador iPhone 17 Pro / iOS 26.5: PASS.
-- Compilación para el iPhone conectado con firma local existente: PASS.
-- Tests existentes de contrato y audio: PASS, 26 tests y 0 fallos.
-- Inspección visual de la pantalla inicial con tamaño de letra normal y máximo
-  de accesibilidad: PASS; corregido el espacio ocupado por el botón fijo.
-- Revisión independiente por lectura de controles, estados y accesibilidad:
-  sin hallazgos concretos. VoiceOver no verificado manualmente.
-- Instalación de la versión BLE directa en el iPhone físico: PASS. Apertura automática
-  bloqueada por pantalla bloqueada. Precisión angular y vibración física: pendientes.
+- Compilación en simulador y iPhone físico: PASS.
+- 28 pruebas de audio, dirección, eventos y contrato BLE: PASS.
+- Inspección visual de pantalla inicial normal y texto de accesibilidad máximo:
+  contenido visible y reflujo; el tamaño máximo requiere desplazamiento.
+- Árbol de accesibilidad contiene controles y estado. VoiceOver manual y
+  desplazamiento completo con texto máximo no verificados.
+- Instalación y apertura automática en iPhone físico: PASS.
+- Usuario confirma conexión BLE, KNOCK con el diseño nuevo y dos pulsos de vibración.
+- Captura FOA probada en el iPhone real: primer bloque de cuatro canales válido.
+- Signo y precisión angular: pendientes de confirmar con sonidos desde cada lado.
 
-Referencia de accesibilidad: [Apple HIG](https://developer.apple.com/design/human-interface-guidelines/accessibility).
+Estado detallado: [actualización](../../DIRECTION-DESIGN-UPDATE.md).
 
-![Pantalla inicial en el simulador](listener.png)
+![Pantalla inicial real de la app en el simulador](listener.png)

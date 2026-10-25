@@ -33,12 +33,12 @@ realizadas de nuevo durante esta revisión.
 | Parte | Implementado en el código actual | Límite o comprobación pendiente |
 |---|---|---|
 | Demo Mac | YAMNet, 10 alertas, prioridades, BLE/USB, reconexión | Pruebas reales por categoría incompletas; métricas anteriores no validan el nuevo veto |
-| App iPhone local | Apple SoundAnalysis en el teléfono, BLE directo, prueba de vibración, hora/nivel/eventos | Captura espacial, calidad acústica y circuito completo iPhone → pulsera pendientes de prueba física |
-| Dirección | Un ángulo dominante de la misma ventana del evento; calibración; flecha en el firmware combinado | No asocia una dirección independiente a cada fuente; otra fuente puede desviar el ángulo incluso con calidad alta |
+| App iPhone local | Apple SoundAnalysis en el teléfono, BLE directo, prueba de vibración, hora/nivel/eventos | Captura FOA probada en el iPhone; usuario confirma prueba BLE/KNOCK/motor. Precisión angular pendiente |
+| Dirección | Un ángulo dominante de la misma ventana del evento; calibración; arco con ícono en app y firmware | No asocia una dirección independiente a cada fuente; otra fuente puede desviar el ángulo incluso con calidad alta |
 | Pulsera | Pantallas de alerta, motor por prioridad, touch/BOOT, SPEECH On/Off persistente | Un solo motor; no produce vibración física izquierda/derecha ni reconoce audio por sí misma |
 | Analytics | Subida opcional de metadatos desde la pulsera por Wi-Fi | Requiere configuración privada, red y servicio externo; no garantiza guardar cada alerta |
 | Carcasa | Diseño/STLs y piezas reportadas como impresas | Autonomía, sujeción y prueba de uso prolongado pendientes |
-| Círculo estilo Fortnite | Maqueta interactiva de diseño fuera de la app | No implementado en Swift ni en el firmware |
+| Círculo estilo Fortnite | Arco parcial, retículo e ícono implementados en Swift y firmware | Una sola dirección dominante; ver [actualización de diseño](DIRECTION-DESIGN-UPDATE.md) para instalación y pruebas |
 | Decir “Fortnite” | No implementado | Detectar SPEECH no transcribe ni identifica palabras |
 | Varios sonidos con distintos ángulos | No implementado | Requiere detección/localización por fuente y validación con mezclas reales |
 | Escucha en segundo plano / bolsillo | No implementado | La app se detiene al ir al fondo y requiere teléfono fijo para dirección |

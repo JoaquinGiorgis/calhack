@@ -1,9 +1,64 @@
 import Foundation
+import AVFoundation
 import SoundAnalysis
 import XCTest
 @testable import FortWatchListener
 
 final class SoundEventsTests: XCTestCase {
+#if FORTWATCH_CAPTURE_PROBE
+    /// Opt-in physical smoke test. Uses the production pipeline, retains no
+    /// audio, and stops after its first decoded update. Never runs by default.
+    @MainActor
+    func testPhysicalSpatialCaptureProvidesValidAudio() async throws {
+#if targetEnvironment(simulator)
+        throw XCTSkip("Requires a physical iPhone with spatial capture.")
+#else
+        guard await AVCaptureDevice.requestAccess(for: .audio) else {
+            XCTFail("Microphone permission was not granted.")
+            return
+        }
+        let outcome = CaptureProbeOutcome()
+        let finished = expectation(description: "First spatial audio update or a capture error")
+        let capture = SpatialCapture { event in
+            switch event {
+            case .started: break
+            case .update:
+                if outcome.finish(error: nil) { finished.fulfill() }
+            case .stopped(let message):
+                if outcome.finish(error: message) { finished.fulfill() }
+            }
+        }
+        capture.start()
+        defer { capture.stop(message: "Physical capture probe finished.") }
+        await fulfillment(of: [finished], timeout: 30)
+        XCTAssertNil(outcome.error, outcome.error ?? "")
+#endif
+    }
+#endif
+    func testDirectionMarkerStaysWithItsOwnClassificationWindow() {
+        let alert = SoundEventDetection(event: "ALARM", score: 0.9, angle: -70, quality: 0.8, expiresAt: 101)
+        XCTAssertEqual(SoundDirectionCue.current(liveAngle: 85, alert: alert, at: 100.5),
+                       SoundDirectionCue(angle: -70, event: "ALARM"))
+        // Once the classified window expires, a newer direction has no category attached.
+        XCTAssertEqual(SoundDirectionCue.current(liveAngle: 85, alert: alert, at: 101),
+                       SoundDirectionCue(angle: 85, event: nil))
+        XCTAssertEqual(SoundDirectionCue.current(liveAngle: nil, alert: alert, at: 102),
+                       SoundDirectionCue(angle: nil, event: nil))
+    }
+
+    func testUncertainAlertCannotBorrowTheLiveDirection() {
+        for (angle, quality): (Double?, Double?) in [(nil, nil), (20, 0.59), (.nan, 0.9),
+                                                    (20, .infinity), (181, 0.9), (20, nil)] {
+            let alert = SoundEventDetection(event: "KNOCK", score: 0.9, angle: angle,
+                                            quality: quality, expiresAt: 101)
+            XCTAssertEqual(SoundDirectionCue.current(liveAngle: 85, alert: alert, at: 100),
+                           SoundDirectionCue(angle: nil, event: "KNOCK"))
+        }
+        for angle in [Double.nan, .infinity, -181, 181] {
+            XCTAssertNil(SoundDirectionCue.current(liveAngle: angle, alert: nil, at: 100).angle)
+        }
+    }
+
     func testEveryEventUsesIdentifiersPresentInApplesBuiltInClassifier() throws {
         let request = try SNClassifySoundRequest(classifierIdentifier: .version1)
         let selector = SoundEventSelector()
@@ -125,3 +180,19 @@ final class SoundEventsTests: XCTestCase {
         XCTAssertEqual(recent.endUptime, 101.1, accuracy: 1e-8)
     }
 }
+
+#if FORTWATCH_CAPTURE_PROBE
+private final class CaptureProbeOutcome: @unchecked Sendable {
+    private let lock = NSLock()
+    private var completed = false
+    private var failure: String?
+    var error: String? { lock.lock(); defer { lock.unlock() }; return failure }
+    func finish(error: String?) -> Bool {
+        lock.lock(); defer { lock.unlock() }
+        guard !completed else { return false }
+        completed = true
+        failure = error
+        return true
+    }
+}
+#endif

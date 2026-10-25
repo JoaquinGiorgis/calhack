@@ -76,7 +76,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
                 try audioSession.setActive(true)
                 audioActivated = true
                 guard let microphone = audioSession.availableInputs?.first(where: { $0.portType == .builtInMic }) else {
-                    throw ListenerError.message("No está disponible el micrófono integrado del iPhone.")
+                    throw ListenerError.message("The iPhone’s built-in microphone is unavailable.")
                 }
                 try audioSession.setPreferredInput(microphone)
                 try configureCapture()
@@ -84,14 +84,14 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
                 // startup cannot repeatedly overflow the single inference slot.
                 let rate = Int(audioSession.sampleRate)
                 guard SpatialPCM.sampleRates.contains(rate) else {
-                    throw ListenerError.message("La frecuencia del micrófono no es compatible.")
+                    throw ListenerError.message("The microphone’s sample rate is not supported.")
                 }
                 let generation = analysisGeneration
                 try Self.inferenceQueue.sync { try prepareAnalyzer(rate: rate, generation: generation) }
                 running = true
                 lastSampleTime = ProcessInfo.processInfo.systemUptime
                 captureSession.startRunning()
-                guard captureSession.isRunning else { throw ListenerError.message("No se pudo iniciar el micrófono.") }
+                guard captureSession.isRunning else { throw ListenerError.message("Could not start the microphone.") }
                 observeInterruptions()
                 beginWatchdog()
                 // Delegate buffers use this same queue, so started is always first.
@@ -104,25 +104,25 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
 
     private func configureCapture() throws {
         guard let device = AVCaptureDevice.default(for: .audio) else {
-            throw ListenerError.message("No hay una entrada de audio disponible.")
+            throw ListenerError.message("No audio input is available.")
         }
         captureSession.beginConfiguration()
         defer { captureSession.commitConfiguration() }
         let input = try AVCaptureDeviceInput(device: device)
         guard captureSession.canAddInput(input) else {
-            throw ListenerError.message("No se puede conectar el micrófono a la captura.")
+            throw ListenerError.message("Could not connect the microphone for capture.")
         }
         captureSession.addInput(input)
         // Apple checks support only after attaching the input to the session.
         guard input.isMultichannelAudioModeSupported(.firstOrderAmbisonics) else {
-            throw ListenerError.message("Este dispositivo no ofrece captura espacial compatible. Usá un iPhone 16 Pro o posterior con iOS 26.")
+            throw ListenerError.message("This device does not support spatial capture. Use an iPhone 16 Pro or later with iOS 26.")
         }
         input.multichannelAudioMode = .firstOrderAmbisonics
         if #available(iOS 26.4, *), input.isAudioZoomSupported { input.isAudioZoomEnabled = false }
         let output = AVCaptureAudioDataOutput()
         output.spatialAudioChannelLayoutTag = SpatialPCM.layoutTag
         guard captureSession.canAddOutput(output) else {
-            throw ListenerError.message("No se puede acceder al audio espacial.")
+            throw ListenerError.message("Could not access spatial audio.")
         }
         captureSession.addOutput(output)
         output.setSampleBufferDelegate(self, queue: queue)
@@ -139,11 +139,11 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             calibrationStartedAt = now
             currentDirection = SpatialDirectionResult(angle: nil, quality: nil, reason: "calibrating")
             currentExpiry = now + 0.75
-            publish(status: "Mantené un sonido frente al teléfono durante un segundo.")
+            publish(status: "Keep a sound in front of the phone for one second.")
         }
     }
 
-    func stop(message: String = "Escucha detenida.") {
+    func stop(message: String = "Listening stopped.") {
         queue.async { [self] in stopOnQueue(message) }
     }
 
@@ -178,7 +178,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             observers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { [weak self] _ in
                 self?.queue.async { [weak self] in
                     guard let self, self.running else { return }
-                    self.stopOnQueue("La captura se interrumpió o cambió el micrófono. Volvé a iniciar y calibrar.")
+                    self.stopOnQueue("Capture was interrupted or the microphone changed. Restart listening and recalibrate.")
                 }
             })
         }
@@ -191,9 +191,9 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             guard let self, self.running else { return }
             let now = ProcessInfo.processInfo.systemUptime
             if now - self.lastSampleTime > 3 {
-                self.stopOnQueue("El micrófono dejó de enviar audio. Volvé a iniciar la escucha.")
+                self.stopOnQueue("The microphone stopped sending audio. Restart listening.")
             } else if self.analysisBusy && now - self.analysisStartedAt > 3 {
-                self.stopOnQueue("El reconocimiento se demoró demasiado. Volvé a iniciar la escucha.")
+                self.stopOnQueue("Sound recognition took too long. Restart listening.")
             }
         }
         timer.resume()
@@ -205,30 +205,30 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         guard running else { return }
         do {
             guard AVAudioSession.sharedInstance().currentRoute.inputs.contains(where: { $0.portType == .builtInMic }) else {
-                throw ListenerError.message("La entrada cambió a un micrófono externo. Volvé al micrófono integrado y reiniciá.")
+                throw ListenerError.message("Input switched to an external microphone. Switch back to the built-in microphone and restart.")
             }
             let decoded = try SpatialPCM.decode(sampleBuffer)
             if let sampleRate, sampleRate != decoded.rate {
-                throw ListenerError.message("Cambió la frecuencia del audio. Volvé a iniciar y calibrar.")
+                throw ListenerError.message("The audio sample rate changed. Restart listening and recalibrate.")
             }
             sampleRate = decoded.rate
             let now = ProcessInfo.processInfo.systemUptime
             lastSampleTime = now
             let decodedEndPTS = decoded.pts + Double(decoded.samples.count / 4) / Double(decoded.rate)
             guard let sourceClock = captureSession.synchronizationClock else {
-                throw ListenerError.message("No se pudo sincronizar el tiempo del micrófono.")
+                throw ListenerError.message("Could not synchronize microphone timing.")
             }
             let hostClock = CMClockGetHostTimeClock()
             let hostEnd = CMSyncConvertTime(CMTime(seconds: decodedEndPTS, preferredTimescale: CMTimeScale(decoded.rate)),
                                            from: sourceClock, to: hostClock)
             let age = CMTimeGetSeconds(CMTimeSubtract(CMClockGetTime(hostClock), hostEnd))
             guard age.isFinite, age >= -0.05 else {
-                throw ListenerError.message("El tiempo del audio no es válido. Volvé a iniciar la escucha.")
+                throw ListenerError.message("Audio timing is invalid. Restart listening.")
             }
             guard age < 0.75 else {
                 resetForCaptureGap()
                 currentExpiry = now + 0.75
-                publish(status: "El audio llegó tarde. Volvé a calibrar el frente.")
+                publish(status: "Audio arrived late. Calibrate the front again.")
                 return
             }
             let decodedEndUptime = now - max(0, age)
@@ -270,14 +270,14 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
                 calibrationStartedAt = nil
                 invalidateAnalysis()
             }
-            let status = calibration.calibrating ? "Mantené un sonido estable frente al teléfono…" :
-                (calibration.zero != nil ? "Frente calibrado. Escuchando sonidos…" : "No se pudo calibrar. Probá un sonido claro y estable frente al teléfono.")
+            let status = calibration.calibrating ? "Keep a steady sound in front of the phone…" :
+                (calibration.zero != nil ? "Front calibrated. Listening for sounds…" : "Calibration failed. Try a clear, steady sound in front of the phone.")
             publish(status: status)
             return
         }
         currentDirection = calibration.zero.map { SpatialDirection.estimate(samples: samples, sampleRate: rate, zero: $0) }
             ?? SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
-        publish(status: calibration.zero == nil ? "Escuchando. Calibrá el frente para ubicar los sonidos." : "Escuchando en el iPhone…")
+        publish(status: calibration.zero == nil ? "Listening. Calibrate the front to locate sounds." : "Listening on iPhone…")
         if analysisBusy && pendingAnalysis.count + samples.count > rate * 4 / 2 {
             // At most 500ms can wait behind the one inference call. Overflow
             // discards that window instead of letting latency grow without bound.
@@ -285,7 +285,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         }
         let startFrame = analysisFrame
         guard ring.append(samples: samples, sampleRate: rate, startFrame: startFrame, endUptime: capturedEnd) else {
-            throw ListenerError.message("No se pudo preparar el audio para reconocer sonidos.")
+            throw ListenerError.message("Could not prepare audio for sound recognition.")
         }
         analysisFrame += Int64(frames)
         if analysisBusy {
@@ -302,7 +302,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         guard let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: Double(rate), channels: 1, interleaved: false),
               let mono = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frames)),
               let channel = mono.floatChannelData?[0] else {
-            throw ListenerError.message("No se pudo preparar el audio para reconocer sonidos.")
+            throw ListenerError.message("Could not prepare audio for sound recognition.")
         }
         mono.frameLength = AVAudioFrameCount(frames)
         for frame in 0..<frames { channel[frame] = samples[frame * 4] }
@@ -337,7 +337,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         let request = try SNClassifySoundRequest(classifierIdentifier: .version1)
         let missing = SoundEventSelector().missingClassifications(from: Set(request.knownClassifications))
         guard missing.isEmpty else {
-            throw ListenerError.message("El reconocimiento de este iPhone no incluye todos los sonidos necesarios: " + missing.joined(separator: ", "))
+            throw ListenerError.message("Sound recognition on this iPhone is missing required sounds: " + missing.joined(separator: ", "))
         }
         let desired = CMTime(seconds: 1, preferredTimescale: 48000)
         let constraint = request.windowDurationConstraint
@@ -348,12 +348,12 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         @unknown default: supported = false
         }
         guard supported else {
-            throw ListenerError.message("El reconocedor no admite ventanas de un segundo en este dispositivo.")
+            throw ListenerError.message("Sound recognition on this device does not support one-second audio windows.")
         }
         request.windowDuration = desired
         let actual = CMTimeGetSeconds(request.windowDuration)
         guard actual.isFinite, (0.5...2).contains(actual) else {
-            throw ListenerError.message("El reconocedor no ofrece una ventana de audio compatible.")
+            throw ListenerError.message("Sound recognition does not offer a compatible audio window.")
         }
         request.overlapFactor = 0.5
         return request
@@ -362,7 +362,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
     /// Called exclusively on inferenceQueue, including initial model warmup.
     private func prepareAnalyzer(rate: Int, generation: UUID) throws {
         guard let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: Double(rate), channels: 1, interleaved: false) else {
-            throw ListenerError.message("El audio no es compatible con el reconocedor.")
+            throw ListenerError.message("This audio is not compatible with sound recognition.")
         }
         analyzer?.removeAllRequests()
         let stream = SNAudioStreamAnalyzer(format: format)
@@ -371,7 +371,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         }, failure: { [weak self] error in
             self?.queue.async { [weak self] in
                 guard let self, self.running, self.analysisGeneration == generation else { return }
-                self.stopOnQueue("No se pudo reconocer el audio: " + error.localizedDescription)
+                self.stopOnQueue("Could not recognize the audio: " + error.localizedDescription)
             }
         })
         try stream.add(Self.makeRequest(), withObserver: observer)
@@ -406,7 +406,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             ?? SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
         let alert = SoundEventDetection(event: candidate.event, score: candidate.score,
                                         angle: direction.angle, quality: direction.quality, expiresAt: expiry)
-        publish(status: "Sonido detectado: " + candidate.event, alert: alert)
+        publish(status: "Sound detected: " + candidate.event, alert: alert)
     }
 
     private func invalidateAnalysis() {

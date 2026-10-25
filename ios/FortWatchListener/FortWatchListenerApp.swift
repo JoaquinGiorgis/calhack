@@ -8,16 +8,65 @@ struct FortWatchListenerApp: App {
     }
 }
 
-// Shared with the wristband: charcoal, saturated blue, white type.
+// FortWatch's wristband palette: charcoal, bold white type and event colors.
 private enum ListenerStyle {
-    static let background = Color(red: 0.07, green: 0.08, blue: 0.10)
-    static let surface = Color(red: 0.11, green: 0.12, blue: 0.15)
-    static let secondary = Color(red: 0.73, green: 0.76, blue: 0.82)
-    static let blue = Color(red: 0.16, green: 0.31, blue: 0.82)
-    static let deepBlue = Color(red: 0.07, green: 0.14, blue: 0.38)
-    static let green = Color(red: 0.43, green: 0.89, blue: 0.72)
-    static let red = Color(red: 0.64, green: 0.12, blue: 0.18)
+    static let background = color(0x15171D)
+    static let surface = color(0x20232B)
+    static let secondary = color(0xB8C0CF)
+    static let blue = color(0x244BCE)
+    static let signalBlue = color(0x7097FF)
+    static let green = color(0x82DEB4)
+    static let red = color(0xA92535)
     static let radius: CGFloat = 20
+
+    static func color(_ hex: UInt32) -> Color {
+        Color(red: Double((hex >> 16) & 255) / 255,
+              green: Double((hex >> 8) & 255) / 255,
+              blue: Double(hex & 255) / 255)
+    }
+}
+
+private struct SoundAppearance {
+    let title: String
+    let icon: String
+    let color: Color
+    let signal: Color
+    let category: String
+
+    init(event: String) {
+        switch event {
+        case "ALARM":
+            self.init("ALARM", "light.beacon.max", 0xB92131, 0xFF6A79, "SAFETY")
+        case "CAR_HORN":
+            self.init("CAR HORN", "car.side", 0xA84408, 0xFFAB64, "SAFETY")
+        case "GLASS":
+            self.init("GLASS", "wineglass", 0xA32555, 0xFF86B0, "SAFETY")
+        case "SHOUT":
+            self.init("SHOUT", "megaphone", 0xA3256D, 0xFC88CD, "SAFETY")
+        case "BABY":
+            self.init("BABY", "figure.child", 0x126B67, 0x63D9C9, "ATTENTION")
+        case "KNOCK":
+            self.init("KNOCK", "door.left.hand.closed", 0x244BCE, 0x7097FF, "ATTENTION")
+        case "DOORBELL":
+            self.init("DOORBELL", "bell", 0x652BC2, 0xB78AFF, "ATTENTION")
+        case "PHONE":
+            self.init("PHONE", "phone", 0x485970, 0xAFC7E9, "ATTENTION")
+        case "DOG":
+            self.init("DOG", "dog", 0x81501C, 0xE8B678, "NEARBY")
+        case "SPEECH":
+            self.init("SPEECH", "text.bubble", 0x1F6539, 0x82DEB4, "NEARBY")
+        default:
+            self.init("SOUND", "waveform", 0x48515F, 0xC5CEDB, "DETECTED")
+        }
+    }
+
+    private init(_ title: String, _ icon: String, _ color: UInt32, _ signal: UInt32, _ category: String) {
+        self.title = title
+        self.icon = icon
+        self.color = ListenerStyle.color(color)
+        self.signal = ListenerStyle.color(signal)
+        self.category = category
+    }
 }
 
 struct ListenerView: View {
@@ -29,13 +78,16 @@ struct ListenerView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 24) {
                     header
                     bluetoothPanel
-                    DirectionPanel(angle: model.angle, capturing: model.capturing,
-                                   calibrated: model.calibrated, calibrating: model.calibrating,
-                                   calibrate: model.calibrate)
                     status
+                    DirectionPanel(angle: model.directionAngle, event: model.directionEvent,
+                                   capturing: model.capturing, calibrated: model.calibrated,
+                                   calibrating: model.calibrating, starting: model.active && !model.capturing,
+                                   canCalibrate: model.bluetooth.isConnected && (!model.active || model.capturing),
+                                   level: model.level,
+                                   calibrate: model.calibrate)
                     if let event = model.lastEvent {
                         SoundAlertCard(event: event, sent: model.lastEventSent)
                     }
@@ -46,7 +98,6 @@ struct ListenerView: View {
                 .frame(maxWidth: 620)
                 .frame(maxWidth: .infinity)
             }
-            .scrollDismissesKeyboard(.interactively)
             .background(ListenerStyle.background.ignoresSafeArea())
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 if !dynamicTypeSize.isAccessibilitySize { captureControl }
@@ -62,23 +113,79 @@ struct ListenerView: View {
     private var header: some View {
         HStack(alignment: .center, spacing: 12) {
             Image(systemName: "waveform")
-                .font(.system(size: 22, weight: .medium))
+                .font(.title2.weight(.bold))
                 .frame(width: 48, height: 48)
                 .background(ListenerStyle.surface, in: .rect(cornerRadius: 14))
-                .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(.white.opacity(0.16)))
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 Text("FortWatch")
-                    .font(.largeTitle.weight(.bold))
+                    .font(.largeTitle.weight(.black))
                     .tracking(-1)
                     .accessibilityAddTraits(.isHeader)
-                Text("SONIDO QUE SE SIENTE")
+                Text("FEEL WHAT YOU CAN’T HEAR")
                     .font(.caption.monospaced().weight(.medium))
-                    .tracking(1.2)
+                    .tracking(0.8)
                     .foregroundStyle(ListenerStyle.secondary)
             }
         }
         .foregroundStyle(.white)
+    }
+
+    private var bluetoothPanel: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            let layout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 14))
+                : AnyLayout(HStackLayout(alignment: .center, spacing: 12))
+            layout {
+                HStack(spacing: 10) {
+                    Image(systemName: "applewatch")
+                        .font(.title2)
+                        .accessibilityHidden(true)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("WRISTBAND")
+                            .font(.caption.monospaced().weight(.semibold))
+                            .tracking(0.8)
+                            .foregroundStyle(ListenerStyle.secondary)
+                        Text(connectionTitle)
+                            .font(.headline)
+                            .foregroundStyle(model.bluetooth.isConnected ? ListenerStyle.green : .white)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .accessibilityElement(children: .combine)
+                if model.bluetooth.isConnected {
+                    Button("Disconnect") { model.disconnect() }
+                        .buttonStyle(CompactButtonStyle())
+                } else if model.bluetooth.connecting {
+                    Button("Cancel") { model.disconnect() }
+                        .buttonStyle(CompactButtonStyle())
+                        .accessibilityLabel("Cancel wristband search")
+                } else {
+                    Button("Connect") { model.bluetooth.connect() }
+                        .buttonStyle(CompactButtonStyle(fill: ListenerStyle.blue))
+                        .accessibilityLabel("Connect wristband")
+                }
+            }
+            if !model.bluetooth.isConnected {
+                Text(model.bluetooth.status)
+                    .font(.subheadline)
+                    .foregroundStyle(ListenerStyle.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Button("Test vibration", systemImage: "waveform.path") { model.testWristband() }
+                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.background))
+                    .disabled(model.active)
+                    .accessibilityHint("Sends a test alert. Check the wristband for two short pulses.")
+            }
+        }
+        .padding(16)
+        .background(ListenerStyle.surface, in: .rect(cornerRadius: ListenerStyle.radius))
+    }
+
+    private var connectionTitle: String {
+        if model.bluetooth.isConnected { return "Connected" }
+        if model.bluetooth.connecting { return "Connecting…" }
+        return "Not connected"
     }
 
     private var status: some View {
@@ -88,7 +195,7 @@ struct ListenerView: View {
                 .foregroundStyle(ListenerStyle.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             if model.microphoneDenied || model.bluetooth.settingsDenied {
-                Button("Abrir Configuración", systemImage: "gearshape") {
+                Button("Open Settings", systemImage: "gearshape") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                 }
                 .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.blue))
@@ -97,68 +204,46 @@ struct ListenerView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var bluetoothPanel: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Label(model.bluetooth.isConnected ? "Pulsera conectada" : "Conectá tu pulsera",
-                  systemImage: model.bluetooth.isConnected ? "checkmark.circle" : "applewatch")
-                .font(.headline)
-                .foregroundStyle(model.bluetooth.isConnected ? ListenerStyle.green : .white)
-                .accessibilityAddTraits(.isHeader)
-            Text(model.bluetooth.status)
-                .font(.subheadline)
-                .foregroundStyle(ListenerStyle.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-            if model.bluetooth.isConnected {
-                Button("Probar vibración", systemImage: "waveform.path") { model.testWristband() }
-                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.blue))
-                    .disabled(model.active)
-                Button("Desconectar pulsera", systemImage: "xmark.circle") { model.disconnect() }
-                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.background))
-            } else if model.bluetooth.connecting {
-                Button("Cancelar búsqueda", systemImage: "xmark") { model.disconnect() }
-                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.background))
-            } else {
-                Button("Conectar pulsera", systemImage: "antenna.radiowaves.left.and.right") {
-                    model.bluetooth.connect()
-                }
-                .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.blue))
-            }
-        }
-        .padding(20)
-        .background(ListenerStyle.surface, in: .rect(cornerRadius: ListenerStyle.radius))
-        .overlay(RoundedRectangle(cornerRadius: ListenerStyle.radius).strokeBorder(.white.opacity(0.20)))
-    }
-
     private var instructions: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Label("El iPhone reconoce el sonido. La pulsera te avisa.", systemImage: "waveform.path")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.white)
-            Text("Dejá el iPhone vertical en un soporte, sin cubrir los micrófonos. Para calibrar, mantené una única fuente de sonido frente al teléfono durante un segundo. Si movés el soporte, calibrá otra vez.")
-            Text("La vibración indica el tipo de alerta; la flecha, la dirección respecto del teléfono. Varias fuentes o eco pueden volverla incierta.")
-            Label("El audio se procesa en tu iPhone y no se guarda. Por Bluetooth solo viajan las alertas y el nivel de sonido. Al salir de la app se detiene la escucha.", systemImage: "iphone")
+        DisclosureGroup {
+            VStack(alignment: .leading, spacing: 16) {
+                Label("Keep your iPhone upright on a fixed stand, with its microphones uncovered.", systemImage: "iphone")
+                Label("To set the front, make one steady sound in front of the phone for a second. Calibrate again if you move it.", systemImage: "viewfinder")
+                Label("The cue shows one dominant direction relative to the phone. Other sounds and echoes can make it uncertain.", systemImage: "scope")
+                Label("Vibration tells you the alert priority. One motor cannot indicate left or right.", systemImage: "waveform.path")
+                Label("Audio is processed on your iPhone and is not saved. Bluetooth carries alerts, sound level and the time.", systemImage: "lock")
+            }
+            .font(.footnote)
+            .foregroundStyle(ListenerStyle.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding(.top, 12)
+        } label: {
+            Text("How to use FortWatch")
+                .font(.subheadline.weight(.semibold))
+                .padding(.vertical, 12)
+                .frame(minHeight: 44, alignment: .leading)
         }
-        .font(.footnote)
-        .foregroundStyle(ListenerStyle.secondary)
-        .fixedSize(horizontal: false, vertical: true)
-        .padding(.vertical, 4)
+        .tint(.white)
     }
 
     private var captureControl: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             if model.active {
-                Button("Detener escucha", systemImage: "stop.fill", role: .destructive) { model.stop() }
-                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.red))
+                Button(model.capturing ? "Stop listening" : "Cancel start", systemImage: "stop.fill", role: .destructive) {
+                    model.stop()
+                }
+                .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.red))
             } else {
-                Button("Iniciar escucha", systemImage: "mic.fill") { model.start() }
+                Button("Listen & calibrate", systemImage: "mic.fill") { model.calibrate() }
                     .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.blue))
                     .disabled(!model.bluetooth.isConnected)
             }
-            Text("Mantené esta app abierta durante la escucha.")
+            Text("Keep this app open while listening.")
                 .font(.caption)
                 .foregroundStyle(ListenerStyle.secondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, dynamicTypeSize.isAccessibilitySize ? 0 : 20)
         .padding(.top, 12)
         .padding(.bottom, 8)
         .frame(maxWidth: 620)
@@ -170,97 +255,206 @@ struct ListenerView: View {
 
 private struct DirectionPanel: View {
     let angle: Double?
+    let event: String?
     let capturing: Bool
     let calibrated: Bool
     let calibrating: Bool
+    let starting: Bool
+    let canCalibrate: Bool
+    let level: Int
     let calibrate: () -> Void
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var appearance: SoundAppearance? { event.map(SoundAppearance.init(event:)) }
+    private var usableAngle: Double? {
+        guard capturing, calibrated, !calibrating,
+              let angle, angle.isFinite, (-180...180).contains(angle) else { return nil }
+        return angle
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Label("SONIDO DOMINANTE", systemImage: "scope")
-                .font(.caption.monospaced().weight(.semibold))
-                .tracking(1.2)
-            let layout = dynamicTypeSize.isAccessibilitySize
-                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 16))
-                : AnyLayout(HStackLayout(alignment: .center, spacing: 18))
-            layout {
-                DirectionDial(angle: angle)
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(title)
-                        .font(.title.weight(.bold))
-                        .tracking(-0.5)
-                        .fixedSize(horizontal: false, vertical: true)
-                    Text(subtitle)
-                        .font(.subheadline)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: 16) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("SOUND DIRECTION")
+                    .font(.caption.monospaced().weight(.semibold))
+                    .tracking(1)
+                Spacer(minLength: 12)
+                Text(capturing ? "LISTENING" : "STANDBY")
+                    .font(.caption.monospaced().weight(.semibold))
+                    .foregroundStyle(capturing ? ListenerStyle.green : ListenerStyle.secondary)
             }
+            .foregroundStyle(ListenerStyle.secondary)
+
+            DirectionCue(angle: usableAngle, appearance: appearance ?? SoundAppearance(event: ""))
+                .frame(maxWidth: capturing ? 260 : 220)
+                .frame(maxWidth: .infinity)
+                .accessibilityHidden(true)
+
+            VStack(spacing: 6) {
+                Text(title)
+                    .font(.largeTitle.weight(.black))
+                    .tracking(-0.8)
+                    .foregroundStyle(.white)
+                    .accessibilityAddTraits(.isHeader)
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(ListenerStyle.secondary)
+            }
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
             .accessibilityElement(children: .combine)
-            Rectangle().fill(.white.opacity(0.28)).frame(height: 1)
-            Button(action: calibrate) {
-                Label(calibrating ? "Calibrando el frente…" : "Calibrar frente", systemImage: "viewfinder")
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity, minHeight: 44)
-                    .padding(.horizontal, 12)
+
+            SoundLevelMeter(level: level, active: capturing)
+                .padding(.vertical, 4)
+
+            Button(calibrating ? "Calibrating front…" : capturing ? "Calibrate front" : "Listen & calibrate",
+                   systemImage: "viewfinder", action: calibrate)
+                .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.surface))
+                .disabled(!canCalibrate || calibrating)
+                .accessibilityHint(capturing ? "Keep one steady sound in front of the phone for one second." : "Starts the microphone, then calibrates using one steady sound in front of the phone.")
+            if !capturing {
+                Text(starting ? "Waiting for the microphone to start…" : canCalibrate ? "Starts the microphone and sets the front direction." : "Connect your wristband to start calibration.")
+                    .font(.footnote)
+                    .foregroundStyle(ListenerStyle.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
             }
-            .buttonStyle(.plain)
-            .background(.black.opacity(0.20), in: .rect(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(.white.opacity(0.5)))
-            .disabled(!capturing || calibrating)
-            .opacity(!capturing || calibrating ? 0.5 : 1)
-            .accessibilityHint("Mantené un sonido frente al teléfono durante un segundo.")
         }
-        .padding(20)
-        .foregroundStyle(.white)
-        .background(LinearGradient(colors: [ListenerStyle.blue, ListenerStyle.deepBlue],
-                                   startPoint: .topLeading, endPoint: .bottomTrailing),
-                    in: .rect(cornerRadius: ListenerStyle.radius))
-        .overlay(RoundedRectangle(cornerRadius: ListenerStyle.radius).strokeBorder(.white.opacity(0.28)))
+        .padding(.vertical, 4)
     }
 
     private var title: String {
-        if let angle { return "\(Int(abs(angle).rounded()))°" }
-        if calibrating { return "Calibrando" }
-        if !capturing { return "En espera" }
-        if !calibrated { return "Fijá el frente" }
-        return "Dirección incierta"
+        if calibrating { return "Calibrating" }
+        if starting { return "Starting microphone" }
+        if !capturing { return "Ready to listen" }
+        if !calibrated { return "Set your front" }
+        if let appearance { return appearance.title }
+        if usableAngle != nil { return "Dominant sound" }
+        return "Listening"
     }
 
     private var subtitle: String {
-        if let angle {
-            let degrees = Int(abs(angle).rounded())
-            let side = degrees < 5 ? "Al frente" : degrees >= 175 ? "Detrás" : angle < 0 ? "A la izquierda" : "A la derecha"
-            return "\(side)\nRespecto del frente calibrado."
-        }
-        if calibrating { return "Mantené un sonido frente al iPhone." }
-        if !capturing { return "Conectá la pulsera y empezá a escuchar." }
-        if !calibrated { return "Calibrá con un sonido frente al iPhone." }
-        return "Esperando una dirección clara."
+        if calibrating { return "Keep a steady sound in front of the phone." }
+        if starting { return "Preparing sound recognition. Calibration will unlock when audio starts." }
+        if !capturing { return "Connect your wristband, then start listening." }
+        if !calibrated { return "Calibrate once with the phone upright and still." }
+        if let usableAngle { return "\(directionName(usableAngle)) · relative to the phone" }
+        if event != nil { return "Direction uncertain. No clear source location." }
+        return "Waiting for a clear direction."
+    }
+
+    private func directionName(_ angle: Double) -> String {
+        let sectors = ["Ahead", "Front right", "Right", "Behind right", "Behind", "Behind left", "Left", "Front left"]
+        let normalized = (angle + 360).truncatingRemainder(dividingBy: 360)
+        return sectors[Int((normalized + 22.5) / 45) % sectors.count]
     }
 }
 
-private struct DirectionDial: View {
+/// A single event cue, not a compass or a map of separated sound sources.
+private struct DirectionCue: View {
     let angle: Double?
+    let appearance: SoundAppearance?
 
     var body: some View {
-        ZStack {
-            Circle().strokeBorder(.white.opacity(0.12), lineWidth: 1)
-            Circle().strokeBorder(.white.opacity(0.22), lineWidth: 1).padding(10)
-            Circle().fill(.white.opacity(0.10)).padding(21)
-            Circle().strokeBorder(.white.opacity(0.55), lineWidth: 1).padding(21)
-            if let angle {
-                Image(systemName: "arrow.up")
-                    .font(.system(size: 32, weight: .semibold))
-                    .rotationEffect(.degrees(angle))
-            } else {
-                Image(systemName: "location.slash")
-                    .font(.system(size: 28, weight: .light))
+        GeometryReader { geometry in
+            let side = min(geometry.size.width, geometry.size.height)
+            let center = CGPoint(x: geometry.size.width / 2, y: geometry.size.height / 2)
+            ZStack {
+                ReticleShape()
+                    .stroke(.white.opacity(0.5), style: StrokeStyle(lineWidth: 1.5, lineCap: .square))
+                    .frame(width: 58, height: 58)
+                    .position(center)
+                VStack(spacing: 8) {
+                    Image(systemName: "iphone")
+                        .font(.system(size: 23, weight: .light))
+                    Text("PHONE")
+                        .font(.caption2.monospaced().weight(.medium))
+                        .tracking(1)
+                }
+                .foregroundStyle(ListenerStyle.secondary)
+                .position(x: center.x, y: center.y + 41)
+
+                if let angle, let appearance {
+                    TaperedSoundArc()
+                        .fill(appearance.signal)
+                        .rotationEffect(.degrees(angle))
+                    let radians = angle * .pi / 180
+                    Image(systemName: appearance.icon)
+                        .font(.system(size: 23, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 48, height: 48)
+                        .background(appearance.color, in: .circle)
+                        .overlay(Circle().strokeBorder(appearance.signal, lineWidth: 1.5))
+                        .position(x: center.x + CGFloat(sin(radians)) * side * 0.405,
+                                  y: center.y - CGFloat(cos(radians)) * side * 0.405)
+                }
             }
         }
-        .frame(width: 110, height: 110)
-        .accessibilityHidden(true)
+        .aspectRatio(1, contentMode: .fit)
+    }
+}
+
+/// The broad middle and pointed ends communicate a direction without claiming
+/// that the width represents measured angular uncertainty.
+private struct TaperedSoundArc: Shape {
+    func path(in rect: CGRect) -> Path {
+        let side = min(rect.width, rect.height)
+        let radius = side * 0.305
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let steps = 64
+        var outer: [CGPoint] = []
+        var inner: [CGPoint] = []
+        for index in 0...steps {
+            let progress = Double(index) / Double(steps)
+            let radians = (-90 - 48 + 96 * progress) * .pi / 180
+            let halfWidth = CGFloat(sin(.pi * progress)) * side * 0.027
+            let x = CGFloat(cos(radians)), y = CGFloat(sin(radians))
+            outer.append(CGPoint(x: center.x + x * (radius + halfWidth), y: center.y + y * (radius + halfWidth)))
+            inner.append(CGPoint(x: center.x + x * (radius - halfWidth), y: center.y + y * (radius - halfWidth)))
+        }
+        var path = Path()
+        path.addLines(outer + inner.reversed())
+        path.closeSubpath()
+        return path
+    }
+}
+
+private struct ReticleShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        let arm = rect.width * 0.22
+        var path = Path()
+        for (x, y, dx, dy) in [(rect.minX, rect.minY, 1.0, 1.0),
+                              (rect.maxX, rect.minY, -1.0, 1.0),
+                              (rect.minX, rect.maxY, 1.0, -1.0),
+                              (rect.maxX, rect.maxY, -1.0, -1.0)] {
+            path.move(to: CGPoint(x: x + arm * dx, y: y))
+            path.addLine(to: CGPoint(x: x, y: y))
+            path.addLine(to: CGPoint(x: x, y: y + arm * dy))
+        }
+        return path
+    }
+}
+
+private struct SoundLevelMeter: View {
+    let level: Int
+    let active: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Text("INPUT")
+                .font(.caption2.monospaced().weight(.medium))
+                .foregroundStyle(ListenerStyle.secondary)
+            GeometryReader { geometry in
+                ZStack(alignment: .leading) {
+                    Capsule().fill(.white.opacity(0.12))
+                    Capsule().fill(ListenerStyle.green)
+                        .frame(width: geometry.size.width * CGFloat(active ? min(100, max(0, level)) : 0) / 100)
+                }
+            }
+            .frame(height: 4)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Microphone level")
+        .accessibilityValue(active ? "\(min(100, max(0, level))) out of 100" : "Not listening")
     }
 }
 
@@ -268,41 +462,35 @@ private struct SoundAlertCard: View {
     let event: String
     let sent: Bool
 
-    private var appearance: (title: String, icon: String, color: Color) {
-        switch event {
-        case "ALARM": return ("ALARMA", "light.beacon.max", ListenerStyle.red)
-        case "CAR_HORN": return ("BOCINA", "car.side", Color(red: 0.55, green: 0.22, blue: 0.04))
-        case "GLASS": return ("VIDRIO", "wineglass", Color(red: 0.55, green: 0.10, blue: 0.28))
-        case "SHOUT": return ("GRITO", "megaphone", Color(red: 0.55, green: 0.10, blue: 0.33))
-        case "BABY": return ("BEBÉ", "figure.child", Color(red: 0.04, green: 0.35, blue: 0.33))
-        case "KNOCK": return ("GOLPES", "door.left.hand.closed", ListenerStyle.blue)
-        case "DOORBELL": return ("TIMBRE", "bell", Color(red: 0.34, green: 0.12, blue: 0.60))
-        case "PHONE": return ("TELÉFONO", "phone", Color(red: 0.27, green: 0.32, blue: 0.40))
-        case "DOG": return ("LADRIDO", "dog", Color(red: 0.40, green: 0.26, blue: 0.10))
-        default: return ("VOZ", "text.bubble", Color(red: 0.08, green: 0.36, blue: 0.19))
-        }
-    }
+    private var appearance: SoundAppearance { SoundAppearance(event: event) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("ÚLTIMO SONIDO DETECTADO")
-                .font(.caption.monospaced().weight(.semibold))
-                .tracking(1)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("LATEST ALERT")
+                    .font(.caption.monospaced().weight(.semibold))
+                    .tracking(1)
+                Spacer(minLength: 12)
+                Text(appearance.category)
+                    .font(.caption2.monospaced().weight(.medium))
+            }
             Label(appearance.title, systemImage: appearance.icon)
-                .font(.title.weight(.bold))
-            Label(sent ? "Alerta enviada por Bluetooth" : "Detectado; no se pudo enviar a la pulsera",
-                  systemImage: sent ? "checkmark.circle" : "exclamationmark.circle")
+                .font(.title.weight(.black))
+            Label(sent ? "Sent over Bluetooth" : "Detected · not sent to wristband",
+                  systemImage: sent ? "arrow.up.right" : "exclamationmark.circle")
                 .font(.subheadline)
+            if sent {
+                Text("Check the wristband for the alert and vibration.")
+                    .font(.footnote)
+            }
         }
         .fixedSize(horizontal: false, vertical: true)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
         .foregroundStyle(.white)
-        .background(LinearGradient(colors: [appearance.color, appearance.color.opacity(0.6)],
-                                   startPoint: .topLeading, endPoint: .bottomTrailing),
-                    in: .rect(cornerRadius: ListenerStyle.radius))
-        .overlay(RoundedRectangle(cornerRadius: ListenerStyle.radius).strokeBorder(.white.opacity(0.28)))
+        .background(appearance.color, in: .rect(cornerRadius: ListenerStyle.radius))
         .accessibilityElement(children: .combine)
+        .accessibilityLabel("Latest alert. \(appearance.title). \(sent ? "Submitted over Bluetooth. Check the wristband for the alert and vibration." : "Detected, but not sent to the wristband.")")
     }
 }
 
@@ -319,6 +507,20 @@ private struct ListenerButtonStyle: ButtonStyle {
             .padding(.vertical, 4)
             .background(fill, in: .rect(cornerRadius: 14))
             .opacity(isEnabled ? (configuration.isPressed ? 0.75 : 1) : 0.45)
+    }
+}
+
+private struct CompactButtonStyle: ButtonStyle {
+    var fill: Color = ListenerStyle.background
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16)
+            .frame(minHeight: 44)
+            .background(fill, in: .rect(cornerRadius: 12))
+            .opacity(configuration.isPressed ? 0.75 : 1)
     }
 }
 

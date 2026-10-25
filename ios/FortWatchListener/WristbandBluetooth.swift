@@ -59,7 +59,7 @@ enum WristbandProtocol {
 final class WristbandBluetooth: NSObject {
     private(set) var isConnected = false
     private(set) var connecting = false
-    private(set) var status = "Pulsera sin conectar."
+    private(set) var status = "Wristband not connected."
     private(set) var settingsDenied = false
     private(set) var unavailableReason: String?
     @ObservationIgnored var onConnect: (() -> Void)?
@@ -78,30 +78,30 @@ final class WristbandBluetooth: NSObject {
         guard !isConnected, !connecting else { return }
         if CBManager.authorization == .denied {
             settingsDenied = true
-            unavailableReason = "Permití Bluetooth para FortWatch en Configuración."
+            unavailableReason = "Allow Bluetooth for FortWatch in Settings."
             status = unavailableReason!
             return
         }
         if CBManager.authorization == .restricted {
             settingsDenied = false
-            unavailableReason = "Bluetooth está restringido en este iPhone. Revisá sus restricciones."
+            unavailableReason = "Bluetooth is restricted on this iPhone. Check its restrictions."
             status = unavailableReason!
             return
         }
-        endSession(message: "Preparando Bluetooth…", notify: false)
+        endSession(message: "Preparing Bluetooth…", notify: false)
         session = UUID()
         wantsConnection = true
         connecting = true
         settingsDenied = false
         unavailableReason = nil
-        armConnectionTimeout("Bluetooth no terminó de prepararse. Revisá el permiso y volvé a conectar.")
+        armConnectionTimeout("Bluetooth did not become ready. Check its permission and reconnect.")
         // Lazy creation: simply opening the app does not request Bluetooth.
         central = CBCentralManager(delegate: self, queue: .main,
                                    options: [CBCentralManagerOptionShowPowerAlertKey: false])
     }
 
     func disconnect() {
-        endSession(message: "Pulsera desconectada.")
+        endSession(message: "Wristband disconnected.")
     }
 
     /// There is no queued alert to replay. An already submitted radio write
@@ -149,7 +149,7 @@ final class WristbandBluetooth: NSObject {
         writeTimeout = Task { [weak self] in
             try? await Task.sleep(for: .seconds(2))
             guard !Task.isCancelled, let self, self.session == run, self.responseInFlight else { return }
-            self.fail("La pulsera no confirmó la escritura. Acercala y volvé a conectar.")
+            self.fail("The wristband did not confirm the message. Move it closer and reconnect.")
         }
         peripheral.writeValue(data, for: characteristic, type: .withResponse)
         return true
@@ -158,10 +158,10 @@ final class WristbandBluetooth: NSObject {
     private func scan() {
         guard wantsConnection, let central, central.state == .poweredOn else { return }
         connecting = true
-        status = "Buscando FortWatch… Encendé la pulsera y acercala."
+        status = "Searching for FortWatch… Turn on the wristband and bring it closer."
         central.scanForPeripherals(withServices: [CBUUID(string: WristbandProtocol.serviceUUID)],
                                    options: [CBCentralManagerScanOptionAllowDuplicatesKey: false])
-        armConnectionTimeout("No se encontró FortWatch. Encendé la pulsera y volvé a conectar.")
+        armConnectionTimeout("FortWatch was not found. Turn on the wristband and reconnect.")
     }
 
     private func armConnectionTimeout(_ message: String) {
@@ -223,20 +223,20 @@ extension WristbandBluetooth: @preconcurrency CBCentralManagerDelegate, @preconc
             if peripheral == nil { scan() }
         case .unknown, .resetting:
             if peripheral != nil || isConnected {
-                fail("Bluetooth se reinició. Volvé a conectar la pulsera.")
+                fail("Bluetooth restarted. Reconnect the wristband.")
             } else {
-                status = "Preparando Bluetooth…"
+                status = "Preparing Bluetooth…"
             }
         case .poweredOff:
-            fail("Bluetooth está apagado. Activá Bluetooth y volvé a conectar la pulsera.")
+            fail("Bluetooth is off. Turn it on and reconnect the wristband.")
         case .unauthorized:
             settingsDenied = CBManager.authorization == .denied
-            fail(settingsDenied ? "Permití Bluetooth para FortWatch en Configuración." :
-                    "Bluetooth está restringido en este iPhone.")
+            fail(settingsDenied ? "Allow Bluetooth for FortWatch in Settings." :
+                    "Bluetooth is restricted on this iPhone.")
         case .unsupported:
-            fail("Este dispositivo no admite la conexión Bluetooth de FortWatch.")
+            fail("This device does not support FortWatch’s Bluetooth connection.")
         @unknown default:
-            fail("Bluetooth no está disponible. Volvé a intentar la conexión.")
+            fail("Bluetooth is unavailable. Try connecting again.")
         }
     }
 
@@ -247,32 +247,32 @@ extension WristbandBluetooth: @preconcurrency CBCentralManagerDelegate, @preconc
         self.peripheral = peripheral
         peripheral.delegate = self
         central.stopScan()
-        status = "Conectando con FortWatch…"
-        armConnectionTimeout("La pulsera no respondió. Acercala y volvé a conectar.")
+        status = "Connecting to FortWatch…"
+        armConnectionTimeout("The wristband did not respond. Move it closer and reconnect.")
         central.connect(peripheral)
     }
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         guard central === self.central, current(peripheral) else { return }
-        status = "Verificando la pulsera…"
+        status = "Checking the wristband…"
         peripheral.discoverServices([CBUUID(string: WristbandProtocol.serviceUUID)])
     }
 
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
         guard central === self.central, current(peripheral) else { return }
-        fail("No se pudo conectar con la pulsera. Acercala y volvé a intentar.")
+        fail("Could not connect to the wristband. Move it closer and try again.")
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         guard central === self.central, current(peripheral) else { return }
-        fail("Se perdió la conexión con la pulsera. Acercala y volvé a conectar.")
+        fail("Connection to the wristband was lost. Move it closer and reconnect.")
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard current(peripheral), peripheral.state == .connected else { return }
         guard error == nil,
               let service = peripheral.services?.first(where: { $0.uuid == CBUUID(string: WristbandProtocol.serviceUUID) }) else {
-            fail("La pulsera no ofrece el servicio FortWatch esperado. Revisá su firmware.")
+            fail("The wristband does not provide the expected FortWatch service. Check its firmware.")
             return
         }
         peripheral.discoverCharacteristics([CBUUID(string: WristbandProtocol.receiveUUID)], for: service)
@@ -284,7 +284,7 @@ extension WristbandBluetooth: @preconcurrency CBCentralManagerDelegate, @preconc
         guard error == nil,
               let characteristic = service.characteristics?.first(where: { $0.uuid == CBUUID(string: WristbandProtocol.receiveUUID) }),
               characteristic.properties.contains(.writeWithoutResponse) || characteristic.properties.contains(.write) else {
-            fail("La pulsera no permite recibir alertas. Revisá su firmware.")
+            fail("The wristband cannot receive alerts. Check its firmware.")
             return
         }
         let wasReady = isConnected
@@ -294,7 +294,7 @@ extension WristbandBluetooth: @preconcurrency CBCentralManagerDelegate, @preconc
         connecting = false
         isConnected = true
         unavailableReason = nil
-        status = "Pulsera conectada."
+        status = "Wristband connected."
         if !wasReady { onConnect?() }
     }
 
@@ -303,12 +303,12 @@ extension WristbandBluetooth: @preconcurrency CBCentralManagerDelegate, @preconc
         responseInFlight = false
         writeTimeout?.cancel()
         writeTimeout = nil
-        if error != nil { fail("La pulsera rechazó la alerta. Volvé a conectar.") }
+        if error != nil { fail("The wristband rejected the alert. Reconnect.") }
     }
 
     func peripheral(_ peripheral: CBPeripheral, didModifyServices invalidatedServices: [CBService]) {
         guard current(peripheral),
               invalidatedServices.contains(where: { $0.uuid == CBUUID(string: WristbandProtocol.serviceUUID) }) else { return }
-        fail("Cambió el servicio de la pulsera. Volvé a conectar.")
+        fail("The wristband’s service changed. Reconnect.")
     }
 }

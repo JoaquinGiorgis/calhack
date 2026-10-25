@@ -66,7 +66,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
 |---|---|---|---|---|---|
-| S12 | DOING | iPhone reconoce y calcula dirección localmente → Bluetooth directo → pulsera. Sin Mac/IP/código. Incluye prueba de vibración. [Guía](ios/README.md) · [Validación](docs/SPATIAL-VALIDATION.md). Pendiente comprobar captura, ángulos y motor en hardware. | Codex | S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
+| S12 | DOING | iPhone reconoce y calcula dirección localmente → Bluetooth directo → pulsera. Sin Mac/IP/código. Diseño circular, interfaz en inglés y Listen & calibrate. FOA probado en iPhone; usuario confirma KNOCK por BLE y vibración. [Guía](ios/README.md) · [Actualización](docs/DIRECTION-DESIGN-UPDATE.md). Pendiente validar ángulos físicos. | Codex | S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |

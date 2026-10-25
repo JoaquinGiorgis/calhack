@@ -8,6 +8,23 @@ struct SoundEventDetection: Sendable {
     let expiresAt: TimeInterval
 }
 
+/// A category marker must use the direction measured in that category's own
+/// audio window. A fresh but uncertain alert must never borrow a live angle.
+struct SoundDirectionCue: Equatable {
+    let angle: Double?
+    let event: String?
+
+    static func current(liveAngle: Double?, alert: SoundEventDetection?, at now: TimeInterval) -> Self {
+        if let alert, now < alert.expiresAt {
+            let valid = alert.angle.map { $0.isFinite && (-180...180).contains($0) } == true
+                && alert.quality.map { $0.isFinite && (SpatialDirection.minimumQuality...1).contains($0) } == true
+            return Self(angle: valid ? alert.angle : nil, event: alert.event)
+        }
+        let valid = liveAngle.map { $0.isFinite && (-180...180).contains($0) } == true
+        return Self(angle: valid ? liveAngle : nil, event: nil)
+    }
+}
+
 struct LocalAudioUpdate: Sendable {
     let angle: Double?
     let quality: Double?

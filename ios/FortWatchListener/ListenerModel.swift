@@ -7,10 +7,13 @@ final class ListenerModel {
     let bluetooth = WristbandBluetooth()
     private(set) var active = false
     private(set) var capturing = false
-    private(set) var status = "Conectá la pulsera por Bluetooth para comenzar."
+    private(set) var status = "Connect your wristband to get started."
     private(set) var calibrated = false
     private(set) var calibrating = false
     private(set) var angle: Double?
+    private(set) var directionCue = SoundDirectionCue(angle: nil, event: nil)
+    var directionAngle: Double? { directionCue.angle }
+    var directionEvent: String? { directionCue.event }
     private(set) var level = 0
     private(set) var lastEvent: String?
     private(set) var lastEventSent = false
@@ -22,31 +25,35 @@ final class ListenerModel {
     @ObservationIgnored private var calibrationRequested = false
     @ObservationIgnored private var lastLevelSent = -Double.infinity
     @ObservationIgnored private var lastTimeSent = -Double.infinity
+    @ObservationIgnored private var directionalAlert: SoundEventDetection?
+    @ObservationIgnored private var calibrateAfterStart = false
 
     init() {
         bluetooth.onConnect = { [weak self] in
-            self?.status = "Pulsera lista. Probá la vibración o iniciá la escucha."
+            self?.status = "Wristband ready. Test vibration or start listening."
         }
         bluetooth.onDisconnect = { [weak self] message in
             guard let self else { return }
             if self.active {
-                self.stop(message: message + " Volvé a conectar la pulsera e iniciar la escucha.")
+                self.stop(message: message + " Reconnect your wristband and start listening again.")
             } else {
                 self.status = message
             }
         }
     }
 
-    func start() {
+    func start(calibrateWhenReady: Bool = false) {
         guard !active else { return }
         guard bluetooth.isConnected else {
-            status = "Conectá primero la pulsera FortWatch."
+            status = "Connect your FortWatch wristband first."
             return
         }
         active = true
+        calibrateAfterStart = calibrateWhenReady
         microphoneDenied = false
         capturing = false
-        status = "Solicitando acceso al micrófono…"
+        status = "Requesting microphone access…"
+        recordCaptureStatus("starting")
         clearDirection()
         lastEvent = nil
         lastEventSent = false
@@ -56,15 +63,15 @@ final class ListenerModel {
             let allowed = await AVCaptureDevice.requestAccess(for: .audio)
             guard let self, self.generation == run, self.active else { return }
             guard allowed else {
-                self.stop(message: "Permití el micrófono en Configuración para usar FortWatch.")
+                self.stop(message: "Allow microphone access in Settings to use FortWatch.")
                 self.microphoneDenied = true
                 return
             }
             guard self.bluetooth.isConnected else {
-                self.stop(message: "Se perdió la conexión. Volvé a conectar la pulsera.")
+                self.stop(message: "Connection lost. Reconnect your wristband.")
                 return
             }
-            self.status = "Preparando el reconocimiento en el iPhone…"
+            self.status = "Preparing sound recognition on your iPhone…"
             self.capture = SpatialCapture { [weak self] event in
                 DispatchQueue.main.async {
                     guard let self, self.generation == run, self.active else { return }
@@ -77,15 +84,17 @@ final class ListenerModel {
         }
     }
 
-    func stop(message: String = "Escucha detenida.") {
+    func stop(message: String = "Listening stopped.") {
         generation = UUID()
         capture?.stop(message: message)
         capture = nil
         freshnessTask?.cancel()
         freshnessTask = nil
         active = false
+        calibrateAfterStart = false
         capturing = false
         status = message
+        recordCaptureStatus("stopped")
         clearDirection()
         audioDeadline = nil
         level = 0
@@ -99,7 +108,7 @@ final class ListenerModel {
     func disconnect() {
         if active { stop() }
         bluetooth.disconnect()
-        status = "Pulsera desconectada."
+        status = "Wristband disconnected."
     }
 
     func testWristband() {
@@ -107,29 +116,38 @@ final class ListenerModel {
         let sent = bluetooth.sendAlert(event: "KNOCK", score: 1, angle: nil, quality: nil,
                                        validUntil: ProcessInfo.processInfo.systemUptime + 0.75)
         status = sent
-            ? "Prueba enviada: buscá KNOCK en la pulsera y dos vibraciones cortas."
-            : "No se pudo enviar la prueba. Revisá la conexión y probá otra vez."
+            ? "Test sent. Check for KNOCK on your wristband and two short pulses."
+            : "Test could not be sent. Check the connection and try again."
     }
 
     func suspend() {
-        if active { stop(message: "Escucha detenida al salir de la app. Volvé a iniciar y calibrar.") }
+        if active { stop(message: "Listening stopped when you left the app. Start again and recalibrate.") }
         bluetooth.disconnect()
     }
 
     func calibrate() {
+        if !capturing {
+            guard !active, bluetooth.isConnected else { return }
+            start(calibrateWhenReady: true)
+            return
+        }
         guard capturing, !calibrating else { return }
         calibrationRequested = true
         calibrated = false
         calibrating = true
         angle = nil
         lastEvent = nil
+        directionalAlert = nil
+        refreshDirectionCue()
         bluetooth.clearPendingAlerts()
-        status = "Mantené un sonido frente al teléfono durante un segundo."
+        status = "Keep one sound in front of the phone for one second."
         capture?.calibrateFront()
     }
 
     private func clearDirection() {
         angle = nil
+        directionalAlert = nil
+        refreshDirectionCue()
         calibrated = false
         calibrating = false
         calibrationRequested = false
@@ -139,9 +157,14 @@ final class ListenerModel {
         switch event {
         case .started:
             capturing = true
-            status = "Escuchando en el iPhone. Calibrá el frente para ubicar los sonidos."
+            status = "Listening on your iPhone. Set the front direction to locate sounds."
+            recordCaptureStatus("capturing")
             bluetooth.sendTime()
             lastTimeSent = ProcessInfo.processInfo.systemUptime
+            if calibrateAfterStart {
+                calibrateAfterStart = false
+                calibrate()
+            }
         case .stopped(let message):
             stop(message: message)
         case .update(let update):
@@ -153,7 +176,8 @@ final class ListenerModel {
             let now = ProcessInfo.processInfo.systemUptime
             guard now < update.expiresAt else {
                 angle = nil
-                status = "Esperando audio reciente del micrófono…"
+                refreshDirectionCue()
+                status = "Waiting for fresh microphone audio…"
                 return
             }
             audioDeadline = update.expiresAt
@@ -171,10 +195,12 @@ final class ListenerModel {
             // Alert first: metering and time must not occupy a write slot ahead of it.
             if let alert = update.alert, !calibrating, now < alert.expiresAt {
                 lastEvent = alert.event
+                directionalAlert = alert
                 lastEventSent = bluetooth.sendAlert(event: alert.event, score: alert.score,
                                                      angle: alert.angle, quality: alert.quality,
                                                      validUntil: alert.expiresAt)
             }
+            refreshDirectionCue()
             if now - lastLevelSent >= 0.25 {
                 bluetooth.sendLevel(level)
                 lastLevelSent = now
@@ -195,9 +221,26 @@ final class ListenerModel {
                 if let deadline = self.audioDeadline, ProcessInfo.processInfo.systemUptime >= deadline {
                     self.angle = nil
                     self.level = 0
-                    self.status = "Esperando audio reciente del micrófono…"
+                    self.status = "Waiting for fresh microphone audio…"
                 }
+                self.refreshDirectionCue()
             }
         }
+    }
+
+    private func refreshDirectionCue() {
+        let now = ProcessInfo.processInfo.systemUptime
+        if let alert = directionalAlert, now >= alert.expiresAt { directionalAlert = nil }
+        directionCue = .current(liveAngle: angle, alert: directionalAlert, at: now)
+    }
+
+    // A single local diagnostic record for device bring-up. No audio, recognized
+    // events, Bluetooth identifiers, or network credentials are written here.
+    private func recordCaptureStatus(_ state: String) {
+        guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+              let data = try? JSONSerialization.data(withJSONObject: ["state": state, "message": status],
+                                                     options: [.sortedKeys]) else { return }
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try? data.write(to: directory.appendingPathComponent("fortwatch-capture-status.json"), options: .atomic)
     }
 }

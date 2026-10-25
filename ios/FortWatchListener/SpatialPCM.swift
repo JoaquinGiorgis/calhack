@@ -20,27 +20,27 @@ enum SpatialPCM {
               formatDescription.pointee.mChannelsPerFrame == 4,
               let layout = CMAudioFormatDescriptionGetChannelLayout(description, sizeOut: nil),
               layout.pointee.mChannelLayoutTag == layoutTag else {
-            throw ListenerError.message("El iPhone no entregó los cuatro canales espaciales esperados. No se puede estimar dirección con esta entrada.")
+            throw ListenerError.message("The iPhone did not provide the four expected spatial channels. Direction cannot be estimated from this input.")
         }
         let frameCount = CMSampleBufferGetNumSamples(sampleBuffer)
         guard frameCount > 0, frameCount <= 48000 else {
-            throw ListenerError.message("El tamaño de la captura no es válido.")
+            throw ListenerError.message("The capture size is invalid.")
         }
         let format = AVAudioFormat(cmAudioFormatDescription: description)
         guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frameCount)) else {
-            throw ListenerError.message("No se pudo preparar el audio espacial.")
+            throw ListenerError.message("Could not prepare spatial audio.")
         }
         buffer.frameLength = AVAudioFrameCount(frameCount)
         guard CMSampleBufferCopyPCMDataIntoAudioBufferList(sampleBuffer, at: 0, frameCount: Int32(frameCount),
                                                          into: buffer.mutableAudioBufferList) == noErr else {
-            throw ListenerError.message("No se pudo leer el audio del micrófono.")
+            throw ListenerError.message("Could not read microphone audio.")
         }
         let pts = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         guard pts.isFinite, pts >= 0, format.sampleRate.isFinite,
               format.sampleRate.rounded() == format.sampleRate,
               Self.sampleRates.contains(Int(format.sampleRate)),
               Double(frameCount) <= format.sampleRate * 0.25 else {
-            throw ListenerError.message("El tiempo o la frecuencia del audio no son válidos.")
+            throw ListenerError.message("Audio timing or sample rate is invalid.")
         }
         return (try interleavedSamples(buffer), Int(format.sampleRate), pts)
     }
@@ -49,14 +49,14 @@ enum SpatialPCM {
         let frames = Int(buffer.frameLength)
         guard buffer.format.channelCount == 4, frames > 0,
               buffer.format.streamDescription.pointee.mFormatFlags & kAudioFormatFlagIsBigEndian == 0 else {
-            throw ListenerError.message("Formato espacial no compatible.")
+            throw ListenerError.message("Spatial audio format is not supported.")
         }
         let size: Int
         switch buffer.format.commonFormat {
         case .pcmFormatFloat32, .pcmFormatInt32: size = 4
         case .pcmFormatFloat64: size = 8
         case .pcmFormatInt16: size = 2
-        default: throw ListenerError.message("Formato PCM no compatible.")
+        default: throw ListenerError.message("PCM audio format is not supported.")
         }
         var samples = [Float](repeating: 0, count: frames * 4)
         var baseChannel = 0
@@ -64,7 +64,7 @@ enum SpatialPCM {
             let channels = Int(audioBuffer.mNumberChannels)
             guard channels > 0, baseChannel + channels <= 4, let data = audioBuffer.mData,
                   Int(audioBuffer.mDataByteSize) >= frames * channels * size else {
-                throw ListenerError.message("El bloque de audio está incompleto.")
+                throw ListenerError.message("The audio block is incomplete.")
             }
             for frame in 0..<frames {
                 for channel in 0..<channels {
@@ -75,15 +75,15 @@ enum SpatialPCM {
                     case .pcmFormatFloat64: value = Float(data.loadUnaligned(fromByteOffset: offset, as: Double.self))
                     case .pcmFormatInt16: value = Float(data.loadUnaligned(fromByteOffset: offset, as: Int16.self)) / 32768
                     case .pcmFormatInt32: value = Float(data.loadUnaligned(fromByteOffset: offset, as: Int32.self)) / 2147483648
-                    default: throw ListenerError.message("Formato PCM no compatible.")
+                    default: throw ListenerError.message("PCM audio format is not supported.")
                     }
-                    guard value.isFinite else { throw ListenerError.message("Audio con muestras inválidas.") }
+                    guard value.isFinite else { throw ListenerError.message("Audio contains invalid samples.") }
                     samples[frame * 4 + baseChannel + channel] = value
                 }
             }
             baseChannel += channels
         }
-        guard baseChannel == 4 else { throw ListenerError.message("Faltan canales espaciales.") }
+        guard baseChannel == 4 else { throw ListenerError.message("Spatial audio channels are missing.") }
         return samples
     }
 }

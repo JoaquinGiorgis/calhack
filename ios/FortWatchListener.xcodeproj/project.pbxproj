@@ -295,8 +295,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FortWatchListener/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "FortWatch Listener";
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "FortWatch se conecta directamente a tu pulsera para mostrar alertas y hacerla vibrar.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch reconoce sonidos y calcula su dirección en este iPhone para avisarte con la pulsera. El audio no sale del teléfono.";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "FortWatch connects to your wristband to show alerts and provide vibrations.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch recognizes sounds and estimates their direction on this iPhone to alert you on your wristband. Audio stays on your phone.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -394,8 +394,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FortWatchListener/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "FortWatch Listener";
-				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "FortWatch se conecta directamente a tu pulsera para mostrar alertas y hacerla vibrar.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch reconoce sonidos y calcula su dirección en este iPhone para avisarte con la pulsera. El audio no sale del teléfono.";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "FortWatch connects to your wristband to show alerts and provide vibrations.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch recognizes sounds and estimates their direction on this iPhone to alert you on your wristband. Audio stays on your phone.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

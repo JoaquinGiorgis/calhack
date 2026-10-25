@@ -18,15 +18,15 @@ guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototip
    el soporte real y los cuatro canales antes de escuchar.
 2. Encender la pulsera con el firmware FortWatch. Cerrar el receptor anterior
    `mac_listener.py` para que no ocupe la conexión Bluetooth.
-3. En la app tocar **Conectar pulsera** y permitir Bluetooth. La conexión se hace
+3. En la app tocar **Connect** y permitir Bluetooth. La conexión se hace
    desde la app; no requiere emparejar un dispositivo de audio en Ajustes.
-4. Tocar **Probar vibración**. Envía una alerta de prueba `KNOCK` sin dirección:
+4. Tocar **Test vibration**. Envía una alerta de prueba `KNOCK` sin dirección:
    la pulsera debería mostrar KNOCK y hacer dos pulsos cortos. Esto permite
    comprobar el enlace y el motor antes de probar reconocimiento.
-5. Tocar **Iniciar escucha** y permitir micrófono. Mantener el iPhone vertical en
-   un soporte, con micrófonos libres y la app abierta.
-6. Tocar **Calibrar frente** y mantener una única fuente de sonido frente al
-   teléfono durante un segundo. Si se mueve el soporte, volver a calibrar.
+5. Mantener el iPhone vertical en un soporte, con micrófonos libres y la app abierta.
+6. Tocar **Listen & calibrate** y permitir micrófono. El mismo botón inicia la
+   escucha y calibra al arrancar: mantener una fuente continua al frente durante
+   un segundo. **Calibrate front** permite repetirlo si se mueve el soporte.
 7. Probar sonidos desde izquierda, frente y derecha; confirmar evento, ángulo y
    vibración. La precisión física y los umbrales deben medirse en el aparato.
 
@@ -34,6 +34,15 @@ Si Bluetooth se apaga o la pulsera se desconecta, la captura se detiene. Reconec
 no reenvía alertas anteriores ni reinicia el micrófono solo. Si falta un permiso,
 la app muestra el estado y acceso a Configuración. Al salir de la app también se
 detiene; todavía no es escucha en segundo plano ni orientación desde el bolsillo.
+
+## Pantalla y datos recientes
+
+Toda la interfaz está en inglés. Conserva el fondo carbón y los colores de cada
+categoría. El indicador central muestra un arco parcial y un ícono alrededor del
+retículo del teléfono. Una alerta usa su propio ángulo; entre alertas se muestra
+la dirección dominante reciente con un ícono genérico. Una alerta incierta no
+toma prestado otro ángulo. Los datos vencidos se retiran; **Latest alert** es
+historial, no una ubicación en vivo.
 
 ## Reconocimiento local
 
@@ -61,7 +70,7 @@ habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
 
 ## Dirección y límites
 
-- La flecha indica el sonido dominante respecto del frente calibrado del iPhone.
+- El arco con ícono indica el sonido dominante respecto del frente calibrado del iPhone.
   No separa fuentes simultáneas ni identifica qué persona habla.
 - Silencio, baja coherencia, sonido vertical/difuso o datos vencidos dan dirección
   incierta. No se muestran como `0°`.
@@ -75,7 +84,7 @@ habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
 - La app no mantiene cola BLE: si el enlace está ocupado o el resultado caducó,
   descarta el envío. “Enviada” indica aceptación por CoreBluetooth; este firmware
   no confirma que el motor haya vibrado físicamente.
-- El firmware con ángulo muestra flecha; versiones anteriores conservan las
+- El firmware con ángulo muestra un arco con el ícono del evento; versiones anteriores conservan las
   alertas y vibración pero ignoran la dirección. No se flashea desde esta app.
 
 ## Código
@@ -112,3 +121,13 @@ no prueban precisión acústica, alcance BLE ni funcionamiento físico del motor
 Fuentes: [Apple SoundAnalysis](https://developer.apple.com/documentation/soundanalysis/snclassifysoundrequest),
 [captura espacial](https://developer.apple.com/documentation/avfoundation/capturing-spatial-audio-in-your-ios-app),
 [CoreBluetooth](https://developer.apple.com/documentation/corebluetooth/transferring-data-between-bluetooth-low-energy-devices).
+
+### Diagnóstico físico optativo
+
+La prueba `testPhysicalSpatialCaptureProvidesValidAudio` se compila solo con
+`FORTWATCH_CAPTURE_PROBE`, requiere un iPhone real y permiso de micrófono. Usa
+`SpatialCapture`, espera el primer bloque decodificado y detiene la captura; no
+guarda audio ni envía alertas. Se ejecutó en el iPhone 17 Pro conectado: PASS.
+No valida el signo ni la precisión angular. Para diagnosticar el inicio, la app
+guarda solo el último estado/mensaje en `Documents/fortwatch-capture-status.json`,
+sin muestras, eventos reconocidos ni identificadores.

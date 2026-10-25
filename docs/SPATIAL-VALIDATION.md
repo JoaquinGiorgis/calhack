@@ -3,6 +3,10 @@
 Fecha: 24 de octubre de 2026 (America/Los_Angeles).
 Rama: `codex/iphone-spatial-direction`.
 
+Este pase es histórico. El [estado del 25/10](DIRECTION-DESIGN-UPDATE.md) añade
+28 tests, prueba FOA en el iPhone, diseño circular e instalación en ambos dispositivos;
+el usuario confirma conexión BLE, pantalla KNOCK y vibración.
+
 La app actual reconoce y calcula dirección en el iPhone, luego envía alertas
 por BLE. Se eliminó la dependencia de Mac/HTTP, los campos IP/código, los tipos de
 transporte y el permiso de red local. Bluetooth y micrófono se solicitan al usarlos.
