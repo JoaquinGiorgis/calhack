@@ -33,10 +33,13 @@ guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototip
 7. Probar sonidos desde izquierda, frente y derecha; confirmar evento, ángulo y
    vibración. La precisión física y los umbrales deben medirse en el aparato.
 
-Si Bluetooth se apaga o la pulsera se desconecta, la captura se detiene. Reconectar
-no reenvía alertas anteriores ni reinicia el micrófono solo. Si falta un permiso,
-la app muestra el estado y acceso a Configuración. Al salir de la app también se
-detiene; todavía no es escucha en segundo plano ni orientación desde el bolsillo.
+Si la pulsera se reinicia o pierde el enlace inesperadamente, la captura se detiene
+y la app vuelve a buscarla automáticamente después de 1,5 segundos. Si estaba
+escuchando, reinicia el micrófono cuando recupera la conexión; no reenvía alertas
+anteriores. Si Bluetooth se apaga, falta un permiso o la pulsera no reaparece en
+15 segundos, la app muestra el estado y permite intentarlo manualmente. Al salir
+de la app se cancela tanto la escucha como la reconexión automática; todavía no es
+escucha en segundo plano ni orientación desde el bolsillo.
 
 ## Pantalla y datos recientes
 

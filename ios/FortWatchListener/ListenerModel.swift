@@ -29,15 +29,24 @@ final class ListenerModel {
     @ObservationIgnored private var lastTimeSent = -Double.infinity
     @ObservationIgnored private var directionalAlert: SoundEventDetection?
     @ObservationIgnored private var calibrateAfterStart = false
+    @ObservationIgnored private var resumeListeningAfterReconnect = false
 
     init() {
         bluetooth.onConnect = { [weak self] in
-            self?.status = "Wristband ready. Test vibration or start listening."
+            guard let self else { return }
+            if self.resumeListeningAfterReconnect {
+                self.resumeListeningAfterReconnect = false
+                self.status = "Wristband reconnected. Restarting listening…"
+                self.start()
+            } else {
+                self.status = "Wristband ready. Test vibration or start listening."
+            }
         }
         bluetooth.onDisconnect = { [weak self] message in
             guard let self else { return }
             if self.active {
-                self.stop(message: message + " Reconnect your wristband and start listening again.")
+                self.stop(message: message + " Listening will restart after reconnection.")
+                self.resumeListeningAfterReconnect = true
             } else {
                 self.status = message
             }
@@ -109,6 +118,7 @@ final class ListenerModel {
     }
 
     func disconnect() {
+        resumeListeningAfterReconnect = false
         if active { stop() }
         bluetooth.disconnect()
         status = "Wristband disconnected."
@@ -131,6 +141,7 @@ final class ListenerModel {
     }
 
     func suspend() {
+        resumeListeningAfterReconnect = false
         if active { stop(message: "Listening stopped when you left the app. Start again and recalibrate.") }
         bluetooth.disconnect()
     }

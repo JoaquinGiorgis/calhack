@@ -88,6 +88,7 @@ final class WristbandBluetooth: NSObject {
     @ObservationIgnored private var responseInFlight = false
     @ObservationIgnored private var connectionTimeout: Task<Void, Never>?
     @ObservationIgnored private var writeTimeout: Task<Void, Never>?
+    @ObservationIgnored private var reconnectTask: Task<Void, Never>?
 
     func connect() {
         guard !isConnected, !connecting else { return }
@@ -209,6 +210,44 @@ final class WristbandBluetooth: NSObject {
         unavailableReason = message
     }
 
+    /// Keep the user's connection intent alive across a short peripheral reset.
+    /// The ESP32 starts advertising again after boot, so a fresh scan is safer
+    /// than trying to reuse the now-invalid peripheral object.
+    private func reconnectAfterUnexpectedDisconnect() {
+        guard wantsConnection, let central, central.state == .poweredOn else {
+            fail("Connection to the wristband was lost. Move it closer and reconnect.")
+            return
+        }
+        let wasReady = isConnected
+        isConnected = false
+        connecting = true
+        receiveCharacteristic = nil
+        responseInFlight = false
+        connectionTimeout?.cancel()
+        connectionTimeout = nil
+        writeTimeout?.cancel()
+        writeTimeout = nil
+        peripheral?.delegate = nil
+        peripheral = nil
+        central.stopScan()
+        status = "Connection lost. Reconnecting to FortWatch…"
+        unavailableReason = nil
+        if wasReady {
+            onDisconnect?("Connection lost. Reconnecting to the wristband automatically.")
+        }
+
+        reconnectTask?.cancel()
+        let run = session
+        reconnectTask = Task { [weak self] in
+            // Give a rebooting ESP32 time to initialize BLE and advertise again.
+            try? await Task.sleep(for: .seconds(1.5))
+            guard !Task.isCancelled, let self, self.session == run,
+                  self.wantsConnection, !self.isConnected else { return }
+            self.reconnectTask = nil
+            self.scan()
+        }
+    }
+
     private func endSession(message: String, notify: Bool = true) {
         let wasReady = isConnected
         session = UUID()
@@ -221,6 +260,8 @@ final class WristbandBluetooth: NSObject {
         connectionTimeout = nil
         writeTimeout?.cancel()
         writeTimeout = nil
+        reconnectTask?.cancel()
+        reconnectTask = nil
         peripheral?.delegate = nil
         if let central {
             central.delegate = nil
@@ -295,7 +336,7 @@ extension WristbandBluetooth: @preconcurrency CBCentralManagerDelegate, @preconc
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         guard central === self.central, current(peripheral) else { return }
-        fail("Connection to the wristband was lost. Move it closer and reconnect.")
+        reconnectAfterUnexpectedDisconnect()
     }
 
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
