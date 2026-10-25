@@ -1,0 +1,11 @@
+{
+  "source_sha256": {
+    "ios/FortWatchListener/SoundCatalog.swift": "f13acda3c27aaaeba0081803e9d488b771048cbdeda5443e4c89b927b16101e4",
+    "ios/FortWatchListener/SoundEvents.swift": "007737375f14712927fd1133bf6932ed4e7162b6149552f35f51b9b1552e77ee",
+    "ios/FortWatchListener/SpatialDirection.swift": "8515b494a5f2cb0eb736acb93edcf293fc5c3ac62e5626c379711e7ffb5124b9",
+    "ios/FortWatchListener/YAMNetEventSelector.swift": "2ae4e4387f4dca2760f7242d6d947ab439202e94a9b4ab634a2b2d77423c5e5f",
+    "tools/yamnet/replay_selector.swift": "6f2fdc86f63972548693bf930131f27089472c9d91bc211908a5d8691105bf99"
+  },
+  "temporary_variant_sha256": "931c662dd830e665a593daa545b521b3249571693387655feb7ec649d77a305c",
+  "change": "Only order eligible candidates by score before priority; current-hit display and sustained/cooldown notification unchanged."
+}

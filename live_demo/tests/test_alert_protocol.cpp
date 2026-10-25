@@ -76,6 +76,20 @@ int main() {
   assert(!parseAlert(boundary.c_str(), alert));
   assert(!alert.hasDirection && alert.event[0] == '\0');
 
+  assert(parseDisplay("D,KNOCK,0.62,-35,0.81", alert));
+  assert(std::string(alert.event) == "KNOCK" && hasUsableDirection(alert));
+  assert(!parseAlert("D,KNOCK,0.62", alert));
+  assert(!parseDisplay("E,KNOCK,0.62", alert));
+  assert(parseDisplay("D,KNOCK,0.62,35", alert) && !alert.hasDirection);
+  assert(parseDisplay("D,KNOCK,0.62,nan,0.9", alert) && !alert.hasDirection);
+  for (const char *wire : {"D", "D,", "DD,KNOCK,0.9", "D,KNOCK,nan", "D,Y521,0.9",
+                          "D,Y0000,0.9", "D,Y00,0.9", "D,KNOCK,1.1"})
+    assert(!parseDisplay(wire, alert));
+  boundary[0] = 'D';
+  assert(!parseDisplay(boundary.c_str(), alert));  // still one byte over 63
+  boundary.pop_back();
+  assert(parseDisplay(boundary.c_str(), alert));
+
   std::cout << "PASS: alert protocol legacy, direction, uncertainty, invalid values, "
                "stale reset and 63-byte boundary\n";
 }

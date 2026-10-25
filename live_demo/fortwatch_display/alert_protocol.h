@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include "sound_catalog.h"
 
 namespace fortwatch {
 
@@ -40,7 +41,7 @@ inline bool parseFiniteNumber(const char *text, float minimum, float maximum,
   return true;
 }
 
-inline bool parseAlert(const char *text, AlertMessage &output) {
+inline bool parseSoundMessage(const char *text, AlertMessage &output, char kind) {
   // Reset on every attempt: a legacy/invalid message never inherits an angle.
   output = AlertMessage{};
   if (!text) return false;
@@ -58,13 +59,15 @@ inline bool parseAlert(const char *text, AlertMessage &output) {
     if (count < 6) fields[count] = p + 1;
     ++count;
   }
-  if (count < 3 || std::strcmp(fields[0], "E") != 0) return false;
+  if (count < 3 || fields[0][0] != kind || fields[0][1] != '\0') return false;
   const std::size_t eventLength = std::strlen(fields[1]);
   if (!eventLength || eventLength > kMaxEventLength) return false;
   for (const char *p = fields[1]; *p; ++p) {
     if (!((*p >= 'A' && *p <= 'Z') || (*p >= '0' && *p <= '9') || *p == '_'))
       return false;
   }
+  // Y is reserved for exact YAMNet IDs; never treat a malformed ID as a label.
+  if (fields[1][0] == 'Y' && !lookupSoundCatalog(fields[1])) return false;
 
   AlertMessage parsed;
   if (!parseFiniteNumber(fields[2], 0.0f, 1.0f, parsed.score)) return false;
@@ -82,6 +85,15 @@ inline bool parseAlert(const char *text, AlertMessage &output) {
   }
   output = parsed;
   return true;
+}
+
+inline bool parseAlert(const char *text, AlertMessage &output) {
+  return parseSoundMessage(text, output, 'E');
+}
+
+// D has the same validated payload as E, but is display-only at dispatch.
+inline bool parseDisplay(const char *text, AlertMessage &output) {
+  return parseSoundMessage(text, output, 'D');
 }
 
 inline bool hasUsableDirection(const AlertMessage &message) {

@@ -1,5 +1,8 @@
 # iPhone sound recognition audit
 
+> Historical ten-category revision. The current full YAMNet integration is described
+> in [SOUND-CATALOG-521.md](SOUND-CATALOG-521.md).
+
 25 October 2026. This describes the native iPhone pipeline, not the Mac's YAMNet
 configuration. The catalog contains **10 alert categories and 22 Apple
 classification identifiers**. A complete mapping is not evidence that real

@@ -1,5 +1,8 @@
 # FortWatch — identidad de los sonidos
 
+> Historical ten-category revision. The current full YAMNet integration is described
+> in [SOUND-CATALOG-521.md](../SOUND-CATALOG-521.md).
+
 25/10/2026. Aplicación nativa iPhone + pantalla de pulsera 320 × 240.
 
 ## Criterio

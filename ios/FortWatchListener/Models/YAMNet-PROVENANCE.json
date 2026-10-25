@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "converted_at_utc": "2026-10-25T12:17:32.555064+00:00",
+  "source": {
+    "name": "Google YAMNet1 /521 AudioSet classes",
+    "bundled_path": "pretrained/yamnet",
+    "model_url": "https://www.kaggle.com/models/google/yamnet",
+    "source_url": "https://github.com/tensorflow/models/tree/master/research/audioset/yamnet",
+    "license": "Apache-2.0",
+    "license_url": "https://raw.githubusercontent.com/tensorflow/models/master/LICENSE",
+    "tree_sha256": "4730c9bde533285dc0b74b8b94c798273b40d91fc746b17f0c9281ac8764d6b8",
+    "files": {
+      "assets/yamnet_class_map.csv": "cdf24d193e196d9e95912a2667051ae203e92a2ba09449218ccb40ef787c6df2",
+      "saved_model.pb": "672af6e1e34fe15a42d45d70217fd39f97e10aef9b0effbf9b0bf7826fccd462",
+      "variables/variables.data-00000-of-00001": "d6753f22f173b2a8b1ce78918eaae79bf0a41ca61f4cfe9a1b948c97ff094ddc",
+      "variables/variables.index": "0bc2ca10e56e8a71b96a2cad26adbbabff927e9344fbd2df8ae7275ddf76ae1e"
+    },
+    "bytes": 18275381
+  },
+  "converted": {
+    "path": "YAMNet.mlpackage",
+    "format": "CoreML MLProgram",
+    "minimum_deployment_target": "iOS16",
+    "input": {
+      "name": "waveform",
+      "shape": [
+        15600
+      ],
+      "dtype": "float32",
+      "sample_rate": 16000,
+      "mono": true,
+      "stride": 7680
+    },
+    "output": {
+      "name": "scores",
+      "shape": [
+        521
+      ],
+      "dtype": "float32",
+      "ordering": "yamnet_class_map.csv index0..520"
+    },
+    "precision": "FLOAT32",
+    "validated_compute_units": "CPU_ONLY",
+    "custom_runtime_ops": false,
+    "tree_sha256": "957321017e895bffb2e0a8a44125bd4288c759b87d252f45d34fc1557f1c86ae",
+    "files": {
+      "Data/com.apple.CoreML/model.mlmodel": "fe5c3139a9f797193ba15ff3740e2bb4bd1198a89568b9c5a9f746c66ff229e8",
+      "Data/com.apple.CoreML/weights/weight.bin": "941643d4b96cd016cdf217efd89b7547a868614e6a070d4b116f8355b8a8fa1c",
+      "Manifest.json": "fb22f98fc41b269670c2c645c6b0aa7b4db3073c7a66b879a425473c48b68466"
+    },
+    "bytes": 16144253
+  },
+  "converter": {
+    "tensorflow": "2.20.0",
+    "coremltools": "9.0",
+    "numpy": "2.4.6",
+    "script": "tools/yamnet/convert.py",
+    "changes": [
+      "Fixed original waveform signature at15600samples and retained all521 sigmoid scores.",
+      "Registered TensorFlow ComplexAbs to existing CoreML complex_abs lowering.",
+      "Converted fixed512-point RFFT to mathematically equivalent one-sided DFT matmuls; phase coefficients computed inFloat64 before casting weights toFloat32 to avoid generic converter phase-rounding error.",
+      "Renamed input/output to waveform/scores. Original learned weights and preprocessing parameters unchanged."
+    ],
+    "compatibility_note": "coremltools9.0 warns that TensorFlow2.20 is newer than its tested2.12; the actual conversion was independently checked numerically."
+  },
+  "validation": {
+    "host": "macOS-26.5.1-arm64-arm-64bit",
+    "summary": {
+      "samples": 238,
+      "public_clips": 26,
+      "public_windows": 234,
+      "synthetic_windows": 4,
+      "maximum_absolute_error": 1.1712312698364258e-05,
+      "mean_absolute_error": 7.535873258746051e-09,
+      "top1_agreement_count": 238,
+      "all_finite": true,
+      "pass_max_abs_error_1e_3": true
+    },
+    "timings": {
+      "tensorflow_load_s": 3.129190125007881,
+      "coreml_load_s": 0.185078375012381,
+      "tensorflow_prediction": {
+        "first_call_ms": 157.03591701458208,
+        "warm_median_ms": 3.7016249843873084,
+        "warm_p95_ms": 4.008125001564622,
+        "warm_max_ms": 4.748208011733368
+      },
+      "coreml_prediction": {
+        "first_call_ms": 34.4039170013275,
+        "warm_median_ms": 1.5214159793686122,
+        "warm_p95_ms": 1.6617417917586863,
+        "warm_max_ms": 1.7327920068055391
+      },
+      "excludes": "File read and resampling; host only, not iPhone latency."
+    },
+    "original_candidate_max_abs_error": 0.001958116888999939,
+    "original_candidate_passed_1e_3": false,
+    "final_candidate_passed_1e_3": true,
+    "dataset_commit": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+    "dataset": "26 deterministic ESC-50 clips across13 datasetclasses;234windows;4syntheticwindows",
+    "full_report_temporary_path": "/tmp/fortwatch-yamnet-model/validation.json",
+    "reference_fixture_temporary_path": "/tmp/fortwatch-yamnet-model/yamnet-reference-fixtures.json",
+    "limits": [
+      "Numeric parity is conversion validation, not recognition accuracy.",
+      "Public file tests do not validate phone mic/FOA/room acoustics.",
+      "All521outputs preserved; overlapping and hierarchical scores are not mutually exclusive probabilities.",
+      "No threshold tuning or production policy changes."
+    ]
+  },
+  "class_map_sha256": "cdf24d193e196d9e95912a2667051ae203e92a2ba09449218ccb40ef787c6df2",
+  "no_dataset_audio_bundled": true
+}

@@ -39,6 +39,10 @@ int main() {
   assert(hapticsForEvent(nullptr).durations[0] == 150);
   assert(kBootHaptics.durationCount == 1 && kBootHaptics.durations[0] == 80);
   assert(kFeedbackHaptics.durationCount == 1 && kFeedbackHaptics.durations[0] == 150);
+  const uint16_t clonedDog[] = {150, 120, 150, 180, 500, 0};
+  const HapticPattern clone = makeHapticPattern("CLONE", "Same rhythm, different storage", clonedDog);
+  assert(sameHapticRhythm(hapticsForEvent("DOG"), clone));
+  assert(!sameHapticRhythm(hapticsForEvent("DOG"), knock));
   assert(!knownHapticsForEvent("alarm"));
   assert(!knownHapticsForEvent("UNKNOWN"));
 

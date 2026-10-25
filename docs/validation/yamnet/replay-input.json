@@ -1,0 +1,3126 @@
+{
+  "version": 1,
+  "scoreCount": 521,
+  "scoreFile": "coreml-scores.f32le",
+  "scoresSHA256": "0f1b819e1734247d6bef91dc8984d12217acba79c833c0015955dfe9d447cf10",
+  "scoreBytes": 487656,
+  "labels": [
+    "Speech",
+    "Child speech, kid speaking",
+    "Conversation",
+    "Narration, monologue",
+    "Babbling",
+    "Speech synthesizer",
+    "Shout",
+    "Bellow",
+    "Whoop",
+    "Yell",
+    "Children shouting",
+    "Screaming",
+    "Whispering",
+    "Laughter",
+    "Baby laughter",
+    "Giggle",
+    "Snicker",
+    "Belly laugh",
+    "Chuckle, chortle",
+    "Crying, sobbing",
+    "Baby cry, infant cry",
+    "Whimper",
+    "Wail, moan",
+    "Sigh",
+    "Singing",
+    "Choir",
+    "Yodeling",
+    "Chant",
+    "Mantra",
+    "Child singing",
+    "Synthetic singing",
+    "Rapping",
+    "Humming",
+    "Groan",
+    "Grunt",
+    "Whistling",
+    "Breathing",
+    "Wheeze",
+    "Snoring",
+    "Gasp",
+    "Pant",
+    "Snort",
+    "Cough",
+    "Throat clearing",
+    "Sneeze",
+    "Sniff",
+    "Run",
+    "Shuffle",
+    "Walk, footsteps",
+    "Chewing, mastication",
+    "Biting",
+    "Gargling",
+    "Stomach rumble",
+    "Burping, eructation",
+    "Hiccup",
+    "Fart",
+    "Hands",
+    "Finger snapping",
+    "Clapping",
+    "Heart sounds, heartbeat",
+    "Heart murmur",
+    "Cheering",
+    "Applause",
+    "Chatter",
+    "Crowd",
+    "Hubbub, speech noise, speech babble",
+    "Children playing",
+    "Animal",
+    "Domestic animals, pets",
+    "Dog",
+    "Bark",
+    "Yip",
+    "Howl",
+    "Bow-wow",
+    "Growling",
+    "Whimper (dog)",
+    "Cat",
+    "Purr",
+    "Meow",
+    "Hiss",
+    "Caterwaul",
+    "Livestock, farm animals, working animals",
+    "Horse",
+    "Clip-clop",
+    "Neigh, whinny",
+    "Cattle, bovinae",
+    "Moo",
+    "Cowbell",
+    "Pig",
+    "Oink",
+    "Goat",
+    "Bleat",
+    "Sheep",
+    "Fowl",
+    "Chicken, rooster",
+    "Cluck",
+    "Crowing, cock-a-doodle-doo",
+    "Turkey",
+    "Gobble",
+    "Duck",
+    "Quack",
+    "Goose",
+    "Honk",
+    "Wild animals",
+    "Roaring cats (lions, tigers)",
+    "Roar",
+    "Bird",
+    "Bird vocalization, bird call, bird song",
+    "Chirp, tweet",
+    "Squawk",
+    "Pigeon, dove",
+    "Coo",
+    "Crow",
+    "Caw",
+    "Owl",
+    "Hoot",
+    "Bird flight, flapping wings",
+    "Canidae, dogs, wolves",
+    "Rodents, rats, mice",
+    "Mouse",
+    "Patter",
+    "Insect",
+    "Cricket",
+    "Mosquito",
+    "Fly, housefly",
+    "Buzz",
+    "Bee, wasp, etc.",
+    "Frog",
+    "Croak",
+    "Snake",
+    "Rattle",
+    "Whale vocalization",
+    "Music",
+    "Musical instrument",
+    "Plucked string instrument",
+    "Guitar",
+    "Electric guitar",
+    "Bass guitar",
+    "Acoustic guitar",
+    "Steel guitar, slide guitar",
+    "Tapping (guitar technique)",
+    "Strum",
+    "Banjo",
+    "Sitar",
+    "Mandolin",
+    "Zither",
+    "Ukulele",
+    "Keyboard (musical)",
+    "Piano",
+    "Electric piano",
+    "Organ",
+    "Electronic organ",
+    "Hammond organ",
+    "Synthesizer",
+    "Sampler",
+    "Harpsichord",
+    "Percussion",
+    "Drum kit",
+    "Drum machine",
+    "Drum",
+    "Snare drum",
+    "Rimshot",
+    "Drum roll",
+    "Bass drum",
+    "Timpani",
+    "Tabla",
+    "Cymbal",
+    "Hi-hat",
+    "Wood block",
+    "Tambourine",
+    "Rattle (instrument)",
+    "Maraca",
+    "Gong",
+    "Tubular bells",
+    "Mallet percussion",
+    "Marimba, xylophone",
+    "Glockenspiel",
+    "Vibraphone",
+    "Steelpan",
+    "Orchestra",
+    "Brass instrument",
+    "French horn",
+    "Trumpet",
+    "Trombone",
+    "Bowed string instrument",
+    "String section",
+    "Violin, fiddle",
+    "Pizzicato",
+    "Cello",
+    "Double bass",
+    "Wind instrument, woodwind instrument",
+    "Flute",
+    "Saxophone",
+    "Clarinet",
+    "Harp",
+    "Bell",
+    "Church bell",
+    "Jingle bell",
+    "Bicycle bell",
+    "Tuning fork",
+    "Chime",
+    "Wind chime",
+    "Change ringing (campanology)",
+    "Harmonica",
+    "Accordion",
+    "Bagpipes",
+    "Didgeridoo",
+    "Shofar",
+    "Theremin",
+    "Singing bowl",
+    "Scratching (performance technique)",
+    "Pop music",
+    "Hip hop music",
+    "Beatboxing",
+    "Rock music",
+    "Heavy metal",
+    "Punk rock",
+    "Grunge",
+    "Progressive rock",
+    "Rock and roll",
+    "Psychedelic rock",
+    "Rhythm and blues",
+    "Soul music",
+    "Reggae",
+    "Country",
+    "Swing music",
+    "Bluegrass",
+    "Funk",
+    "Folk music",
+    "Middle Eastern music",
+    "Jazz",
+    "Disco",
+    "Classical music",
+    "Opera",
+    "Electronic music",
+    "House music",
+    "Techno",
+    "Dubstep",
+    "Drum and bass",
+    "Electronica",
+    "Electronic dance music",
+    "Ambient music",
+    "Trance music",
+    "Music of Latin America",
+    "Salsa music",
+    "Flamenco",
+    "Blues",
+    "Music for children",
+    "New-age music",
+    "Vocal music",
+    "A capella",
+    "Music of Africa",
+    "Afrobeat",
+    "Christian music",
+    "Gospel music",
+    "Music of Asia",
+    "Carnatic music",
+    "Music of Bollywood",
+    "Ska",
+    "Traditional music",
+    "Independent music",
+    "Song",
+    "Background music",
+    "Theme music",
+    "Jingle (music)",
+    "Soundtrack music",
+    "Lullaby",
+    "Video game music",
+    "Christmas music",
+    "Dance music",
+    "Wedding music",
+    "Happy music",
+    "Sad music",
+    "Tender music",
+    "Exciting music",
+    "Angry music",
+    "Scary music",
+    "Wind",
+    "Rustling leaves",
+    "Wind noise (microphone)",
+    "Thunderstorm",
+    "Thunder",
+    "Water",
+    "Rain",
+    "Raindrop",
+    "Rain on surface",
+    "Stream",
+    "Waterfall",
+    "Ocean",
+    "Waves, surf",
+    "Steam",
+    "Gurgling",
+    "Fire",
+    "Crackle",
+    "Vehicle",
+    "Boat, Water vehicle",
+    "Sailboat, sailing ship",
+    "Rowboat, canoe, kayak",
+    "Motorboat, speedboat",
+    "Ship",
+    "Motor vehicle (road)",
+    "Car",
+    "Vehicle horn, car horn, honking",
+    "Toot",
+    "Car alarm",
+    "Power windows, electric windows",
+    "Skidding",
+    "Tire squeal",
+    "Car passing by",
+    "Race car, auto racing",
+    "Truck",
+    "Air brake",
+    "Air horn, truck horn",
+    "Reversing beeps",
+    "Ice cream truck, ice cream van",
+    "Bus",
+    "Emergency vehicle",
+    "Police car (siren)",
+    "Ambulance (siren)",
+    "Fire engine, fire truck (siren)",
+    "Motorcycle",
+    "Traffic noise, roadway noise",
+    "Rail transport",
+    "Train",
+    "Train whistle",
+    "Train horn",
+    "Railroad car, train wagon",
+    "Train wheels squealing",
+    "Subway, metro, underground",
+    "Aircraft",
+    "Aircraft engine",
+    "Jet engine",
+    "Propeller, airscrew",
+    "Helicopter",
+    "Fixed-wing aircraft, airplane",
+    "Bicycle",
+    "Skateboard",
+    "Engine",
+    "Light engine (high frequency)",
+    "Dental drill, dentist's drill",
+    "Lawn mower",
+    "Chainsaw",
+    "Medium engine (mid frequency)",
+    "Heavy engine (low frequency)",
+    "Engine knocking",
+    "Engine starting",
+    "Idling",
+    "Accelerating, revving, vroom",
+    "Door",
+    "Doorbell",
+    "Ding-dong",
+    "Sliding door",
+    "Slam",
+    "Knock",
+    "Tap",
+    "Squeak",
+    "Cupboard open or close",
+    "Drawer open or close",
+    "Dishes, pots, and pans",
+    "Cutlery, silverware",
+    "Chopping (food)",
+    "Frying (food)",
+    "Microwave oven",
+    "Blender",
+    "Water tap, faucet",
+    "Sink (filling or washing)",
+    "Bathtub (filling or washing)",
+    "Hair dryer",
+    "Toilet flush",
+    "Toothbrush",
+    "Electric toothbrush",
+    "Vacuum cleaner",
+    "Zipper (clothing)",
+    "Keys jangling",
+    "Coin (dropping)",
+    "Scissors",
+    "Electric shaver, electric razor",
+    "Shuffling cards",
+    "Typing",
+    "Typewriter",
+    "Computer keyboard",
+    "Writing",
+    "Alarm",
+    "Telephone",
+    "Telephone bell ringing",
+    "Ringtone",
+    "Telephone dialing, DTMF",
+    "Dial tone",
+    "Busy signal",
+    "Alarm clock",
+    "Siren",
+    "Civil defense siren",
+    "Buzzer",
+    "Smoke detector, smoke alarm",
+    "Fire alarm",
+    "Foghorn",
+    "Whistle",
+    "Steam whistle",
+    "Mechanisms",
+    "Ratchet, pawl",
+    "Clock",
+    "Tick",
+    "Tick-tock",
+    "Gears",
+    "Pulleys",
+    "Sewing machine",
+    "Mechanical fan",
+    "Air conditioning",
+    "Cash register",
+    "Printer",
+    "Camera",
+    "Single-lens reflex camera",
+    "Tools",
+    "Hammer",
+    "Jackhammer",
+    "Sawing",
+    "Filing (rasp)",
+    "Sanding",
+    "Power tool",
+    "Drill",
+    "Explosion",
+    "Gunshot, gunfire",
+    "Machine gun",
+    "Fusillade",
+    "Artillery fire",
+    "Cap gun",
+    "Fireworks",
+    "Firecracker",
+    "Burst, pop",
+    "Eruption",
+    "Boom",
+    "Wood",
+    "Chop",
+    "Splinter",
+    "Crack",
+    "Glass",
+    "Chink, clink",
+    "Shatter",
+    "Liquid",
+    "Splash, splatter",
+    "Slosh",
+    "Squish",
+    "Drip",
+    "Pour",
+    "Trickle, dribble",
+    "Gush",
+    "Fill (with liquid)",
+    "Spray",
+    "Pump (liquid)",
+    "Stir",
+    "Boiling",
+    "Sonar",
+    "Arrow",
+    "Whoosh, swoosh, swish",
+    "Thump, thud",
+    "Thunk",
+    "Electronic tuner",
+    "Effects unit",
+    "Chorus effect",
+    "Basketball bounce",
+    "Bang",
+    "Slap, smack",
+    "Whack, thwack",
+    "Smash, crash",
+    "Breaking",
+    "Bouncing",
+    "Whip",
+    "Flap",
+    "Scratch",
+    "Scrape",
+    "Rub",
+    "Roll",
+    "Crushing",
+    "Crumpling, crinkling",
+    "Tearing",
+    "Beep, bleep",
+    "Ping",
+    "Ding",
+    "Clang",
+    "Squeal",
+    "Creak",
+    "Rustle",
+    "Whir",
+    "Clatter",
+    "Sizzle",
+    "Clicking",
+    "Clickety-clack",
+    "Rumble",
+    "Plop",
+    "Jingle, tinkle",
+    "Hum",
+    "Zing",
+    "Boing",
+    "Crunch",
+    "Silence",
+    "Sine wave",
+    "Harmonic",
+    "Chirp tone",
+    "Sound effect",
+    "Pulse",
+    "Inside, small room",
+    "Inside, large room or hall",
+    "Inside, public space",
+    "Outside, urban or manmade",
+    "Outside, rural or natural",
+    "Reverberation",
+    "Echo",
+    "Noise",
+    "Environmental noise",
+    "Static",
+    "Mains hum",
+    "Distortion",
+    "Sidetone",
+    "Cacophony",
+    "White noise",
+    "Pink noise",
+    "Throbbing",
+    "Vibration",
+    "Television",
+    "Radio",
+    "Field recording"
+  ],
+  "clips": [
+    {
+      "filename": "1-20133-A-39.wav",
+      "datasetCategory": "glass_breaking",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-20133-A-39.wav",
+      "audioSHA256": "db6946133c37fbd4513fe932dbb71e0b077bf7d240beaed339eb6c88e48c903b",
+      "attribution": "- [1-20133-A.ogg]: clip derived from breaking_glass.wav (http://www.freesound.org/people/gezortenplotz/sounds/20133/) by gezortenplotz [CC-BY]",
+      "targetIndices": [
+        435,
+        437
+      ],
+      "targetNames": [
+        "Glass",
+        "Shatter"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.3395551320790845,
+          "scoreByteOffset": 0
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.272300261127773,
+          "scoreByteOffset": 2084
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.08927848330895359,
+          "scoreByteOffset": 4168
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.1729259102724612,
+          "scoreByteOffset": 6252
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.1730894705355456,
+          "scoreByteOffset": 8336
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.019140931137897044,
+          "scoreByteOffset": 10420
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.014000587361719994,
+          "scoreByteOffset": 12504
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 14588
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 16672
+        }
+      ]
+    },
+    {
+      "filename": "1-84536-A-39.wav",
+      "datasetCategory": "glass_breaking",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-84536-A-39.wav",
+      "audioSHA256": "79efba4c0c54acadc88783e83b428fc9c430db94515b25339a6b5598e2ade0c0",
+      "attribution": "- [1-84536-A.ogg]: clip derived from glass.wav (http://www.freesound.org/people/cmusounddesign/sounds/84536/) by cmusounddesign [CC-BY]",
+      "targetIndices": [
+        435,
+        437
+      ],
+      "targetNames": [
+        "Glass",
+        "Shatter"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.22917893555194443,
+          "scoreByteOffset": 18756
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.29138286237831323,
+          "scoreByteOffset": 20840
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.19255558858977903,
+          "scoreByteOffset": 22924
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.04379614067742349,
+          "scoreByteOffset": 25008
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0049183657617690975,
+          "scoreByteOffset": 27092
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0033416035005683687,
+          "scoreByteOffset": 29176
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 31260
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 33344
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 35428
+        }
+      ]
+    },
+    {
+      "filename": "1-17124-A-43.wav",
+      "datasetCategory": "car_horn",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-17124-A-43.wav",
+      "audioSHA256": "9d5e01e07a386ee36c2e73f40817d132a54d91c936eccc01414280abca5a4209",
+      "attribution": "- [1-17124-A.ogg]: clip derived from car sharp horn.wav (http://www.freesound.org/people/cognito%20perceptu/sounds/17124/) by cognito perceptu [CC0]",
+      "targetIndices": [
+        302,
+        312
+      ],
+      "targetNames": [
+        "Vehicle horn, car horn, honking",
+        "Air horn, truck horn"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.10639833438788492,
+          "scoreByteOffset": 37512
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.01781148639243865,
+          "scoreByteOffset": 39596
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.0,
+          "scoreByteOffset": 41680
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0,
+          "scoreByteOffset": 43764
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0,
+          "scoreByteOffset": 45848
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0,
+          "scoreByteOffset": 47932
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 50016
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 52100
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 54184
+        }
+      ]
+    },
+    {
+      "filename": "1-19026-A-43.wav",
+      "datasetCategory": "car_horn",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-19026-A-43.wav",
+      "audioSHA256": "67bb2fe5cf138930eb6a6a84bedeb7284093076738cd47ef73cc8b3b8393ff40",
+      "attribution": "- [1-19026-A.ogg]: clip derived from claxon.wav (http://www.freesound.org/people/han1/sounds/19026/) by han1 [CC-BY]",
+      "targetIndices": [
+        302,
+        312
+      ],
+      "targetNames": [
+        "Vehicle horn, car horn, honking",
+        "Air horn, truck horn"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.2436502328767832,
+          "scoreByteOffset": 56268
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.13735871367947677,
+          "scoreByteOffset": 58352
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.0038421357576471082,
+          "scoreByteOffset": 60436
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0028410557789279715,
+          "scoreByteOffset": 62520
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0002203452724092051,
+          "scoreByteOffset": 64604
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0,
+          "scoreByteOffset": 66688
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 68772
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 70856
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 72940
+        }
+      ]
+    },
+    {
+      "filename": "1-31482-A-42.wav",
+      "datasetCategory": "siren",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-31482-A-42.wav",
+      "audioSHA256": "e4c640a001c2abe808389c90b90ba7084fb1922d58235e3ec95c18c4afb4ef5c",
+      "attribution": "- [1-31482-A.ogg]: clip derived from 20070224.siren.flac (http://www.freesound.org/people/dobroide/sounds/31482/) by dobroide [CC-BY]",
+      "targetIndices": [
+        390,
+        391,
+        317,
+        318,
+        319
+      ],
+      "targetNames": [
+        "Siren",
+        "Civil defense siren",
+        "Police car (siren)",
+        "Ambulance (siren)",
+        "Fire engine, fire truck (siren)"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.24098713018061296,
+          "scoreByteOffset": 75024
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.06393553099776653,
+          "scoreByteOffset": 77108
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.2895266495591634,
+          "scoreByteOffset": 79192
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.2926082247811831,
+          "scoreByteOffset": 81276
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.18475769127367495,
+          "scoreByteOffset": 83360
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.199427676677767,
+          "scoreByteOffset": 85444
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.16140564980107694,
+          "scoreByteOffset": 87528
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.19698153250568637,
+          "scoreByteOffset": 89612
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.2708308257784552,
+          "scoreByteOffset": 91696
+        }
+      ]
+    },
+    {
+      "filename": "1-54084-A-42.wav",
+      "datasetCategory": "siren",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-54084-A-42.wav",
+      "audioSHA256": "b0ce84a3c012d144a1f97394cab2830512078d660e809eecb8abc4fa8ad0a9e1",
+      "attribution": "- [1-54084-A.ogg]: clip derived from civildefense.wav (http://www.freesound.org/people/guitarguy1985/sounds/54084/) by guitarguy1985 [CC0]",
+      "targetIndices": [
+        390,
+        391,
+        317,
+        318,
+        319
+      ],
+      "targetNames": [
+        "Siren",
+        "Civil defense siren",
+        "Police car (siren)",
+        "Ambulance (siren)",
+        "Fire engine, fire truck (siren)"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.04397264908172576,
+          "scoreByteOffset": 93780
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.05099537894029778,
+          "scoreByteOffset": 95864
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.048909908676451265,
+          "scoreByteOffset": 97948
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.07068396262049613,
+          "scoreByteOffset": 100032
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.09790945785286985,
+          "scoreByteOffset": 102116
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.10602708718254605,
+          "scoreByteOffset": 104200
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.10560700208787802,
+          "scoreByteOffset": 106284
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.10719327711675423,
+          "scoreByteOffset": 108368
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.1108975054932377,
+          "scoreByteOffset": 110452
+        }
+      ]
+    },
+    {
+      "filename": "1-13613-A-37.wav",
+      "datasetCategory": "clock_alarm",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-13613-A-37.wav",
+      "audioSHA256": "2e28b25e14611723cdcc0becfa36468a8d0329a0c141e4f1d894bd6bb5773f34",
+      "attribution": "- [1-13613-A.ogg]: clip derived from alarm clock.aif (http://www.freesound.org/people/hookhead/sounds/13613/) by hookhead [CC0]",
+      "targetIndices": [
+        389
+      ],
+      "targetNames": [
+        "Alarm clock"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.11291076224224869,
+          "scoreByteOffset": 112536
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.1119405433472557,
+          "scoreByteOffset": 114620
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.11784953984445483,
+          "scoreByteOffset": 116704
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.1361872063951874,
+          "scoreByteOffset": 118788
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.14544029001776698,
+          "scoreByteOffset": 120872
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.145378060000185,
+          "scoreByteOffset": 122956
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.1406463391708477,
+          "scoreByteOffset": 125040
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.12951979204507405,
+          "scoreByteOffset": 127124
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.1242981347120364,
+          "scoreByteOffset": 129208
+        }
+      ]
+    },
+    {
+      "filename": "1-14262-A-37.wav",
+      "datasetCategory": "clock_alarm",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-14262-A-37.wav",
+      "audioSHA256": "220c3d127df2f0d8979a2edde5318aaaa3aed19d8c5d3b4a40d529f979bba453",
+      "attribution": "- [1-14262-A.ogg]: clip derived from alarm_clock.wav (http://www.freesound.org/people/xyzr_kx/sounds/14262/) by xyzr_kx [CC0]",
+      "targetIndices": [
+        389
+      ],
+      "targetNames": [
+        "Alarm clock"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.08355990239460075,
+          "scoreByteOffset": 131292
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.07366849402206894,
+          "scoreByteOffset": 133376
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.07837015929633115,
+          "scoreByteOffset": 135460
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.07781796241682856,
+          "scoreByteOffset": 137544
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.07050610554459938,
+          "scoreByteOffset": 139628
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.06835558725790035,
+          "scoreByteOffset": 141712
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.07319125716950861,
+          "scoreByteOffset": 143796
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.06999575453425813,
+          "scoreByteOffset": 145880
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.041968824510669946,
+          "scoreByteOffset": 147964
+        }
+      ]
+    },
+    {
+      "filename": "1-187207-A-20.wav",
+      "datasetCategory": "crying_baby",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-187207-A-20.wav",
+      "audioSHA256": "ddf5bf45f73bc73d1838bf0cb6af530584f324aef513112ee15c210e83ecbd6b",
+      "attribution": "- [1-187207-A.ogg]: clip derived from More baby noises... (http://www.freesound.org/people/k3pp/sounds/187207/) by k3pp [CC0]",
+      "targetIndices": [
+        20
+      ],
+      "targetNames": [
+        "Baby cry, infant cry"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.23068938933154431,
+          "scoreByteOffset": 150048
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.2758473261512216,
+          "scoreByteOffset": 152132
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.20477151277457137,
+          "scoreByteOffset": 154216
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.13579832539261993,
+          "scoreByteOffset": 156300
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.05134028595155926,
+          "scoreByteOffset": 158384
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.11862810439290848,
+          "scoreByteOffset": 160468
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.14414263741173441,
+          "scoreByteOffset": 162552
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.1006113655314955,
+          "scoreByteOffset": 164636
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.09986360814546338,
+          "scoreByteOffset": 166720
+        }
+      ]
+    },
+    {
+      "filename": "1-211527-A-20.wav",
+      "datasetCategory": "crying_baby",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-211527-A-20.wav",
+      "audioSHA256": "3cbcd59a0db21f0ed8c252c74ea1bc193117d2c13ed99821885c46c564010b3e",
+      "attribution": "- [1-211527-A.ogg]: clip derived from Crying newborn baby child 3.WAV (http://www.freesound.org/people/the_yura/sounds/211527/) by the_yura [CC0]",
+      "targetIndices": [
+        20
+      ],
+      "targetNames": [
+        "Baby cry, infant cry"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.019521791683426496,
+          "scoreByteOffset": 168804
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.03841594666923197,
+          "scoreByteOffset": 170888
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.07239212657311335,
+          "scoreByteOffset": 172972
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.07856199925010643,
+          "scoreByteOffset": 175056
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.12691838746722348,
+          "scoreByteOffset": 177140
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.13994240125134239,
+          "scoreByteOffset": 179224
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.08360845394554145,
+          "scoreByteOffset": 181308
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.033867134329814405,
+          "scoreByteOffset": 183392
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.043371355107769155,
+          "scoreByteOffset": 185476
+        }
+      ]
+    },
+    {
+      "filename": "1-101336-A-30.wav",
+      "datasetCategory": "door_wood_knock",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-101336-A-30.wav",
+      "audioSHA256": "e738266e395e378102f74e0920b05ff5937543788420d5b2a6b8d3df8bdb3910",
+      "attribution": "- [1-101336-A.ogg]: clip derived from 01801 knocking.wav (http://www.freesound.org/people/Robinhood76/sounds/101336/) by Robinhood76 [CC-BY-NC]",
+      "targetIndices": [
+        353
+      ],
+      "targetNames": [
+        "Knock"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.1682477555412135,
+          "scoreByteOffset": 187560
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.1363158089554591,
+          "scoreByteOffset": 189644
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.11267376674913504,
+          "scoreByteOffset": 191728
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.12239862113512953,
+          "scoreByteOffset": 193812
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.11667958388498681,
+          "scoreByteOffset": 195896
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.06724330250754533,
+          "scoreByteOffset": 197980
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0007896486723683242,
+          "scoreByteOffset": 200064
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 202148
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 204232
+        }
+      ]
+    },
+    {
+      "filename": "1-103995-A-30.wav",
+      "datasetCategory": "door_wood_knock",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-103995-A-30.wav",
+      "audioSHA256": "1c1d3e65b7a58658766180d2faeeb9bdd1fe7405119bf100d9cd2f671a6e2b11",
+      "attribution": "- [1-103995-A.ogg]: clip derived from Bassdrum_Shell_Ticks.aif (http://www.freesound.org/people/RutgerMuller/sounds/103995/) by RutgerMuller [CC0]",
+      "targetIndices": [
+        353
+      ],
+      "targetNames": [
+        "Knock"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.10262750957362697,
+          "scoreByteOffset": 206316
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.058720585482146176,
+          "scoreByteOffset": 208400
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.015976717203448076,
+          "scoreByteOffset": 210484
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0,
+          "scoreByteOffset": 212568
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0,
+          "scoreByteOffset": 214652
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0,
+          "scoreByteOffset": 216736
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 218820
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 220904
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 222988
+        }
+      ]
+    },
+    {
+      "filename": "1-100032-A-0.wav",
+      "datasetCategory": "dog",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-100032-A-0.wav",
+      "audioSHA256": "f40a849a2375c8c63312a73dd2dd6c74007301fcc21b4be2ece29a642831e3d8",
+      "attribution": "- [1-100032-A.ogg]: clip derived from rose_bark.wav (http://www.freesound.org/people/nfrae/sounds/100032/) by nfrae [CC0]",
+      "targetIndices": [
+        69,
+        70,
+        73
+      ],
+      "targetNames": [
+        "Dog",
+        "Bark",
+        "Bow-wow"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.0,
+          "scoreByteOffset": 225072
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.0,
+          "scoreByteOffset": 227156
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.0,
+          "scoreByteOffset": 229240
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.09357316469376423,
+          "scoreByteOffset": 231324
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.09403450720753141,
+          "scoreByteOffset": 233408
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.011995500910609488,
+          "scoreByteOffset": 235492
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 237576
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 239660
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 241744
+        }
+      ]
+    },
+    {
+      "filename": "1-110389-A-0.wav",
+      "datasetCategory": "dog",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-110389-A-0.wav",
+      "audioSHA256": "4a18f3f834eb184b9f02595ac74c7de37ef8048a3da92f58f27018fec580b36a",
+      "attribution": "- [1-110389-A.ogg]: clip derived from animals_dog_bark_springer_spaniel_001.wav (http://www.freesound.org/people/soundscalpel.com/sounds/110389/) by soundscalpel.com [CC-BY]",
+      "targetIndices": [
+        69,
+        70,
+        73
+      ],
+      "targetNames": [
+        "Dog",
+        "Bark",
+        "Bow-wow"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.07839120341135267,
+          "scoreByteOffset": 243828
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 9.82549779111881e-05,
+          "scoreByteOffset": 245912
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.0,
+          "scoreByteOffset": 247996
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0,
+          "scoreByteOffset": 250080
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0,
+          "scoreByteOffset": 252164
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0,
+          "scoreByteOffset": 254248
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 256332
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 258416
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 260500
+        }
+      ]
+    },
+    {
+      "filename": "1-34094-A-5.wav",
+      "datasetCategory": "cat",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-34094-A-5.wav",
+      "audioSHA256": "ceddf296bcdda3996d35d3f4c292c338050bcb4c5a05a96ca22a69d33e33e4de",
+      "attribution": "- [1-34094-A.ogg]: clip derived from 070422-cats-sample.wav (http://www.freesound.org/people/sazman/sounds/34094/) by sazman [CC-BY]",
+      "targetIndices": [
+        76,
+        78,
+        77,
+        80
+      ],
+      "targetNames": [
+        "Cat",
+        "Meow",
+        "Purr",
+        "Caterwaul"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.06381795461403761,
+          "scoreByteOffset": 262584
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.06004035593517314,
+          "scoreByteOffset": 264668
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.044341480321055504,
+          "scoreByteOffset": 266752
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.14274070613361195,
+          "scoreByteOffset": 268836
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.2007072332844572,
+          "scoreByteOffset": 270920
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.1526331000187799,
+          "scoreByteOffset": 273004
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.05109471799124029,
+          "scoreByteOffset": 275088
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.031653864382032756,
+          "scoreByteOffset": 277172
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.02005345613198625,
+          "scoreByteOffset": 279256
+        }
+      ]
+    },
+    {
+      "filename": "1-47819-A-5.wav",
+      "datasetCategory": "cat",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-47819-A-5.wav",
+      "audioSHA256": "2abe50ef7597a38f17d49076a3800690355a8f70ab2952298dd0277c9d4a6839",
+      "attribution": "- [1-47819-A.ogg]: clip derived from cat_door.wav (http://www.freesound.org/people/YuriVoorhak/sounds/47819/) by YuriVoorhak [CC-Sampling+]",
+      "targetIndices": [
+        76,
+        78,
+        77,
+        80
+      ],
+      "targetNames": [
+        "Cat",
+        "Meow",
+        "Purr",
+        "Caterwaul"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.013260524299689191,
+          "scoreByteOffset": 281340
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.01053482889159896,
+          "scoreByteOffset": 283424
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.003340332258147752,
+          "scoreByteOffset": 285508
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0019341636130737149,
+          "scoreByteOffset": 287592
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0018195853864064562,
+          "scoreByteOffset": 289676
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0017690591888294852,
+          "scoreByteOffset": 291760
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0018806601276359772,
+          "scoreByteOffset": 293844
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.001922603219734524,
+          "scoreByteOffset": 295928
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.005301975821071038,
+          "scoreByteOffset": 298012
+        }
+      ]
+    },
+    {
+      "filename": "1-17367-A-10.wav",
+      "datasetCategory": "rain",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-17367-A-10.wav",
+      "audioSHA256": "d732acd2e0c7c40405968010f49f250740c86998fc416eff2ed5330fc8c89dea",
+      "attribution": "- [1-17367-A.ogg]: clip derived from unlocki door to mod rain.wav (http://www.freesound.org/people/cognito%20perceptu/sounds/17367/) by cognito perceptu [CC0]",
+      "targetIndices": [
+        283,
+        284,
+        285
+      ],
+      "targetNames": [
+        "Rain",
+        "Raindrop",
+        "Rain on surface"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.08535730279878931,
+          "scoreByteOffset": 300096
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.09070891753475634,
+          "scoreByteOffset": 302180
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.09638062297482412,
+          "scoreByteOffset": 304264
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.09087474886603997,
+          "scoreByteOffset": 306348
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.08746255491976933,
+          "scoreByteOffset": 308432
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.08836904274310116,
+          "scoreByteOffset": 310516
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.08268623755861466,
+          "scoreByteOffset": 312600
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.08059847023798498,
+          "scoreByteOffset": 314684
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.08679286837318707,
+          "scoreByteOffset": 316768
+        }
+      ]
+    },
+    {
+      "filename": "1-21189-A-10.wav",
+      "datasetCategory": "rain",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-21189-A-10.wav",
+      "audioSHA256": "5f15ab2d8f6ef9932909b1b75c8ac254cbea46c93b4b2f0f3542abdf09b9abc0",
+      "attribution": "- [1-21189-A.ogg]: clip derived from Louisiana Rain 1.wav (http://www.freesound.org/people/uberhuberman/sounds/21189/) by uberhuberman [CC0]",
+      "targetIndices": [
+        283,
+        284,
+        285
+      ],
+      "targetNames": [
+        "Rain",
+        "Raindrop",
+        "Rain on surface"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.08151548913276369,
+          "scoreByteOffset": 318852
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.08262692097151542,
+          "scoreByteOffset": 320936
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.08388166933656861,
+          "scoreByteOffset": 323020
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0905290919643298,
+          "scoreByteOffset": 325104
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.09296678341831821,
+          "scoreByteOffset": 327188
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.08655196710105857,
+          "scoreByteOffset": 329272
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.08991191428843733,
+          "scoreByteOffset": 331356
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0980613350458855,
+          "scoreByteOffset": 333440
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.09715785927536422,
+          "scoreByteOffset": 335524
+        }
+      ]
+    },
+    {
+      "filename": "1-155858-A-25.wav",
+      "datasetCategory": "footsteps",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-155858-A-25.wav",
+      "audioSHA256": "cb90f52c7fe7d0d994941b2e6de555cb36e898fb49b52cc31f08401ac464e7c6",
+      "attribution": "- [1-155858-A.ogg]: clip derived from Footsteps in Factory Hall on Wood and Concrete.wav (http://www.freesound.org/people/RutgerMuller/sounds/155858/) by RutgerMuller [CC0]",
+      "targetIndices": [
+        48
+      ],
+      "targetNames": [
+        "Walk, footsteps"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.004382655485035788,
+          "scoreByteOffset": 337608
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.006057455983725432,
+          "scoreByteOffset": 339692
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.008161051319366156,
+          "scoreByteOffset": 341776
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.006652004273219212,
+          "scoreByteOffset": 343860
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0070856730773793,
+          "scoreByteOffset": 345944
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.007078254832889409,
+          "scoreByteOffset": 348028
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.007467473778480029,
+          "scoreByteOffset": 350112
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.03704660117859394,
+          "scoreByteOffset": 352196
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.04094926767328675,
+          "scoreByteOffset": 354280
+        }
+      ]
+    },
+    {
+      "filename": "1-223162-A-25.wav",
+      "datasetCategory": "footsteps",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-223162-A-25.wav",
+      "audioSHA256": "4e0e2251d9819f49e8d9ee6c4106f9e4de95995e336be88c517269d57cda39b0",
+      "attribution": "- [1-223162-A.ogg]: clip derived from wooden panel footstep 3 (http://www.freesound.org/people/Yoyodaman234/sounds/223162/) by Yoyodaman234 [CC0]",
+      "targetIndices": [
+        48
+      ],
+      "targetNames": [
+        "Walk, footsteps"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.06381731712900245,
+          "scoreByteOffset": 356364
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.0,
+          "scoreByteOffset": 358448
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.0,
+          "scoreByteOffset": 360532
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0,
+          "scoreByteOffset": 362616
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0,
+          "scoreByteOffset": 364700
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0,
+          "scoreByteOffset": 366784
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 368868
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 370952
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 373036
+        }
+      ]
+    },
+    {
+      "filename": "1-104089-A-22.wav",
+      "datasetCategory": "clapping",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-104089-A-22.wav",
+      "audioSHA256": "2b6ec14aafc6ed98c833c5c7e56780d283f3ceaea0d4c3c142b2f49fcc2fd215",
+      "attribution": "- [1-104089-A.ogg]: clip derived from Clapping Small Room.wav (http://www.freesound.org/people/sorohanro/sounds/104089/) by sorohanro [CC-BY]",
+      "targetIndices": [
+        58,
+        62
+      ],
+      "targetNames": [
+        "Clapping",
+        "Applause"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.06557403919163755,
+          "scoreByteOffset": 375120
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.08820287812432852,
+          "scoreByteOffset": 377204
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.09088476480264972,
+          "scoreByteOffset": 379288
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.08689598405085099,
+          "scoreByteOffset": 381372
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.08135549983862292,
+          "scoreByteOffset": 383456
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0826305008142463,
+          "scoreByteOffset": 385540
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.08674049960437287,
+          "scoreByteOffset": 387624
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.08141457833904452,
+          "scoreByteOffset": 389708
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.09481310225113501,
+          "scoreByteOffset": 391792
+        }
+      ]
+    },
+    {
+      "filename": "1-105224-A-22.wav",
+      "datasetCategory": "clapping",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-105224-A-22.wav",
+      "audioSHA256": "a91622b0235b622d7913ae2cc9af3785a546356310507bb7ffd6f1cb6d38ab85",
+      "attribution": "- [1-105224-A.ogg]: clip derived from Crowd Claps.wav (http://www.freesound.org/people/club%20sound/sounds/105224/) by club sound [CC-BY-NC]",
+      "targetIndices": [
+        58,
+        62
+      ],
+      "targetNames": [
+        "Clapping",
+        "Applause"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.20579375702419794,
+          "scoreByteOffset": 393876
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.2337816427478629,
+          "scoreByteOffset": 395960
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.2427957761981421,
+          "scoreByteOffset": 398044
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.23233784978543942,
+          "scoreByteOffset": 400128
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.23651714514590727,
+          "scoreByteOffset": 402212
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.21546168618208264,
+          "scoreByteOffset": 404296
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.18609117776466108,
+          "scoreByteOffset": 406380
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.17263698737272334,
+          "scoreByteOffset": 408464
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.1374594337046265,
+          "scoreByteOffset": 410548
+        }
+      ]
+    },
+    {
+      "filename": "1-19111-A-24.wav",
+      "datasetCategory": "coughing",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-19111-A-24.wav",
+      "audioSHA256": "ab2afe6d0ee0de5edc1f0107448077919c6ac94dcf59243497e6fcb333685438",
+      "attribution": "- [1-19111-A.ogg]: clip derived from cough1.aiff (http://www.freesound.org/people/Fratz/sounds/19111/) by Fratz [CC-BY]",
+      "targetIndices": [
+        42,
+        43
+      ],
+      "targetNames": [
+        "Cough",
+        "Throat clearing"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.09951001704622303,
+          "scoreByteOffset": 412632
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.0545630745595723,
+          "scoreByteOffset": 414716
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.0,
+          "scoreByteOffset": 416800
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0,
+          "scoreByteOffset": 418884
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0,
+          "scoreByteOffset": 420968
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0,
+          "scoreByteOffset": 423052
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 425136
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 427220
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 429304
+        }
+      ]
+    },
+    {
+      "filename": "1-19118-A-24.wav",
+      "datasetCategory": "coughing",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-19118-A-24.wav",
+      "audioSHA256": "4fb6197f72791e50c465de8f1f715a7a3f93f7afab62dfa130f28d500303d8d9",
+      "attribution": "- [1-19118-A.ogg]: clip derived from cough3.aiff (http://www.freesound.org/people/Fratz/sounds/19118/) by Fratz [CC-BY]",
+      "targetIndices": [
+        42,
+        43
+      ],
+      "targetNames": [
+        "Cough",
+        "Throat clearing"
+      ],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.007775118775862443,
+          "scoreByteOffset": 431388
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.0011927286548029444,
+          "scoreByteOffset": 433472
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.0,
+          "scoreByteOffset": 435556
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.0,
+          "scoreByteOffset": 437640
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.0,
+          "scoreByteOffset": 439724
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.0,
+          "scoreByteOffset": 441808
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.0,
+          "scoreByteOffset": 443892
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.0,
+          "scoreByteOffset": 445976
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.0,
+          "scoreByteOffset": 448060
+        }
+      ]
+    },
+    {
+      "filename": "1-21896-A-35.wav",
+      "datasetCategory": "washing_machine",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-21896-A-35.wav",
+      "audioSHA256": "1b4210c50a01cabab07065a112463fad4f82de60385ef9aaf6316afe7d4b976c",
+      "attribution": "- [1-21896-A.ogg]: clip derived from file0100washingmachine.mp3 (http://www.freesound.org/people/ulcered/sounds/21896/) by ulcered [CC-Sampling+]",
+      "targetIndices": [],
+      "targetNames": [],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.14725104592797464,
+          "scoreByteOffset": 450144
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.146544638198471,
+          "scoreByteOffset": 452228
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.14676176765914492,
+          "scoreByteOffset": 454312
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.1461313929855182,
+          "scoreByteOffset": 456396
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.14711744722780537,
+          "scoreByteOffset": 458480
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.1484689944236958,
+          "scoreByteOffset": 460564
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.14894647083251672,
+          "scoreByteOffset": 462648
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.148162974978949,
+          "scoreByteOffset": 464732
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.1504472939738203,
+          "scoreByteOffset": 466816
+        }
+      ]
+    },
+    {
+      "filename": "1-23996-A-35.wav",
+      "datasetCategory": "washing_machine",
+      "sourceRate": 44100,
+      "sourceURL": "https://raw.githubusercontent.com/karolpiczak/ESC-50/33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6/audio/1-23996-A-35.wav",
+      "audioSHA256": "cbfd9239fcd7e10a936e6836bbcc8c5f391f89b6a1e12dfe159df717e2898657",
+      "attribution": "- [1-23996-A.ogg]: clip derived from WashingMachine1.flac (http://www.freesound.org/people/acclivity/sounds/23996/) by acclivity [CC-BY-NC]",
+      "targetIndices": [],
+      "targetNames": [],
+      "windows": [
+        {
+          "startSample16k": 0,
+          "nativeStartFrame": 0,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 0.9750113378684807,
+          "modelEndSeconds": 0.975,
+          "rms": 0.14525791657719628,
+          "scoreByteOffset": 468900
+        },
+        {
+          "startSample16k": 7680,
+          "nativeStartFrame": 21168,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.4550113378684808,
+          "modelEndSeconds": 1.455,
+          "rms": 0.1507630013364935,
+          "scoreByteOffset": 470984
+        },
+        {
+          "startSample16k": 15360,
+          "nativeStartFrame": 42336,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 1.9350113378684808,
+          "modelEndSeconds": 1.935,
+          "rms": 0.15254282422147802,
+          "scoreByteOffset": 473068
+        },
+        {
+          "startSample16k": 23040,
+          "nativeStartFrame": 63504,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.4150113378684805,
+          "modelEndSeconds": 2.415,
+          "rms": 0.14585548421334307,
+          "scoreByteOffset": 475152
+        },
+        {
+          "startSample16k": 30720,
+          "nativeStartFrame": 84672,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 2.8950113378684805,
+          "modelEndSeconds": 2.895,
+          "rms": 0.13479239303128987,
+          "scoreByteOffset": 477236
+        },
+        {
+          "startSample16k": 38400,
+          "nativeStartFrame": 105840,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.3750113378684805,
+          "modelEndSeconds": 3.375,
+          "rms": 0.1394838035210249,
+          "scoreByteOffset": 479320
+        },
+        {
+          "startSample16k": 46080,
+          "nativeStartFrame": 127008,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 3.855011337868481,
+          "modelEndSeconds": 3.855,
+          "rms": 0.14644070873952864,
+          "scoreByteOffset": 481404
+        },
+        {
+          "startSample16k": 53760,
+          "nativeStartFrame": 148176,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.3350113378684805,
+          "modelEndSeconds": 4.335,
+          "rms": 0.14078479345351058,
+          "scoreByteOffset": 483488
+        },
+        {
+          "startSample16k": 61440,
+          "nativeStartFrame": 169344,
+          "nativeFrameCount": 42998,
+          "capturedEndSeconds": 4.815011337868481,
+          "modelEndSeconds": 4.815,
+          "rms": 0.13874960168765121,
+          "scoreByteOffset": 485572
+        }
+      ]
+    }
+  ],
+  "datasetCommit": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+  "sourceReportSHA256": "81f6c618d1d89807a5d8fd6c7bced268af0c86bee5eeca7b504756b581daee33",
+  "modelSummary": {
+    "samples": 238,
+    "public_clips": 26,
+    "public_windows": 234,
+    "synthetic_windows": 4,
+    "maximum_absolute_error": 1.1712312698364258e-05,
+    "mean_absolute_error": 7.535873258746051e-09,
+    "top1_agreement_count": 238,
+    "all_finite": true,
+    "pass_max_abs_error_1e_3": true
+  },
+  "method": "Original CoreML Float32 scores packed losslessly; native-source RMS and rounded975ms capture end follow production timing. Fresh selector per clip. No callback-arrival clock substitution.",
+  "limits": [
+    "Scores were produced offline after scipy resample_poly, not the app's AVAudioConverter.",
+    "This replay does not execute CoreML, resampling, live TTL, microphone capture, BLE, or direction.",
+    "Target labels are declared semantic comparators, not a complete human annotation of every sound in each clip.",
+    "No washing-machine-specific class exists in the521-label YAMNet vocabulary."
+  ]
+}

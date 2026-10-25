@@ -2,6 +2,7 @@
 # (research scripts, datasets, training artifacts, the virtualenv) stays local.
 /*
 !/.gitignore
+!/.gitattributes
 !/README.md
 !/PROJECT_STATUS.md
 !/BOARD.md
@@ -10,6 +11,8 @@
 !/live_demo/
 !/ios/
 !/pretrained/
+!/shared/
+!/tools/
 !/hardware/
 !/docs/
 

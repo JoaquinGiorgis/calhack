@@ -6,6 +6,7 @@ struct SoundEventDetection: Sendable {
     let angle: Double?
     let quality: Double?
     let expiresAt: TimeInterval
+    var shouldNotify = true
 }
 
 /// An on-device, in-memory record for readable event identity after its live
@@ -77,6 +78,7 @@ struct SoundEventPolicy: Sendable {
 struct SoundEventCandidate: Equatable, Sendable {
     let event: String
     let score: Double
+    var shouldNotify = true
 }
 
 /// Apple thresholds are provisional demo settings, not YAMNet's measured

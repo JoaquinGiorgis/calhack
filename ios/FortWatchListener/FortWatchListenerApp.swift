@@ -201,7 +201,7 @@ struct ListenerView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Sound library")
                         .font(ListenerStyle.display(21, relativeTo: .headline))
-                    Text("\(SoundIdentity.all.count) sounds · meanings & rhythms")
+                    Text("\(SoundCatalog.all.count) sound classes · \(SoundCatalog.families.count) families")
                         .font(ListenerStyle.body(14, relativeTo: .footnote))
                         .foregroundStyle(ListenerStyle.secondary)
                 }
@@ -217,7 +217,7 @@ struct ListenerView: View {
             .modifier(FrostedSurface(radius: 22))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Sound library. Learn and test \(SoundIdentity.all.count) sound patterns.")
+        .accessibilityLabel("Sound library. Explore \(SoundCatalog.all.count) sound classes and their family rhythms.")
     }
 
     private func openSettings() {
@@ -359,11 +359,11 @@ private struct SoundPanel: View {
                 }
                 VStack(alignment: .leading, spacing: 7) {
                     Text(title)
-                        .font(ListenerStyle.display(appearance == nil ? 28 : 34, relativeTo: .title))
+                        .font(ListenerStyle.display(appearance == nil ? 28 : title.count > 24 ? 26 : 34, relativeTo: .title))
                         .tracking(-0.5)
                         .foregroundStyle(.white)
                         .accessibilityAddTraits(.isHeader)
-                    if let appearance {
+                    if let appearance, !appearance.summary.isEmpty {
                         Text(appearance.summary)
                             .font(ListenerStyle.body(16))
                             .foregroundStyle(ListenerStyle.secondary)
@@ -598,7 +598,7 @@ private struct VibrationPattern: View {
 
     var body: some View {
         HStack(spacing: 5) {
-            Text("VIB").font(.caption2.monospaced().weight(.medium))
+            Text(pattern.segments.isEmpty ? "VIB OFF" : "VIB").font(.caption2.monospaced().weight(.medium))
             PulseRhythm(segments: pattern.segments)
                 .fill(.white.opacity(0.95))
                 .frame(width: 66, height: 5)
@@ -695,18 +695,30 @@ private struct SoundLibrary: View {
     let testSound: (String) -> Bool
     @State private var lastTestedEvent: String?
     @State private var testFeedback: String?
+    @State private var search = ""
+    @State private var selectedFamily = ""
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var filteredEntries: [SoundCatalog.Entry] {
+        SoundCatalog.all.filter { entry in
+            (selectedFamily.isEmpty || entry.family == selectedFamily) &&
+            (search.isEmpty || entry.name.localizedStandardContains(search) ||
+             entry.title.localizedStandardContains(search) || entry.familyTitle.localizedStandardContains(search))
+        }
+    }
 
     var body: some View {
+        let entries = filteredEntries
         NavigationStack {
             ZStack {
                 ListeningBackdrop()
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("\(SoundIdentity.all.count) sound types")
+                    LazyVStack(alignment: .leading, spacing: 16) {
+                        Text("\(SoundCatalog.all.count) sound classes")
                             .font(ListenerStyle.display(28, relativeTo: .title))
                             .accessibilityAddTraits(.isHeader)
-                        Text("Learn each sound by its color, symbol and rhythm. Direction appears on screen.")
+                        Text("Explore the full model vocabulary. Related sounds share colors and rhythms. Each class keeps its own name.")
                             .font(ListenerStyle.body())
                         Text(canTest ? "Choose Test to play a pattern on your wristband." : disabledReason)
                             .font(ListenerStyle.body(14, relativeTo: .footnote))
@@ -718,7 +730,30 @@ private struct SoundLibrary: View {
                                 .padding(14)
                                 .modifier(FrostedSurface(radius: 18))
                         }
-                        ForEach(SoundIdentity.all, id: \.event) { identity in
+                        let filterLayout = dynamicTypeSize.isAccessibilitySize
+                            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
+                            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 12))
+                        filterLayout {
+                            Picker("Sound family", selection: $selectedFamily) {
+                                Text("All families").tag("")
+                                ForEach(SoundCatalog.families, id: \.self) { family in
+                                    Text(SoundCatalog.familyTitle(for: family)).tag(family)
+                                }
+                            }
+                            .pickerStyle(.menu)
+                            .tint(ListenerStyle.lime)
+                            .frame(minHeight: 44)
+                            if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
+                            Text("\(entries.count) classes")
+                                .font(ListenerStyle.body(14, relativeTo: .footnote))
+                                .foregroundStyle(ListenerStyle.secondary)
+                        }
+                        if entries.isEmpty {
+                            ContentUnavailableView("No matching sounds", systemImage: "magnifyingglass",
+                                                   description: Text("Try another name or choose All families."))
+                        }
+                        ForEach(entries) { entry in
+                            let identity = SoundIdentity(event: entry.event)
                             SoundLibraryRow(identity: identity, canTest: canTest,
                                             selected: lastTestedEvent == identity.event) {
                                 lastTestedEvent = identity.event
@@ -741,6 +776,7 @@ private struct SoundLibrary: View {
             }
             .navigationTitle("Sound library")
             .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $search, prompt: "Search sound classes")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
         .preferredColorScheme(.dark)
@@ -754,6 +790,7 @@ private struct SoundLibraryRow: View {
     let test: () -> Void
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private var pattern: SoundHapticPattern { .forEvent(identity.event) }
+    private var isQuiet: Bool { SoundCatalog.forEvent(identity.event)?.isQuiet == true }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -761,7 +798,7 @@ private struct SoundLibraryRow: View {
                 ? AnyLayout(VStackLayout(alignment: .leading, spacing: 6))
                 : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
             headerLayout {
-                Text(String(format: "%02d", identity.index) + "  /  " + identity.category)
+                Text(identity.category)
                     .font(.caption2.monospaced().weight(.medium))
                     .tracking(0.8)
                 if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
@@ -786,18 +823,22 @@ private struct SoundLibraryRow: View {
                     Text(identity.title)
                         .font(ListenerStyle.display(25, relativeTo: .title2))
                         .accessibilityAddTraits(.isHeader)
-                    Text(identity.summary)
-                        .font(ListenerStyle.body(15, relativeTo: .subheadline))
-                        .foregroundStyle(ListenerStyle.secondary)
+                    if !identity.summary.isEmpty {
+                        Text(identity.summary)
+                            .font(ListenerStyle.body(15, relativeTo: .subheadline))
+                            .foregroundStyle(ListenerStyle.secondary)
+                    }
                 }
                 .fixedSize(horizontal: false, vertical: true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .accessibilityElement(children: .combine)
             }
-            Text(identity.examples)
-                .font(ListenerStyle.body(14, relativeTo: .footnote))
-                .foregroundStyle(ListenerStyle.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+            if !identity.examples.isEmpty {
+                Text(identity.examples)
+                    .font(ListenerStyle.body(14, relativeTo: .footnote))
+                    .foregroundStyle(ListenerStyle.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             Rectangle().fill(identity.signal.opacity(0.24)).frame(height: 1)
             let rhythmLayout = dynamicTypeSize.isAccessibilitySize
                 ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
@@ -814,14 +855,14 @@ private struct SoundLibraryRow: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Button(action: test) {
-                    Text("Test")
+                    Text(isQuiet ? "Silent" : "Test")
                         .frame(maxWidth: dynamicTypeSize.isAccessibilitySize ? .infinity : nil)
                         .fixedSize(horizontal: !dynamicTypeSize.isAccessibilitySize, vertical: true)
                 }
                 .buttonStyle(SecondaryCapsuleStyle())
-                .disabled(!canTest)
-                .accessibilityLabel("Test \(identity.title) vibration")
-                .accessibilityHint("Plays this sound's vibration pattern on the wristband.")
+                .disabled(!canTest || isQuiet)
+                .accessibilityLabel(pattern.segments.isEmpty ? "Silence. No vibration." : "Test \(identity.title) vibration")
+                .accessibilityHint(pattern.segments.isEmpty ? "Quiet periods do not trigger a vibration." : "Plays this sound's vibration pattern on the wristband.")
             }
         }
         .foregroundStyle(.white)
@@ -846,7 +887,7 @@ private struct ListeningGuide: View {
                     Label("For direction, keep the phone upright and still with its microphones uncovered.", systemImage: "iphone")
                     Label("Tap Calibrate front and make one steady sound in front for a second. Calibrate again if you move the phone.", systemImage: "viewfinder")
                     Label("The ring shows one dominant direction relative to the phone. It cannot separate voices or multiple sources.", systemImage: "scope")
-                    Label("Each sound has its own vibration pattern. Direction appears on screen.", systemImage: "waveform.path")
+                    Label("Sound families share vibration rhythms. The screen names the specific sound and shows its direction when available.", systemImage: "waveform.path")
                     Label("Audio stays on the iPhone and is not saved. Keep the app open during listening.", systemImage: "lock")
                     Text("Open Sound library to learn and test every pattern. Stop listening before testing.")
                         .foregroundStyle(ListenerStyle.secondary)
@@ -870,20 +911,27 @@ struct ListenerDesignPreview: View {
     @State private var previewMoment = Date()
 
     private var fixtureEvent: String? {
+        if scenario == "catalog-long" { return SoundCatalog.all.max { $0.name.count < $1.name.count }?.event }
+        if scenario == "catalog-silence" { return "Y494" }
+        if scenario == "catalog-unknown" { return "Y999" }
         if scenario == "long-label" { return "CAR_HORN" }
         if scenario == "unknown" { return "GLASS" }
         if scenario == "unknown-sound" { return "UNRECOGNIZED" }
         let candidate = scenario.uppercased().replacingOccurrences(of: "-", with: "_")
-        return SoundIdentity.all.contains { $0.event == candidate } ? candidate : nil
+        if SoundCatalog.forEvent(candidate) != nil { return candidate }
+        return SoundIdentity.legacy.contains { $0.event == candidate } ? candidate : nil
     }
     private var fixtureAngle: Double? {
         if scenario == "long-label" { return -135 }
         if scenario == "recent-live-angle" { return 90 }
+        if scenario == "catalog-silence" || scenario == "catalog-unknown" { return nil }
         if scenario == "unknown" || scenario == "unknown-sound" { return nil }
         return fixtureEvent == nil ? nil : 45
     }
     private var fixtureRecent: RecentSound? {
         switch scenario {
+        case "catalog-recent":
+            return RecentSound(event: "Y500", observedAt: previewMoment.addingTimeInterval(-25), sent: true)
         case "calibration-failed":
             return RecentSound(event: "SPEECH", observedAt: previewMoment.addingTimeInterval(-18), sent: true)
         case "calibrating-recent":
@@ -896,6 +944,34 @@ struct ListenerDesignPreview: View {
         }
     }
 
+    /// Static layout render of the same production card; excludes UIKit-backed
+    /// ScrollView/navigation wrappers which ImageRenderer cannot rasterize.
+    var snapshot: some View {
+        ZStack(alignment: .top) {
+            ListeningBackdrop()
+            snapshotContent
+        }
+        .preferredColorScheme(.dark)
+    }
+
+    private var snapshotContent: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            FortWatchWordmark()
+            Text("DESIGN PREVIEW · SIMULATED STATE")
+                .font(.caption.monospaced())
+                .foregroundStyle(.white)
+            SoundPanel(angle: fixtureAngle, event: fixtureEvent,
+                       capturing: scenario != "recent-stopped",
+                       calibrated: fixtureEvent != nil || scenario == "recent-live-angle",
+                       calibrating: scenario == "calibrating-recent",
+                       calibrationFailed: scenario == "calibration-failed" || scenario == "calibration-failed-empty", starting: false,
+                       level: fixtureAngle == nil ? 25 : 48,
+                       status: "Keep one steady sound in front of the phone, then try again.",
+                       calibrate: {}, recentSound: fixtureRecent)
+        }
+        .padding(20)
+    }
+
     var body: some View {
         Group {
             if scenario == "guide" || scenario == "library" {
@@ -905,21 +981,7 @@ struct ListenerDesignPreview: View {
                 ZStack {
                     ListeningBackdrop()
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 18) {
-                            FortWatchWordmark()
-                            Text("DESIGN PREVIEW · SIMULATED STATE")
-                                .font(.caption.monospaced())
-                                .foregroundStyle(.white)
-                            SoundPanel(angle: fixtureAngle, event: fixtureEvent,
-                                       capturing: scenario != "recent-stopped",
-                                       calibrated: fixtureEvent != nil || scenario == "recent-live-angle",
-                                       calibrating: scenario == "calibrating-recent",
-                                       calibrationFailed: scenario == "calibration-failed" || scenario == "calibration-failed-empty", starting: false,
-                                       level: fixtureAngle == nil ? 25 : 48,
-                                       status: "Keep one steady sound in front of the phone, then try again.",
-                                       calibrate: {}, recentSound: fixtureRecent)
-                        }
-                        .padding(20)
+                        snapshotContent
                     }
                 }
             }
@@ -949,4 +1011,47 @@ struct ListenerDesignPreview: View {
 #Preview("Unknown direction — simulated") { ListenerDesignPreview(scenario: "unknown") }
 #Preview("Unknown sound — simulated") { ListenerDesignPreview(scenario: "unknown-sound") }
 #Preview("Sound library — simulated") { ListenerDesignPreview(scenario: "library") }
+#Preview("YAMNet long name — simulated") { ListenerDesignPreview(scenario: "catalog-long") }
+#Preview("YAMNet recent class — simulated") { ListenerDesignPreview(scenario: "catalog-recent") }
+#Preview("YAMNet silence — simulated") { ListenerDesignPreview(scenario: "catalog-silence") }
+#Preview("YAMNet unknown ID — simulated") { ListenerDesignPreview(scenario: "catalog-unknown") }
+#Preview("YAMNet last class — simulated") { ListenerDesignPreview(scenario: "y520") }
+
+/// Static samples of the actual production library row. ImageRenderer receives
+/// no ScrollView/navigation wrappers, and every test action stays disabled.
+struct SoundLibraryDesignPreview: View {
+    let events: [String]
+    var typeSize: DynamicTypeSize = .large
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            ListeningBackdrop()
+            VStack(alignment: .leading, spacing: 18) {
+                FortWatchWordmark()
+                Text("DESIGN PREVIEW · SIMULATED STATE")
+                    .font(.caption.monospaced())
+                    .foregroundStyle(.white)
+                Text("\(events.count) sample library \(events.count == 1 ? "card" : "cards") · Tests disabled")
+                    .font(ListenerStyle.body(15, relativeTo: .subheadline))
+                    .foregroundStyle(ListenerStyle.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                ForEach(events, id: \.self) { event in
+                    SoundLibraryRow(identity: SoundIdentity(event: event), canTest: false,
+                                    selected: false, test: {})
+                }
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .environment(\.dynamicTypeSize, typeSize)
+        .preferredColorScheme(.dark)
+    }
+}
+
+#Preview("Library — three simulated sample cards") {
+    SoundLibraryDesignPreview(events: ["Y076", "Y283", "Y081"])
+}
+#Preview("Library — simulated long class at largest text size") {
+    SoundLibraryDesignPreview(events: ["Y081"], typeSize: .accessibility5)
+}
 #endif

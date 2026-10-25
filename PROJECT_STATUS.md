@@ -1,5 +1,9 @@
 # FortWatch — project status and context
 
+> **Latest iPhone revision (25 October):** the app now bundles YAMNet and the full
+> 521-class catalog. See [current integration evidence](docs/SOUND-CATALOG-521.md).
+> Apple SoundAnalysis and ten-category iPhone notes below describe the earlier revision.
+
 *Last updated: 2026-10-25, during Cal Hacks 13.0 (Palace of Fine Arts, San Francisco).*
 
 For setup and usage, see [README.md](README.md). This document records where the

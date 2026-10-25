@@ -17,7 +17,7 @@ struct SoundIdentity: Identifiable {
     var color: Color { Self.color(colorHex) }
     var signal: Color { Self.color(signalHex) }
 
-    static let all: [Self] = [
+    static let legacy: [Self] = [
         Self("ALARM", "ALARM", "light.beacon.max", 0xB92131, 0xFF94A0, "SAFETY",
              "Alarm or siren", "Smoke alarms, alarm clocks and emergency sirens.", 1),
         Self("CAR_HORN", "CAR HORN", "car.side", 0xA84408, 0xFFBA83, "SAFETY",
@@ -40,10 +40,20 @@ struct SoundIdentity: Identifiable {
              "Someone speaking", "Sustained speech. Words and speakers are not identified.", 10)
     ]
 
+    /// Complete model vocabulary; legacy IDs remain supported separately.
+    static let all: [Self] = SoundCatalog.all.map { Self(event: $0.event) }
+    static var library: [Self] { all }
+
     init(event: String) {
-        self = Self.all.first { $0.event == event }
-            ?? Self("UNKNOWN", "SOUND", "waveform", 0x48515F, 0xE2E7EE, "LISTENING",
-                    "Sound nearby", "No recognized sound category.", 0)
+        if let entry = SoundCatalog.forEvent(event) {
+            self = Self(entry.event, entry.title, entry.icon, entry.colorHex, entry.signalHex,
+                        entry.familyTitle.uppercased(), entry.name == entry.title ? "" : entry.name,
+                        "", entry.index)
+        } else {
+            self = Self.legacy.first { $0.event == event }
+                ?? Self("UNKNOWN", "SOUND", "waveform", 0x48515F, 0xE2E7EE, "LISTENING",
+                        "Sound nearby", "No recognized sound category.", 0)
+        }
     }
 
     private init(_ event: String, _ title: String, _ icon: String,

@@ -1,0 +1,202 @@
+{
+  "windowCount": 234,
+  "priorityTargetVisualClips": 19,
+  "dominantTargetVisualClips": 19,
+  "priorityTargetNotificationClips": 16,
+  "dominantTargetNotificationClips": 16,
+  "targetAvailableClips": 24,
+  "changes": [
+    {
+      "filename": "1-84536-A-39.wav",
+      "category": "glass_breaking",
+      "time": 1.4550113378684808,
+      "priority": {
+        "event": "Y436",
+        "hapticEvent": "GLASS",
+        "index": 436,
+        "name": "Chink, clink",
+        "score": 0.5081077814102173,
+        "shouldNotify": true
+      },
+      "dominant": {
+        "event": "Y464",
+        "hapticEvent": "OTHER",
+        "index": 464,
+        "name": "Breaking",
+        "score": 0.8809329867362976,
+        "shouldNotify": false
+      },
+      "raw": [
+        {
+          "index": 464,
+          "name": "Breaking",
+          "score": 0.8809329867362976
+        },
+        {
+          "index": 435,
+          "name": "Glass",
+          "score": 0.8461448550224304
+        },
+        {
+          "index": 436,
+          "name": "Chink, clink",
+          "score": 0.5081077814102173
+        },
+        {
+          "index": 437,
+          "name": "Shatter",
+          "score": 0.3112232983112335
+        },
+        {
+          "index": 463,
+          "name": "Smash, crash",
+          "score": 0.1706225723028183
+        }
+      ]
+    },
+    {
+      "filename": "1-84536-A-39.wav",
+      "category": "glass_breaking",
+      "time": 1.9350113378684808,
+      "priority": {
+        "event": "Y436",
+        "hapticEvent": "GLASS",
+        "index": 436,
+        "name": "Chink, clink",
+        "score": 0.8200653791427612,
+        "shouldNotify": false
+      },
+      "dominant": {
+        "event": "Y436",
+        "hapticEvent": "GLASS",
+        "index": 436,
+        "name": "Chink, clink",
+        "score": 0.8200653791427612,
+        "shouldNotify": true
+      },
+      "raw": [
+        {
+          "index": 435,
+          "name": "Glass",
+          "score": 0.9478166699409485
+        },
+        {
+          "index": 436,
+          "name": "Chink, clink",
+          "score": 0.8200653791427612
+        },
+        {
+          "index": 437,
+          "name": "Shatter",
+          "score": 0.7793341875076294
+        },
+        {
+          "index": 464,
+          "name": "Breaking",
+          "score": 0.6321961283683777
+        },
+        {
+          "index": 374,
+          "name": "Coin (dropping)",
+          "score": 0.19477897882461548
+        }
+      ]
+    },
+    {
+      "filename": "1-31482-A-42.wav",
+      "category": "siren",
+      "time": 4.815011337868481,
+      "priority": {
+        "event": "Y390",
+        "hapticEvent": "ALARM",
+        "index": 390,
+        "name": "Siren",
+        "score": 0.6526929140090942,
+        "shouldNotify": true
+      },
+      "dominant": {
+        "event": "Y316",
+        "hapticEvent": "VEHICLE",
+        "index": 316,
+        "name": "Emergency vehicle",
+        "score": 0.6540648341178894,
+        "shouldNotify": false
+      },
+      "raw": [
+        {
+          "index": 316,
+          "name": "Emergency vehicle",
+          "score": 0.6540648341178894
+        },
+        {
+          "index": 390,
+          "name": "Siren",
+          "score": 0.6526929140090942
+        },
+        {
+          "index": 382,
+          "name": "Alarm",
+          "score": 0.5976700186729431
+        },
+        {
+          "index": 319,
+          "name": "Fire engine, fire truck (siren)",
+          "score": 0.48987501859664917
+        },
+        {
+          "index": 300,
+          "name": "Motor vehicle (road)",
+          "score": 0.3868946433067322
+        }
+      ]
+    },
+    {
+      "filename": "1-14262-A-37.wav",
+      "category": "clock_alarm",
+      "time": 4.815011337868481,
+      "priority": {
+        "event": "Y384",
+        "hapticEvent": "PHONE",
+        "index": 384,
+        "name": "Telephone bell ringing",
+        "score": 0.5231547355651855,
+        "shouldNotify": true
+      },
+      "dominant": {
+        "event": "Y198",
+        "hapticEvent": "VEHICLE",
+        "index": 198,
+        "name": "Bicycle bell",
+        "score": 0.6703293919563293,
+        "shouldNotify": false
+      },
+      "raw": [
+        {
+          "index": 198,
+          "name": "Bicycle bell",
+          "score": 0.6703293919563293
+        },
+        {
+          "index": 383,
+          "name": "Telephone",
+          "score": 0.5520952343940735
+        },
+        {
+          "index": 384,
+          "name": "Telephone bell ringing",
+          "score": 0.5231547355651855
+        },
+        {
+          "index": 382,
+          "name": "Alarm",
+          "score": 0.3456730246543884
+        },
+        {
+          "index": 477,
+          "name": "Ding",
+          "score": 0.3139583170413971
+        }
+      ]
+    }
+  ]
+}

@@ -22,9 +22,9 @@ final class SoundCatalogTests: XCTestCase {
     ]
 
     func testCatalogSelectorAndHapticsCoverExactlyTheSameTenEvents() {
-        let identities = SoundIdentity.all
+        let identities = SoundIdentity.legacy
         let policies = SoundEventSelector.defaultPolicies
-        let patterns = SoundHapticPattern.all
+        let patterns = SoundHapticPattern.all.filter { expectedAliases.keys.contains($0.event) }
         let expected = Set(expectedAliases.keys)
         XCTAssertEqual(expected.count, 10)
         XCTAssertEqual(Set(identities.map(\.event)), expected)
@@ -37,7 +37,7 @@ final class SoundCatalogTests: XCTestCase {
     }
 
     func testVisibleIdentitiesHaveDistinctIconsTitlesAndSpecificCopy() {
-        let identities = SoundIdentity.all
+        let identities = SoundIdentity.legacy
         XCTAssertEqual(Set(identities.map(\.icon)).count, identities.count)
         XCTAssertEqual(Set(identities.map { $0.title.lowercased() }).count, identities.count)
         XCTAssertEqual(Set(identities.map(\.index)).count, identities.count)
@@ -62,7 +62,7 @@ final class SoundCatalogTests: XCTestCase {
     }
 
     func testEventLookupPreservesTheCatalogIdentityAndHapticAssociation() {
-        for identity in SoundIdentity.all {
+        for identity in SoundIdentity.legacy {
             let lookup = SoundIdentity(event: identity.event)
             XCTAssertEqual(lookup.event, identity.event)
             XCTAssertEqual(lookup.title, identity.title)
@@ -79,7 +79,7 @@ final class SoundCatalogTests: XCTestCase {
 
     @MainActor
     func testEveryCatalogIconExistsOnTheTargetOperatingSystem() {
-        for identity in SoundIdentity.all {
+        for identity in SoundIdentity.legacy {
             XCTAssertNotNil(UIImage(systemName: identity.icon),
                             "\(identity.event) would display a missing symbol: \(identity.icon)")
         }
@@ -88,7 +88,7 @@ final class SoundCatalogTests: XCTestCase {
     func testCategoryColorsMeetTextAndSignalContrastTargets() {
         let white: UInt32 = 0xFFFFFF
         let brandInk: UInt32 = 0x12141F
-        for identity in SoundIdentity.all {
+        for identity in SoundIdentity.legacy {
             XCTAssertLessThanOrEqual(identity.colorHex, 0xFFFFFF, "Expected opaque RGB for \(identity.event)")
             XCTAssertLessThanOrEqual(identity.signalHex, 0xFFFFFF, "Expected opaque RGB for \(identity.event)")
             XCTAssertGreaterThanOrEqual(contrast(white, identity.colorHex), 4.5,

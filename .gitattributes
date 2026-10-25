@@ -1,0 +1,3 @@
+# Preserve the original YAMNet CSV bytes and their provenance hashes.
+ios/FortWatchListener/Models/yamnet_class_map.csv -text whitespace=cr-at-eol
+ios/Tests/Fixtures/yamnet_class_map_expected.csv -text whitespace=cr-at-eol

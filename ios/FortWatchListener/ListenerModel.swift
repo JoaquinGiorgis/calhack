@@ -121,10 +121,10 @@ final class ListenerModel {
     @discardableResult
     func testSound(event: String) -> Bool {
         guard !active, bluetooth.isConnected,
-              SoundHapticPattern.all.contains(where: { $0.event == event }) else { return false }
+              SoundHapticPattern.supports(event) else { return false }
         let sent = bluetooth.sendPatternTest(event: event)
         status = sent
-            ? "Test sent: " + event.replacingOccurrences(of: "_", with: " ") + ". "
+            ? "Test sent: " + (SoundCatalog.forEvent(event)?.title ?? event.replacingOccurrences(of: "_", with: " ")) + ". "
                 + SoundHapticPattern.forEvent(event).description + "."
             : "Test could not be sent. Check the connection and try again."
         return sent
@@ -209,9 +209,15 @@ final class ListenerModel {
             if let alert = update.alert, !calibrating, now < alert.expiresAt {
                 lastEvent = alert.event
                 directionalAlert = alert
-                lastEventSent = bluetooth.sendAlert(event: alert.event, score: alert.score,
-                                                     angle: alert.angle, quality: alert.quality,
-                                                     validUntil: alert.expiresAt)
+                if alert.shouldNotify {
+                    lastEventSent = bluetooth.sendAlert(event: alert.event, score: alert.score,
+                                                       angle: alert.angle, quality: alert.quality,
+                                                       validUntil: alert.expiresAt)
+                } else {
+                    lastEventSent = bluetooth.sendDisplay(event: alert.event, score: alert.score,
+                                                         angle: alert.angle, quality: alert.quality,
+                                                         validUntil: alert.expiresAt)
+                }
                 recentSound = RecentSound(event: alert.event, observedAt: Date(), sent: lastEventSent)
             }
             refreshDirectionCue()

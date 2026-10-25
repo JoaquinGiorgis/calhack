@@ -1,5 +1,10 @@
 # FortWatch Listener — interfaz iPhone
 
+**Estado actual:** el catálogo de 521 clases y su validación están en
+[SOUND-CATALOG-521.md](../../SOUND-CATALOG-521.md). La instalación y las 47 pruebas
+descritas en la primera sección corresponden a la revisión anterior de diez alertas.
+La versión final de 521 clases todavía necesita instalarse junto con su firmware.
+
 La referencia vigente es la landing FortWatch mostrada por el usuario el 25/10:
 foto de fondo oscurecida, paneles translúcidos, marca `fortwatch` en minúsculas,
 tipografía blanca y acciones lima. Se reutilizan la foto de `docs/landing/` y
@@ -44,3 +49,25 @@ Estado funcional y pruebas físicas: [identidad de sonidos](../SOUND-IDENTITY.md
 ![Biblioteca de la app real en simulador, sin conexión con pulsera](vibration-guide-preview.png)
 
 ![Los diez tipos en vistas simuladas de la interfaz](sound-identities.png)
+
+
+## 521-class catalog static renders
+
+`yamnet-cat.png`, `yamnet-long-name.png` and `yamnet-recent.png` come from the
+production SwiftUI card, rendered with ImageRenderer at 393×852 pt, 2× scale.
+They are explicitly marked simulated states. ImageRenderer does not rasterize
+UIKit-backed scroll/navigation wrappers and its material appearance is not a
+physical display capture. The first attempted export contained only the backdrop;
+that attempt was rejected and the final export renders the shared card content
+directly. Cat and the longest-name card were visually inspected without clipping.
+The actual Simulator library was subsequently opened through the normal home
+screen. Searching `Piano` returned Piano and Electric piano; clearing search
+restored 521 entries. The Nature filter returned 17 entries. Searching `zzzz`
+showed the explicit no-results state, and dismissing search restored that family.
+`yamnet-library-search.png` records the actual disconnected app, not a fixture.
+Physical screen viewing and manual VoiceOver remain pending.
+
+`yamnet-library-samples.png` renders three production library rows (Cat, Rain,
+Livestock and farm animals) with disabled tests. `yamnet-library-largest-text.png`
+renders the long row at accessibility5. Both are marked simulated states; they
+check wrapping and vertical reflow without asserting scroll/navigation behavior.

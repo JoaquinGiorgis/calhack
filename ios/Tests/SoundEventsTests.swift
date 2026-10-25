@@ -28,10 +28,19 @@ final class SoundEventsTests: XCTestCase {
                 if outcome.finish(error: message) { finished.fulfill() }
             }
         }
+        let startedAt = Date().timeIntervalSince1970
         capture.start()
         defer { capture.stop(message: "Physical capture probe finished.") }
         await fulfillment(of: [finished], timeout: 30)
         XCTAssertNil(outcome.error, outcome.error ?? "")
+        let directory = try XCTUnwrap(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first)
+        let data = try Data(contentsOf: directory.appendingPathComponent("fortwatch-spatial-status.json"))
+        let snapshot = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(snapshot["classifier"] as? String, "YAMNet")
+        XCTAssertEqual(snapshot["classifierClasses"] as? Int, 521)
+        XCTAssertGreaterThan(snapshot["inferenceCount"] as? Int ?? 0, 0)
+        XCTAssertGreaterThanOrEqual(snapshot["sampledAt"] as? Double ?? 0, startedAt)
+        print("PHYSICAL YAMNET CAPTURE: \(snapshot["inferenceCount"] ?? 0) inferences, last \(snapshot["lastInferenceMs"] ?? 0)ms")
 #endif
     }
 

@@ -1,0 +1,12 @@
+{
+  "baseline_source_sha256": {
+    "ios/FortWatchListener/SoundCatalog.swift": "f13acda3c27aaaeba0081803e9d488b771048cbdeda5443e4c89b927b16101e4",
+    "ios/FortWatchListener/SoundEvents.swift": "d41d745a103fea0190d6b34130fd2168df81843b76664f09240c535c0171a243",
+    "ios/FortWatchListener/SpatialDirection.swift": "8515b494a5f2cb0eb736acb93edcf293fc5c3ac62e5626c379711e7ffb5124b9",
+    "ios/FortWatchListener/YAMNetEventSelector.swift": "7caef919a39680b61a44c0de708e64737d806b63c9c80a2ceb9e01fdf1f46c22",
+    "tools/yamnet/replay_selector.swift": "6a91caaa73628ee0b9b3b0cc2d08f3da02f23ff7e695484b86f421c7588559f0"
+  },
+  "temporary_variant_sha256": "0d37d12c3e99d71872f76f3d116c3a713eeb84769ebcc6da637dfcf3a54e5818",
+  "temporary_variant_change": "After existing ancestor suppression, rank eligible labels by descending score first; priority breaks exact score ties. Thresholds, hit history, family cooldown, and RMS gate unchanged. No production edits.",
+  "binary_score_sha256": "0f1b819e1734247d6bef91dc8984d12217acba79c833c0015955dfe9d447cf10"
+}

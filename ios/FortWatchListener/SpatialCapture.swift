@@ -1,27 +1,10 @@
 import AVFoundation
 import Foundation
-import SoundAnalysis
 
 enum CaptureEvent {
     case started
     case update(LocalAudioUpdate)
     case stopped(String)
-}
-
-private final class ClassificationObserver: NSObject, SNResultsObserving {
-    let result: (SNClassificationResult) -> Void
-    let failure: (Error) -> Void
-
-    init(result: @escaping (SNClassificationResult) -> Void, failure: @escaping (Error) -> Void) {
-        self.result = result
-        self.failure = failure
-    }
-
-    func request(_ request: SNRequest, didProduce result: SNResult) {
-        if let classification = result as? SNClassificationResult { self.result(classification) }
-    }
-
-    func request(_ request: SNRequest, didFailWithError error: Error) { failure(error) }
 }
 
 /// Capture and mutable state have one serial owner. Inference has one bounded slot
@@ -42,16 +25,15 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
     private var lastSampleTime = ProcessInfo.processInfo.systemUptime
     private var calibration = FrontCalibration()
     private var calibrationStartedAt: TimeInterval?
-    private var selector = SoundEventSelector()
+    private var selector = YAMNetEventSelector()
     private var ring = SpatialSampleRing()
     private var analysisGeneration = UUID()
     private var analysisFrame: Int64 = 0
     private var analysisBusy = false
     private var analysisStartedAt: TimeInterval = 0
-    private var pendingAnalysis: [Float] = []
-    private var pendingAnalysisStart: Int64?
-    private var pendingAnalysisEnd: TimeInterval = 0
-    private var lastResultEndFrame: Int64 = -1
+    private var windowSchedule = YAMNetWindowSchedule()
+    private var inferenceCount = 0
+    private var lastInferenceMilliseconds = 0.0
     private var currentLevel = 0
     private var currentDirection = SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
     private var directionSamples: [Float] = []
@@ -61,11 +43,8 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
     private var diagnosticValidWindows = 0
     private var diagnosticPeakQuality = 0.0
     private var lastDiagnosticSnapshot: [String: Any] = [:]
-    // The following three fields belong exclusively to inferenceQueue.
-    private var analyzer: SNAudioStreamAnalyzer?
-    private var analyzerGeneration: UUID?
-    private var analyzerRate: Int?
-    private var analysisObserver: ClassificationObserver?
+    // Accessed exclusively on inferenceQueue.
+    private var classifier: YAMNetClassifier?
 
     init(onEvent: @escaping (CaptureEvent) -> Void) {
         self.onEvent = onEvent
@@ -81,13 +60,12 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
                 // intensity on the connected iPhone during physical diagnosis.
                 captureSession.automaticallyConfiguresApplicationAudioSession = true
                 try configureCapture()
-                // Load Apple's built-in model before capture starts, so cold model
-                // startup cannot repeatedly overflow the single inference slot.
-                // Warm the model at a supported nominal rate. submitAnalysis
-                // recreates the analyzer if the actual decoded rate differs.
-                let rate = 48_000
-                let generation = analysisGeneration
-                try Self.inferenceQueue.sync { try prepareAnalyzer(rate: rate, generation: generation) }
+                // Load and warm the bundled model before microphone capture.
+                try Self.inferenceQueue.sync {
+                    let model = try YAMNetClassifier()
+                    _ = try model.predict(waveform: [Float](repeating: 0, count: YAMNetClassifier.inputFrames))
+                    classifier = model
+                }
                 running = true
                 lastSampleTime = ProcessInfo.processInfo.systemUptime
                 captureSession.startRunning()
@@ -168,13 +146,7 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         directionSamples.removeAll(keepingCapacity: false)
         calibration.reset()
         invalidateAnalysis()
-        Self.inferenceQueue.async { [self] in
-            analyzer?.removeAllRequests()
-            analyzer = nil
-            analysisObserver = nil
-            analyzerGeneration = nil
-            analyzerRate = nil
-        }
+        Self.inferenceQueue.async { [self] in classifier = nil }
         if captureSession.isRunning { captureSession.stopRunning() }
         onEvent(.stopped(message))
     }
@@ -300,118 +272,52 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             ? "Calibration failed. Keep one clear, continuous sound in front and try again."
             : calibration.zero == nil ? "Listening. Calibrate the front to locate sounds." : "Listening on iPhone…"
         publish(status: status)
-        if analysisBusy && pendingAnalysis.count + samples.count > rate * 4 / 2 {
-            // At most 500ms can wait behind the one inference call. Overflow
-            // discards that window instead of letting latency grow without bound.
-            invalidateAnalysis()
-        }
         let startFrame = analysisFrame
         guard ring.append(samples: samples, sampleRate: rate, startFrame: startFrame, endUptime: capturedEnd) else {
             throw ListenerError.message("Could not prepare audio for sound recognition.")
         }
         analysisFrame += Int64(frames)
-        if analysisBusy {
-            if pendingAnalysisStart == nil { pendingAnalysisStart = startFrame }
-            pendingAnalysis.append(contentsOf: samples)
-            pendingAnalysisEnd = capturedEnd
-        } else {
-            try submitAnalysis(samples, startFrame: startFrame, rate: rate, now: now)
-        }
+        submitLatestAnalysis(rate: rate)
     }
 
-    private func submitAnalysis(_ samples: [Float], startFrame: Int64, rate: Int, now: TimeInterval) throws {
-        let frames = samples.count / 4
-        guard let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: Double(rate), channels: 1, interleaved: false),
-              let mono = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: AVAudioFrameCount(frames)),
-              let channel = mono.floatChannelData?[0] else {
-            throw ListenerError.message("Could not prepare audio for sound recognition.")
-        }
-        mono.frameLength = AVAudioFrameCount(frames)
-        for frame in 0..<frames { channel[frame] = samples[frame * 4] }
+    private func submitLatestAnalysis(rate: Int) {
+        guard running, !analysisBusy, !calibration.calibrating,
+              let bounds = windowSchedule.take(availableFrames: analysisFrame, sampleRate: rate),
+              let window = ring.window(startFrame: bounds.start, frameCount: bounds.count),
+              ProcessInfo.processInfo.systemUptime < window.endUptime + 0.75 else { return }
         let generation = analysisGeneration
         analysisBusy = true
-        analysisStartedAt = now
+        analysisStartedAt = ProcessInfo.processInfo.systemUptime
         Self.inferenceQueue.async { [self] in
+            let started = ProcessInfo.processInfo.systemUptime
+            let result: Result<[Double], Error>
             do {
-                if analyzerGeneration != generation || analyzerRate != rate { try prepareAnalyzer(rate: rate, generation: generation) }
-                analyzer?.analyze(mono, atAudioFramePosition: startFrame)
-            } catch {
-                queue.async { [self] in
-                    if running && analysisGeneration == generation { stopOnQueue(error.localizedDescription) }
-                }
-            }
+                guard let classifier else { throw ListenerError.message("The sound model is unavailable. Restart listening.") }
+                let waveform = try YAMNetClassifier.waveform(spatial: window.samples, sampleRate: rate)
+                result = .success(try classifier.predict(waveform: waveform))
+            } catch { result = .failure(error) }
+            let elapsed = (ProcessInfo.processInfo.systemUptime - started) * 1000
             queue.async { [self] in
                 analysisBusy = false
-                guard running, !calibration.calibrating,
-                      let start = pendingAnalysisStart, !pendingAnalysis.isEmpty else { return }
-                let now = ProcessInfo.processInfo.systemUptime
-                guard now < pendingAnalysisEnd + 0.75 else { invalidateAnalysis(); return }
-                let samples = pendingAnalysis
-                pendingAnalysis.removeAll(keepingCapacity: true)
-                pendingAnalysisStart = nil
-                do { try submitAnalysis(samples, startFrame: start, rate: rate, now: now) }
-                catch { stopOnQueue(error.localizedDescription) }
+                guard running else { return }
+                if analysisGeneration == generation {
+                    switch result {
+                    case .success(let scores):
+                        inferenceCount += 1
+                        lastInferenceMilliseconds = elapsed
+                        receive(scores, window: window, rate: rate)
+                    case .failure(let error):
+                        stopOnQueue("Could not recognize the audio: " + error.localizedDescription)
+                        return
+                    }
+                }
+                // The same queue owns rate changes and generation invalidation.
+                if let sampleRate { submitLatestAnalysis(rate: sampleRate) }
             }
         }
     }
 
-    private static func makeRequest() throws -> SNClassifySoundRequest {
-        let request = try SNClassifySoundRequest(classifierIdentifier: .version1)
-        let missing = SoundEventSelector().missingClassifications(from: Set(request.knownClassifications))
-        guard missing.isEmpty else {
-            throw ListenerError.message("Sound recognition on this iPhone is missing required sounds: " + missing.joined(separator: ", "))
-        }
-        let desired = CMTime(seconds: 1, preferredTimescale: 48000)
-        let constraint = request.windowDurationConstraint
-        let supported: Bool
-        switch constraint {
-        case .durationRange(let range): supported = CMTimeRangeContainsTime(range, time: desired)
-        case .enumeratedDurations(let durations): supported = durations.contains { CMTimeCompare($0, desired) == 0 }
-        @unknown default: supported = false
-        }
-        guard supported else {
-            throw ListenerError.message("Sound recognition on this device does not support one-second audio windows.")
-        }
-        request.windowDuration = desired
-        let actual = CMTimeGetSeconds(request.windowDuration)
-        guard actual.isFinite, (0.5...2).contains(actual) else {
-            throw ListenerError.message("Sound recognition does not offer a compatible audio window.")
-        }
-        request.overlapFactor = 0.5
-        return request
-    }
-
-    /// Called exclusively on inferenceQueue, including initial model warmup.
-    private func prepareAnalyzer(rate: Int, generation: UUID) throws {
-        guard let format = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: Double(rate), channels: 1, interleaved: false) else {
-            throw ListenerError.message("This audio is not compatible with sound recognition.")
-        }
-        analyzer?.removeAllRequests()
-        let stream = SNAudioStreamAnalyzer(format: format)
-        let observer = ClassificationObserver(result: { [weak self] result in
-            self?.queue.async { [weak self] in self?.receive(result, generation: generation, rate: rate) }
-        }, failure: { [weak self] error in
-            self?.queue.async { [weak self] in
-                guard let self, self.running, self.analysisGeneration == generation else { return }
-                self.stopOnQueue("Could not recognize the audio: " + error.localizedDescription)
-            }
-        })
-        try stream.add(Self.makeRequest(), withObserver: observer)
-        analyzer = stream
-        analyzerGeneration = generation
-        analyzerRate = rate
-        analysisObserver = observer
-    }
-
-    private func receive(_ result: SNClassificationResult, generation: UUID, rate: Int) {
-        guard running, generation == analysisGeneration, !calibration.calibrating,
-              result.timeRange.start.isNumeric, result.timeRange.duration.isNumeric else { return }
-        let start = CMTimeConvertScale(result.timeRange.start, timescale: CMTimeScale(rate), method: .roundHalfAwayFromZero).value
-        let count = CMTimeConvertScale(result.timeRange.duration, timescale: CMTimeScale(rate), method: .roundHalfAwayFromZero).value
-        guard start >= 0, count > 0, count <= rate * 2, start <= Int64.max - count,
-              start + count > lastResultEndFrame,
-              let window = ring.window(startFrame: start, frameCount: count) else { return }
-        lastResultEndFrame = start + count
+    private func receive(_ result: [Double], window: AlignedSpatialSamples, rate: Int) {
         let expiry = window.endUptime + 0.75
         guard ProcessInfo.processInfo.systemUptime < expiry else { selector.reset(); return }
         var power = 0.0
@@ -420,25 +326,23 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             power += value * value
         }
         let rms = sqrt(power / Double(window.samples.count / 4))
-        let scores = rms >= SpatialDirection.minimumRMS
-            ? Dictionary(result.classifications.map { ($0.identifier, $0.confidence) }, uniquingKeysWith: max)
-            : [:]
+        let scores = rms >= SpatialDirection.minimumRMS ? result : [Double](repeating: 0, count: YAMNetClassifier.classCount)
         guard let candidate = selector.select(scores: scores, at: window.endUptime) else { return }
         let direction = calibration.zero.map { SpatialDirection.estimate(samples: window.samples, sampleRate: rate, zero: $0) }
             ?? SpatialDirectionResult(angle: nil, quality: nil, reason: "not_calibrated")
         let alert = SoundEventDetection(event: candidate.event, score: candidate.score,
-                                        angle: direction.angle, quality: direction.quality, expiresAt: expiry)
-        publish(status: "Sound detected: " + candidate.event, alert: alert)
+                                        angle: direction.angle, quality: direction.quality, expiresAt: expiry,
+                                        shouldNotify: candidate.shouldNotify)
+        let name = SoundCatalog.forEvent(candidate.event)?.title ?? "Sound"
+        publish(status: "Sound detected: " + name, alert: alert)
     }
 
     private func invalidateAnalysis() {
         analysisGeneration = UUID()
         analysisFrame = 0
-        lastResultEndFrame = -1
+        windowSchedule = YAMNetWindowSchedule()
         ring.reset()
         selector.reset()
-        pendingAnalysis.removeAll(keepingCapacity: true)
-        pendingAnalysisStart = nil
     }
 
     private func resetForCaptureGap() {
@@ -471,6 +375,8 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
         lastDiagnosticWrite = now
         var snapshot: [String: Any] = [
             "capturing": running, "sampledAt": Date().timeIntervalSince1970,
+            "classifier": "YAMNet", "classifierClasses": YAMNetClassifier.classCount,
+            "inferenceCount": inferenceCount, "lastInferenceMs": lastInferenceMilliseconds,
             "calibrated": calibration.zero != nil, "calibrating": calibration.calibrating,
             "calibrationFailed": calibration.failed, "windows": diagnosticWindows,
             "validDirectionWindows": diagnosticValidWindows, "peakQuality": diagnosticPeakQuality,

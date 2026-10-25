@@ -19,6 +19,7 @@ enum WristbandProtocol {
         guard !name.isEmpty, name.count <= 23,
               name.allSatisfy({ (65...90).contains($0) || (48...57).contains($0) || $0 == 95 }),
               score.isFinite, (0...1).contains(score) else { return nil }
+        if name[0] == 89, SoundCatalog.forEvent(event) == nil { return nil }
         var text = "E,\(event)," + String(format: "%.2f", locale: numberLocale, score)
         // Direction quality is a heuristic, not a probability. Invalid/weak
         // optional metadata keeps the sound alert but omits the direction.
@@ -29,13 +30,21 @@ enum WristbandProtocol {
         return message(text)
     }
 
+    /// Refresh a current label/direction without starting another vibration or
+    /// adding a duplicate analytics event. Same validation as a notifying alert.
+    static func display(event: String, score: Double, angle: Double?, quality: Double?) -> Data? {
+        guard var data = alert(event: event, score: score, angle: angle, quality: quality) else { return nil }
+        data[0] = 68 // D, visual update
+        return data
+    }
+
     static func level(_ value: Int) -> Data {
         Data("L,\(min(100, max(0, value)))".utf8)
     }
 
     /// A deliberate training action, not a detected event or dashboard record.
     static func patternTest(event: String) -> Data? {
-        guard SoundHapticPattern.all.contains(where: { $0.event == event }) else { return nil }
+        guard SoundHapticPattern.supports(event) else { return nil }
         return message("P," + event)
     }
 
@@ -119,6 +128,15 @@ final class WristbandBluetooth: NSObject {
                    validUntil: TimeInterval) -> Bool {
         guard WristbandProtocol.isFresh(validUntil: validUntil, now: ProcessInfo.processInfo.systemUptime),
               let data = WristbandProtocol.alert(event: event, score: score, angle: angle, quality: quality)
+        else { return false }
+        return write(data, validUntil: validUntil)
+    }
+
+    @discardableResult
+    func sendDisplay(event: String, score: Double, angle: Double?, quality: Double?,
+                     validUntil: TimeInterval) -> Bool {
+        guard WristbandProtocol.isFresh(validUntil: validUntil, now: ProcessInfo.processInfo.systemUptime),
+              let data = WristbandProtocol.display(event: event, score: score, angle: angle, quality: quality)
         else { return false }
         return write(data, validUntil: validUntil)
     }

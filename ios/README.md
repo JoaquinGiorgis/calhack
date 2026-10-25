@@ -5,7 +5,7 @@ Micrófonos iPhone → reconocimiento y dirección en el iPhone → Bluetooth LE
 ```
 
 La app funciona sin Mac, servidor, Wi-Fi ni cuenta durante la escucha. El iPhone
-reconoce sonidos con el clasificador integrado de Apple SoundAnalysis y calcula
+reconoce sonidos con YAMNet incluido (521 clases, ejecución Core ML) y calcula
 el ángulo del sonido dominante con audio espacial FOA. Solo manda pequeños
 mensajes de evento, nivel y hora a la pulsera; el audio no sale del iPhone ni se
 guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototipo.
@@ -20,7 +20,8 @@ guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototip
    `mac_listener.py` para que no ocupe la conexión Bluetooth.
 3. En la app tocar **Connect** y permitir Bluetooth. La conexión se hace
    desde la app; no requiere emparejar un dispositivo de audio en Ajustes.
-4. Abrir el menú **…** → **Sound library** y tocar **Test** en cada sonido.
+4. Abrir **Sound library**, buscar un sonido o filtrar por familia y tocar **Test**.
+   Incluye las 521 clases originales; Silence no vibra.
    La pulsera muestra **TEST / PATTERN TEST** y reproduce su ritmo sin guardar una
    detección en el dashboard. **Test vibration** sigue probando KNOCK: dos pulsos
    cortos. Detener la escucha antes de probar; no hace falta calibrar para esto.
@@ -54,27 +55,30 @@ la dirección de un sonido posterior y se borra al iniciar una nueva escucha.
 
 ## Reconocimiento local
 
-Usa `SNClassifySoundRequest(classifierIdentifier: .version1)`, ventana de un segundo,
-50% de solapamiento y únicamente el canal omnidireccional **W**. Los canales X/Y/Z
-se usan para dirección, no se mezclan con W para clasificar. Se comprueba que el
-modelo del sistema incluya los identificadores requeridos.
+Usa el modelo YAMNet completo convertido a Core ML, incluida su preparación de
+onda, espectrograma y bandas mel. Recibe 15.600 muestras mono a 16 kHz (975 ms),
+produce 521 scores y avanza cada 480 ms. Se remuestrea solamente **W**; los cuatro
+canales originales se conservan para medir la dirección de esa misma ventana.
+La inferencia usa una sola tarea; si queda ocupada, se elige la última ventana
+completa en lugar de acumular audio retrasado. El límite de frescura sigue siendo
+750 ms desde el fin de la captura, sin renovarlo después de predecir.
 
-| Alerta | Identificadores de Apple | Umbral provisional |
-|---|---|---|
-| ALARM | alarm_clock, smoke_detector, siren y sirenas específicas | 0.65 |
-| CAR_HORN | car_horn, air_horn | 0.65 |
-| GLASS | glass_breaking | 0.65 |
-| SHOUT | shout, yell, children_shouting, screaming | 0.70 |
-| BABY | baby_crying | 0.65 |
-| KNOCK | knock | 0.65 |
-| DOORBELL | door_bell | 0.65 |
-| PHONE | telephone_bell_ringing, ringtone | 0.65 |
-| DOG | dog_bark, dog_bow_wow | 0.65 |
-| SPEECH | speech; tres aciertos de cuatro, pausa de 15 s entre alertas | 0.75 |
+El catálogo conserva los nombres originales y los agrupa visualmente en People,
+Animals, Nature, Vehicles, Home, Music, Devices & machines y Other sounds. Cada
+clase mantiene su ID Y000…Y520 y nombre concreto. Una subclase que supera el filtro
+reemplaza a sus ancestros genéricos: Meow en lugar de Meow, Cat y Animal por separado.
+Esto no separa fuentes simultáneas. Silence no genera alerta automática.
 
-Se priorizan seguridad, atención y luego sonidos de baja prioridad. La pausa
-habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
-**los resultados ESC-50 de YAMNet no validan este clasificador de Apple**.
+Las clases con equivalencia a los diez avisos anteriores conservan esos ritmos y
+umbrales de partida; las demás usan el ritmo de su familia, score mínimo 0.60 y
+al menos dos de tres ventanas para vibrar. La pantalla se actualiza con cada
+resultado actual aunque la vibración espere confirmación o esté en pausa. Las
+pausas se aplican después de elegir, para no promover una conjetura secundaria. Los nuevos
+umbrales son provisionales: vocabulario completo no significa precisión perfecta.
+
+Ver [implementación, pruebas y límites de las 521 clases](../docs/SOUND-CATALOG-521.md).
+La auditoría anterior de Apple permanece como evidencia histórica; ya no describe
+el clasificador de producción.
 
 ## Dirección y límites
 
@@ -89,7 +93,7 @@ habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
   Una caída breve no borra toda la muestra; silencio prolongado, poca actividad
   o cambios de dirección no producen una referencia. El umbral sigue en 0.60.
 - La señal genérica en vivo usa 300 ms; cada alerta clasificada sigue usando
-  su propia ventana exacta de un segundo. No se intercambian sus ángulos.
+  su propia ventana exacta de 975 ms. No se intercambian sus ángulos.
 - Solo se elige una categoría por ventana, con prioridad y umbrales. No es
   separación de varias fuentes ni reconocimiento garantizado de cualquier sonido.
 - La vibración identifica el tipo de sonido con un ritmo aprendido. Un único motor
@@ -108,12 +112,15 @@ habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
 
 | Archivo | Responsabilidad |
 |---|---|
-| `SpatialCapture.swift` | FOA, SoundAnalysis local, continuidad, tiempo y memoria acotada |
+| `SpatialCapture.swift` | FOA, YAMNet local, continuidad, tiempo y memoria acotada |
+| `YAMNetClassifier.swift` | Modelo Core ML, remuestreo y ventanas 975/480 ms |
+| `YAMNetEventSelector.swift` | Selección entre 521 clases, ancestros, filtros y pausas |
+| `SoundCatalog.swift` | Catálogo generado: 521 nombres, familias y estilos |
 | `SpatialPCM.swift` | Lectura PCM preservando W,Y,Z,X |
 | `SpatialDirection.swift` | Ángulo, calidad y calibración |
-| `SoundEvents.swift` | Mapeo Apple → eventos, prioridad y ventanas alineadas |
+| `SoundEvents.swift` | Eventos, ventanas alineadas y selector Apple histórico para regresiones |
 | `SoundIdentity.swift` | Catálogo visual único: nombre, significado, símbolo y colores |
-| `SoundHaptics.swift` | Diez ritmos por tipo, guía y contrato con firmware |
+| `SoundHaptics.swift` | Ritmos por familia, diez avisos heredados y contrato con firmware |
 | `WristbandBluetooth.swift` | Servicio BLE existente, conexión, frescura y mensajes |
 | `ListenerModel.swift` | Permisos, estados, parada, prueba de vibración y envío |
 | `FortWatchListenerApp.swift` | Estilo fotográfico/glass de la marca y estados de escucha |
@@ -121,7 +128,9 @@ habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
 UUID servicio: `6b1a0001-5d1e-4c3b-9a7e-50554e445345`.
 UUID escritura: `6b1a0002-5d1e-4c3b-9a7e-50554e445345`.
 Se conserva `E,<evento>,<score>[,<ángulo>,<calidad>]`, `L,<nivel>` y
-`T,<hora>,<fecha>`, con máximo 63 bytes por escritura. `P,<evento>` prueba un ritmo
+`T,<hora>,<fecha>`, con máximo 63 bytes por escritura.
+`D,<evento>,<score>[,<ángulo>,<calidad>]` refresca la pantalla sin vibración,
+contador ni analytics. Un descarte manual bloquea D hasta una nueva notificación E. `P,<evento>` prueba un ritmo
 con un evento conocido exacto; no incrementa historial, contador ni analytics.
 
 ## Verificar software
@@ -138,7 +147,8 @@ El proyecto se genera desde `project.yml` con XcodeGen. Si se regenera, conserva
 volver a seleccionar el equipo de firma personal. Los tests usan audio sintético:
 no prueban precisión acústica, alcance BLE ni funcionamiento físico del motor.
 
-Fuentes: [Apple SoundAnalysis](https://developer.apple.com/documentation/soundanalysis/snclassifysoundrequest),
+Fuentes: [YAMNet](https://github.com/tensorflow/models/tree/master/research/audioset/yamnet),
+[Core ML](https://developer.apple.com/documentation/coreml),
 [captura espacial](https://developer.apple.com/documentation/avfoundation/capturing-spatial-audio-in-your-ios-app),
 [CoreBluetooth](https://developer.apple.com/documentation/corebluetooth/transferring-data-between-bluetooth-low-energy-devices).
 
@@ -147,7 +157,10 @@ Fuentes: [Apple SoundAnalysis](https://developer.apple.com/documentation/soundan
 La prueba `testPhysicalSpatialCaptureProvidesValidAudio` se compila solo con
 `FORTWATCH_CAPTURE_PROBE`, requiere un iPhone real y permiso de micrófono. Usa
 `SpatialCapture`, espera 50 actualizaciones decodificadas y detiene la captura; no
-guarda audio ni envía alertas. Se ejecutó en el iPhone 17 Pro conectado: PASS.
+guarda audio ni envía alertas. La versión anterior, con Apple SoundAnalysis, pasó en el iPhone 17 Pro.
+La revisión YAMNet además exige que el diagnóstico confirme inferencias nuevas;
+esa prueba de micrófono aún está pendiente. El modelo sí pasó por separado sus
+pruebas de salidas y remuestreo en el iPhone.
 No valida el signo ni la precisión angular. Para diagnosticar el inicio, la app
 guarda solo el último estado/mensaje en `Documents/fortwatch-capture-status.json`,
 sin muestras, eventos reconocidos ni identificadores.
