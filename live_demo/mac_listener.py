@@ -3,10 +3,12 @@
 
     microphone -> YAMNet (on the Mac) -> Bluetooth LE or USB -> ESP32 screen
 
-Audio never leaves the Mac. The ESP32 only receives short text messages:
+Audio stays on your devices. Optional spatial mode receives iPhone audio over
+the local network. The ESP32 only receives short text messages:
 
     L,<0-100>            sound level, sent every hop (for the level bar)
     E,<EVENT>,<score>    detected event, e.g. "E,KNOCK,0.62"
+    E,<EVENT>,<score>,<angle>,<quality>  optional calibrated FOA direction
     T,<HH:MM>,<date>     local time for the home-screen clock, every 10 s
 
 Examples:
@@ -34,6 +36,7 @@ import glob
 import json
 import os
 import queue
+import secrets
 import socket
 import sys
 import threading
@@ -49,7 +52,6 @@ os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
 import numpy as np
 import serial
-import sounddevice as sd
 from scipy.signal import resample_poly
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -125,6 +127,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--list-devices", action="store_true", help="list microphones and exit")
     parser.add_argument("--device", help="microphone index or part of its name (default: system input)")
     parser.add_argument(
+        "--spatial-listen", metavar="HOST:PORT",
+        help="receive iPhone FOA audio locally, e.g. 0.0.0.0:8766 (explicitly opens a LAN port)",
+    )
+    parser.add_argument("--spatial-token", help="pairing token (default: a new random token each run)")
+    parser.add_argument(
         "--link", choices=["ble", "usb", "none"], default="ble",
         help="how to reach the ESP32: Bluetooth (default), USB cable, or none (print only)",
     )
@@ -153,7 +160,14 @@ def parse_args() -> argparse.Namespace:
         "--device-id", default=os.environ.get("FORTWATCH_DEVICE_ID") or socket.gethostname(),
         help="name of this listener in the analytics dashboard (default: this Mac's hostname)",
     )
-    return parser.parse_args()
+    args = parser.parse_args()
+    if not 0.05 <= args.hop <= 1.0:
+        parser.error("--hop must be between 0.05 and 1.0 seconds")
+    if args.spatial_listen and args.device:
+        parser.error("--spatial-listen and --device select different audio sources; use one")
+    if args.spatial_token and len(args.spatial_token) < 16:
+        parser.error("--spatial-token must contain at least 16 characters")
+    return args
 
 
 def apply_overrides(args: argparse.Namespace) -> None:
@@ -173,6 +187,8 @@ def apply_overrides(args: argparse.Namespace) -> None:
 
 
 def resolve_device(spec: str | None) -> int | None:
+    import sounddevice as sd
+
     if spec is None:
         return None
     if spec.isdigit():
@@ -238,12 +254,14 @@ class SerialLink:
     def connected(self) -> bool:
         return self.serial is not None
 
-    def send(self, line: str) -> None:
+    def send(self, line: str, valid=None) -> None:
         if self.serial is None:
             self._connect()
             if self.serial is None:
                 return
         try:
+            if valid is not None and not valid():
+                return
             self.serial.write((line + "\n").encode("ascii"))
         except (serial.SerialException, OSError):
             print("  ESP32 disconnected; retrying...")
@@ -254,15 +272,15 @@ class BleLink:
     """One message per BLE write, on a background thread that finds and reconnects to the ESP32."""
 
     def __init__(self):
-        self.outbox: queue.Queue[str] = queue.Queue(maxsize=20)
+        self.outbox: queue.Queue[tuple[str, object]] = queue.Queue(maxsize=20)
         self.connected = False
         threading.Thread(target=lambda: asyncio.run(self._run()), daemon=True).start()
 
-    def send(self, line: str) -> None:
+    def send(self, line: str, valid=None) -> None:
         if not self.connected:
             return  # messages made while disconnected would be stale on arrival
         try:
-            self.outbox.put_nowait(line)
+            self.outbox.put_nowait((line, valid))
         except queue.Full:
             pass
 
@@ -270,6 +288,17 @@ class BleLink:
     def _is_fortwatch(device, advertisement) -> bool:
         uuids = [uuid.lower() for uuid in advertisement.service_uuids]
         return BLE_SERVICE_UUID in uuids or device.name == BLE_NAME
+
+    async def _write_next(self, client) -> bool:
+        try:
+            line, valid = self.outbox.get_nowait()
+        except queue.Empty:
+            return False
+        # Recheck immediately before the radio write, not only when enqueued.
+        if valid is not None and not valid():
+            return True
+        await client.write_gatt_char(BLE_RX_UUID, line.encode("ascii"), response=line.startswith("E,"))
+        return True
 
     async def _run(self) -> None:
         from bleak import BleakClient, BleakScanner
@@ -286,15 +315,8 @@ class BleLink:
                     print("  Connected to FortWatch over Bluetooth")
                     self.connected = True
                     while not disconnected.is_set():
-                        try:
-                            line = self.outbox.get_nowait()
-                        except queue.Empty:
+                        if not await self._write_next(client):
                             await asyncio.sleep(0.02)
-                            continue
-                        # Alerts are acknowledged; level updates are fire-and-forget.
-                        await client.write_gatt_char(
-                            BLE_RX_UUID, line.encode("ascii"), response=line.startswith("E,")
-                        )
             except Exception as error:  # bleak raises several types for radio/timeout errors
                 print(f"  Bluetooth error: {error}")
             self.connected = False
@@ -307,7 +329,7 @@ class BleLink:
 class NoLink:
     connected = False
 
-    def send(self, line: str) -> None:
+    def send(self, line: str, valid=None) -> None:
         pass
 
 
@@ -398,18 +420,123 @@ class Analytics:
                     self.pending = (batch + self.pending)[-self.MAX_BUFFER:]
 
 
+class SpatialEventProcessor:
+    """Classify and locate the same live window; discard superseded inference."""
+
+    def __init__(self, classify, names, link, analytics=None, quiet=False):
+        self.classify, self.names, self.link = classify, names, link
+        self.indices = event_indices(names)
+        self.analytics, self.quiet = analytics, quiet
+        self.epoch = None
+        self.history = {}
+        self.last_sent = {}
+        self.next_clock = 0.0
+
+    def process(self, window, receiver) -> bool:
+        from spatial_audio import MIN_QUALITY
+
+        waveform = window.mono(MODEL_RATE)
+        direction = window.direction()
+        scores = self.classify(waveform)
+
+        def publish():
+            if self.epoch != window.epoch:
+                self.epoch = window.epoch
+                self.history = {name: deque(maxlen=event.window) for name, event in EVENTS.items()}
+                self.last_sent.clear()
+            rms = float(np.sqrt(np.mean(waveform**2)))
+            db = 20 * np.log10(rms + 1e-10)
+            level = int(np.clip((db + 60) / 60 * 100, 0, 100))
+            self.link.send(f"L,{level}", valid=lambda: receiver.is_current(window))
+            now = time.monotonic()
+            if now >= self.next_clock:
+                self.next_clock = now + 10
+                self.link.send("T," + datetime.now().strftime("%H:%M,%A, %b %-d"))
+            connected = bool(getattr(self.link, "connected", False))
+            if self.analytics:
+                self.analytics.update(level, connected)
+            candidates = []
+            for name, event in EVENTS.items():
+                score = float(scores[self.indices[name]].max())
+                hit = score >= event.threshold
+                self.history[name].append(hit)
+                sustained = sum(self.history[name]) >= event.min_hits
+                cooled = now - self.last_sent.get(name, -1e9) >= event.cooldown
+                # Direction belongs to this window, so require a current hit too.
+                if hit and sustained and cooled:
+                    candidates.append((event.priority, score / event.threshold, name, score))
+            if candidates:
+                _, _, name, score = max(candidates)
+                self.last_sent[name] = now
+                line = f"E,{name},{score:.2f}"
+                note = direction.reason
+                if (direction.angle_deg is not None and direction.quality is not None
+                        and direction.quality >= MIN_QUALITY):
+                    line += f",{direction.angle_deg:.0f},{direction.quality:.2f}"
+                    note = f"dominant sound {direction.angle_deg:+.0f} deg, quality={direction.quality:.2f}"
+                self.link.send(line, valid=lambda: receiver.is_current(window))
+                if self.analytics:
+                    self.analytics.alert(name, score, level, connected)
+                print(f">>> {name}  score={score:.2f} | {note}")
+            elif not self.quiet:
+                top = np.argsort(scores)[-3:][::-1]
+                summary = "  ".join(f"{self.names[i]} {scores[i]:.2f}" for i in top)
+                print(f"Spatial {db:6.1f} dB | {summary} | {direction.reason}")
+
+        return receiver.publish_if_current(window, publish)
+
+
+def run_spatial(args, classify, names, link, analytics) -> None:
+    from spatial_audio import SpatialReceiver, make_server
+
+    try:
+        host, port_text = args.spatial_listen.rsplit(":", 1)
+        port = int(port_text)
+        if not host or not 1 <= port <= 65535:
+            raise ValueError
+    except ValueError:
+        sys.exit("--spatial-listen must be HOST:PORT, e.g. 0.0.0.0:8766")
+    token = args.spatial_token or secrets.token_urlsafe(24)
+    receiver = SpatialReceiver(token, connected=lambda: bool(getattr(link, "connected", False)))
+    try:
+        server = make_server((host, port), receiver)
+    except OSError as error:
+        sys.exit(f"Cannot open spatial receiver: {error}")
+    server_thread = threading.Thread(target=server.serve_forever, daemon=True)
+    server_thread.start()
+    print(f"iPhone spatial receiver: http://{host}:{port}/audio")
+    print("Use this Mac's LAN IP in the iPhone app when binding 0.0.0.0.")
+    print(f"Pairing token: {token}")
+    print("Local HTTP transport; keep both devices on a trusted private network.")
+    print("Keep the iPhone upright and fixed; calibrate its front in the app.")
+    print("Direction estimates the dominant sound, not an isolated YAMNet event.\n")
+    processor = SpatialEventProcessor(classify, names, link, analytics, args.quiet)
+    try:
+        while True:
+            window = receiver.next_window(args.hop)
+            if window is not None:
+                processor.process(window, receiver)
+    finally:
+        server.shutdown()
+        server.server_close()
+        server_thread.join(timeout=2)
+
+
 def main() -> None:
     args = parse_args()
     if args.list_devices:
+        import sounddevice as sd
         print(sd.query_devices())
         return
     apply_overrides(args)
 
-    device = resolve_device(args.device)
-    info = sd.query_devices(device, kind="input")
-    mic_rate = int(info["default_samplerate"])
-    divisor = gcd(MODEL_RATE, mic_rate)
-    up, down = MODEL_RATE // divisor, mic_rate // divisor
+    if not args.spatial_listen:
+        import sounddevice as sd
+        device = resolve_device(args.device)
+        info = sd.query_devices(device, kind="input")
+        mic_rate = int(info["default_samplerate"])
+        divisor = gcd(MODEL_RATE, mic_rate)
+        up, down = MODEL_RATE // divisor, mic_rate // divisor
 
     classify, names = load_yamnet()
     indices = event_indices(names)
@@ -420,6 +547,9 @@ def main() -> None:
         if not args.analytics_key:
             sys.exit("--analytics-url needs --analytics-key (or FORTWATCH_ANALYTICS_KEY)")
         analytics = Analytics(args.analytics_url, args.analytics_key, args.device_id, link_type)
+    if args.spatial_listen:
+        run_spatial(args, classify, names, link, analytics)
+        return
     history = {name: deque(maxlen=event.window) for name, event in EVENTS.items()}
     last_sent: dict[str, float] = {}
 

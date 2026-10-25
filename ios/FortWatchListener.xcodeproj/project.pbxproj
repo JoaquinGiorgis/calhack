@@ -1,0 +1,421 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		69D735AB6B78CF43CD353D9E /* BridgeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8961BE2B9E1FCAE3AC85B714 /* BridgeProtocol.swift */; };
+		6A90B3B699D6AD2D5A8EBD4E /* ListenerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76DDFEE03C4BF254149188E /* ListenerModel.swift */; };
+		AE005FCDF9BEA5F880193A3B /* FortWatchListenerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */; };
+		EA534C38FF2453624916B3DF /* BridgeProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A4545E43BBCB5E97DA9C87 /* BridgeProtocolTests.swift */; };
+		EFF3B65DE5F56EE641C8BBC4 /* SpatialCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		40372EFB0B0CEA276748EDD3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B615EC85E23CEBD5ABDDC314 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 33B89C448579A915F00D11F6;
+			remoteInfo = FortWatchListener;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		007848FE177F9C4945A00E94 /* FortWatchListenerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FortWatchListenerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		4808734C41A990345CD7D93A /* FortWatchListener.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FortWatchListener.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8961BE2B9E1FCAE3AC85B714 /* BridgeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeProtocol.swift; sourceTree = "<group>"; };
+		AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortWatchListenerApp.swift; sourceTree = "<group>"; };
+		B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialCapture.swift; sourceTree = "<group>"; };
+		D76DDFEE03C4BF254149188E /* ListenerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenerModel.swift; sourceTree = "<group>"; };
+		E92B8B3995967D0D39982576 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F8A4545E43BBCB5E97DA9C87 /* BridgeProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeProtocolTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		048F9A2247E1AF85393851B6 = {
+			isa = PBXGroup;
+			children = (
+				DEB5FCCFE04B816D1704FA23 /* FortWatchListener */,
+				7340E68DFCA929448E28DAAC /* Tests */,
+				51FFC301E1E2599C26BF7B2C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		51FFC301E1E2599C26BF7B2C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4808734C41A990345CD7D93A /* FortWatchListener.app */,
+				007848FE177F9C4945A00E94 /* FortWatchListenerTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7340E68DFCA929448E28DAAC /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F8A4545E43BBCB5E97DA9C87 /* BridgeProtocolTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		DEB5FCCFE04B816D1704FA23 /* FortWatchListener */ = {
+			isa = PBXGroup;
+			children = (
+				8961BE2B9E1FCAE3AC85B714 /* BridgeProtocol.swift */,
+				AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */,
+				E92B8B3995967D0D39982576 /* Info.plist */,
+				D76DDFEE03C4BF254149188E /* ListenerModel.swift */,
+				B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */,
+			);
+			path = FortWatchListener;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		33B89C448579A915F00D11F6 /* FortWatchListener */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D959E26B3F4EB8C210F0D65B /* Build configuration list for PBXNativeTarget "FortWatchListener" */;
+			buildPhases = (
+				96C0A07CC72D27C836E25BE6 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FortWatchListener;
+			packageProductDependencies = (
+			);
+			productName = FortWatchListener;
+			productReference = 4808734C41A990345CD7D93A /* FortWatchListener.app */;
+			productType = "com.apple.product-type.application";
+		};
+		802B8913038FDD693F348D73 /* FortWatchListenerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 71256C99FABA91B0C3A25D96 /* Build configuration list for PBXNativeTarget "FortWatchListenerTests" */;
+			buildPhases = (
+				84B4F2A54FFA292ACD8D13A5 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				84E17F0D686570BEB184D585 /* PBXTargetDependency */,
+			);
+			name = FortWatchListenerTests;
+			packageProductDependencies = (
+			);
+			productName = FortWatchListenerTests;
+			productReference = 007848FE177F9C4945A00E94 /* FortWatchListenerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B615EC85E23CEBD5ABDDC314 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					33B89C448579A915F00D11F6 = {
+						ProvisioningStyle = Automatic;
+					};
+					802B8913038FDD693F348D73 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 7232B13521471DD041B8772C /* Build configuration list for PBXProject "FortWatchListener" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 048F9A2247E1AF85393851B6;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 51FFC301E1E2599C26BF7B2C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				33B89C448579A915F00D11F6 /* FortWatchListener */,
+				802B8913038FDD693F348D73 /* FortWatchListenerTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		84B4F2A54FFA292ACD8D13A5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EA534C38FF2453624916B3DF /* BridgeProtocolTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96C0A07CC72D27C836E25BE6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				69D735AB6B78CF43CD353D9E /* BridgeProtocol.swift in Sources */,
+				AE005FCDF9BEA5F880193A3B /* FortWatchListenerApp.swift in Sources */,
+				6A90B3B699D6AD2D5A8EBD4E /* ListenerModel.swift in Sources */,
+				EFF3B65DE5F56EE641C8BBC4 /* SpatialCapture.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		84E17F0D686570BEB184D585 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 33B89C448579A915F00D11F6 /* FortWatchListener */;
+			targetProxy = 40372EFB0B0CEA276748EDD3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0EEAB6E9523C6143AF2916BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		35B3807291F4E38C60CB0124 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fortwatch.spatiallistener.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FortWatchListener.app/FortWatchListener";
+			};
+			name = Debug;
+		};
+		382B98D49D58E648D7CEF5D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FortWatchListener/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "FortWatch Listener";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "FortWatch envía el audio espacial a tu Mac en la misma red para generar las alertas de la pulsera.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch usa el sonido para identificar alertas y estimar su dirección. El audio se envía únicamente a la Mac que conectes.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fortwatch.spatiallistener;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		469B91503027E8EA0BF6A67F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fortwatch.spatiallistener.tests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FortWatchListener.app/FortWatchListener";
+			};
+			name = Release;
+		};
+		49FA4FB6EF9398CF524BE1AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		F2856763747558FF4ED08C94 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FortWatchListener/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "FortWatch Listener";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "FortWatch envía el audio espacial a tu Mac en la misma red para generar las alertas de la pulsera.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch usa el sonido para identificar alertas y estimar su dirección. El audio se envía únicamente a la Mac que conectes.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = dev.fortwatch.spatiallistener;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		71256C99FABA91B0C3A25D96 /* Build configuration list for PBXNativeTarget "FortWatchListenerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35B3807291F4E38C60CB0124 /* Debug */,
+				469B91503027E8EA0BF6A67F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7232B13521471DD041B8772C /* Build configuration list for PBXProject "FortWatchListener" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0EEAB6E9523C6143AF2916BF /* Debug */,
+				49FA4FB6EF9398CF524BE1AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D959E26B3F4EB8C210F0D65B /* Build configuration list for PBXNativeTarget "FortWatchListener" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F2856763747558FF4ED08C94 /* Debug */,
+				382B98D49D58E648D7CEF5D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B615EC85E23CEBD5ABDDC314 /* Project object */;
+}

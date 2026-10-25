@@ -11,7 +11,9 @@ Mac microphone ─► YAMNet sound classifier (on the Mac) ─► Bluetooth LE �
 The wristband is a Waveshare ESP32-S3-Touch-LCD-2 running on a USB power bank. The
 Mac listens, classifies each second of audio with Google's pretrained
 [YAMNet](https://www.kaggle.com/models/google/yamnet) model, and sends only short
-text messages (like `E,KNOCK,0.62`) to the wristband. **Audio never leaves the Mac.**
+text messages (like `E,KNOCK,0.62`) to the wristband. The default microphone mode
+keeps audio on the Mac. Optional experimental spatial mode streams iPhone audio
+over the local network to the Mac; neither mode uploads audio to the cloud.
 
 > **Status:** hackathon prototype. Classification runs on the Mac, not on the
 > wristband. FortWatch is a complementary aid and **does not replace certified smoke
@@ -25,6 +27,8 @@ For where the project stands, why it is built this way, and what's next, see
 | Path | What it is |
 |---|---|
 | `live_demo/mac_listener.py` | Mac program: microphone → YAMNet → Bluetooth/USB → wristband |
+| `ios/` | Experimental native iPhone spatial-audio capture app |
+| `live_demo/spatial_audio.py` | Spatial receiver, calibration and dominant-sound angle estimator |
 | `live_demo/fortwatch_display/` | Wristband firmware (Arduino sketch). Screens are the Figma designs in `screens.h` |
 | `live_demo/screen_preview/` | Slideshow firmware to preview every designed screen on the real display |
 | `live_demo/requirements.txt` | Python packages for the Mac program |
@@ -152,6 +156,15 @@ The terminal prints YAMNet's top three guesses with scores twice a second. To tu
 threshold, make the sound a few times, note its typical score, and set the threshold
 a bit below it.
 
+### Experimental sound direction from iPhone
+
+An optional iOS 26 app sends spatial audio to the Mac. The Mac uses the same audio
+window to classify the event and estimate the dominant sound's angle; the extended
+wristband firmware shows a direction arrow and keeps the existing vibration.
+This is an experimental, single-source demo; angular accuracy and physical
+end-to-end operation still require measurement. See
+[setup and limitations](docs/SPATIAL-DIRECTION.md) and [the iPhone app](ios/README.md).
+
 ### Live analytics dashboard (optional)
 
 The wristband can upload every alert it shows (name, score, level, time; never audio)
@@ -188,6 +201,7 @@ The same text messages go over Bluetooth LE or USB:
 |---|---|
 | `L,<0-100>` | Sound level, every 0.5 s (drives the level bar) |
 | `E,<EVENT>,<score>` | Detected alert, e.g. `E,KNOCK,0.62`. Unknown names still display |
+| `E,<EVENT>,<score>,<angle>,<quality>` | Optional dominant-sound direction relative to the calibrated phone; old messages still work |
 | `T,<HH:MM>,<date>` | Local time for the home-screen clock, every 10 s (the wristband has no clock) |
 
 - **Bluetooth:** the wristband advertises as `FortWatch` with service

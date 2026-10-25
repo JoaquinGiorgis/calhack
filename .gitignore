@@ -8,6 +8,7 @@
 !/CLAUDE.md
 !/dashboard.html
 !/live_demo/
+!/ios/
 !/pretrained/
 !/hardware/
 !/docs/
@@ -19,6 +20,9 @@ __pycache__/
 .pio/
 node_modules/
 .venv/
+DerivedData/
+*.xcuserstate
+xcuserdata/
 # Waveshare's schematic and drawings are their copyrighted documents; the README links to them.
 live_demo/docs/
 docs/hardware/waveshare-*.jpg

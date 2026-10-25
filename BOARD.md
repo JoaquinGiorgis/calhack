@@ -56,6 +56,12 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | S9 | DONE | Home estilo iOS *Liquid Glass*: wallpaper real, reloj (hora desde la Mac), widgets Listening/Last alert con ícono, texto Inter con antialias | Joaquin | S8 | ✅ Cargado en la placa (24/10); falta confirmar visualmente |
 | S10 | DONE | Analytics en vivo (dashboard de Mana): la **pulsera sube cada alerta por WiFi** ella misma (`wifi_analytics.h`, secretos en `secrets.h` git-ignorado); el ícono de SPEECH es una persona hablando. El WiFi de Cal Hacks es solo 5/6 GHz y la ESP32-S3 solo usa 2,4 GHz → usa el hotspot del iPhone ("Maximizar compatibilidad") | Joaquin, Nico | S2 | ✅ 24/10: conectada al hotspot, serial dice `Analytics: uploaded`; la Mac ya no sube (sin duplicados) |
 
+### Extensión opcional de dirección
+
+| ID | Estado | Tarea | Owner | Depende | Done cuando |
+|---|---|---|---|---|---|
+| S11 | DOING | Captura FOA iPhone → Mac → ángulo del sonido dominante y vibración existente. App/firmware compilan; 15 tests Python, 9 iOS, parser C++ y modelo YAMNet pasan. [Guía](docs/SPATIAL-DIRECTION.md) · [Validación](docs/SPATIAL-VALIDATION.md). Falta instalar y medir en hardware. | Codex | S1, S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
+
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
 |---|---|---|---|---|---|

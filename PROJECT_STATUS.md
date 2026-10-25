@@ -49,6 +49,22 @@ replace smoke alarms or other alerting systems.
 
 ## How it works
 
+### Experimental spatial extension (2026-10-24)
+
+An opt-in iOS 26 FOA capture app and local Mac receiver add a calibrated angle of
+the dominant sound to the existing alert message. The wristband displays an arrow
+and preserves its vibration patterns. This is experimental software integration,
+not physically validated direction finding. It does not separate concurrent or
+successive sources within a one-second window. See [setup and test procedure](docs/SPATIAL-DIRECTION.md).
+Software validation: iOS and ESP32 builds pass, 15 Python tests and 9 iOS tests
+pass, the C++ protocol tests pass, and the actual YAMNet model loads and infers.
+Physical capture, angular accuracy and wrist vibration with this version remain
+unverified. See the [validation report](docs/SPATIAL-VALIDATION.md).
+The original mono capture path remains the default. Spatial mode moves temporary
+audio from iPhone to Mac over the local network; no audio is uploaded to analytics.
+
+### Default microphone path
+
 ```
 Mac microphone ─► YAMNet (on the Mac) ─► Bluetooth LE ─► ESP32-S3 wristband
 ```

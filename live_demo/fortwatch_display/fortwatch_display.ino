@@ -3,7 +3,8 @@
 // Receives text messages from live_demo/mac_listener.py over Bluetooth LE
 // (device name "FortWatch") or over the USB cable:
 //   L,<0-100>            sound level -> live level bar
-//   E,<EVENT>,<score>    detected event -> full-screen alert
+//   E,<EVENT>,<score>[,<angle>,<quality>] -> full-screen alert + optional direction
+// Angle: degrees relative to phone, positive right; quality: heuristic coherence.
 //
 // With secrets.h (see secrets.example.h) the wristband also joins Wi-Fi and uploads
 // every alert it shows to the analytics dashboard itself (wifi_analytics.h).
@@ -34,6 +35,7 @@
 #include <Wire.h>
 #include "screens.h"
 #include "fonts.h"
+#include "alert_protocol.h"
 #include "wifi_analytics.h"  // optional Wi-Fi upload to the dashboard (needs secrets.h)
 #include "icons.h"    // generated: python ../fonts/make_icons.py icons.h (alert icons from Figma)    // generated: python ../fonts/make_font_atlas.py fonts.h (Inter, SIL OFL)  // generated: python ../screen_preview/png_to_rgb565.py ../../docs/design/firmware_screens screens.h
 
@@ -88,14 +90,15 @@ uint32_t lastMessageMs = 0;
 uint32_t alertStartedMs = 0;
 uint32_t alertCount = 0;
 int lastLevel = -1;
-char line[64];
+char line[fortwatch::kMaxMessageLength + 1];
 size_t lineLength = 0;
+bool droppingSerialLine = false;
 const char *linkName = "";  // "Bluetooth" or "USB", shown on the listening screen
 
 // BLE callbacks run on the Bluetooth task, so they only queue messages;
 // loop() does all drawing, keeping the display on a single task.
 struct BleMessage {
-  char text[64];
+  char text[fortwatch::kMaxMessageLength + 1];
 };
 QueueHandle_t bleQueue;
 volatile bool bleConnected = false;
@@ -103,8 +106,11 @@ volatile bool bleConnected = false;
 class RxCallbacks : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic *characteristic) override {
     String value = characteristic->getValue();
+    // Never turn a truncated write into a plausible but different alert.
+    if (value.length() == 0 || value.length() > fortwatch::kMaxMessageLength) return;
+    if (memchr(value.c_str(), '\0', value.length()) != nullptr) return;
     BleMessage message;
-    size_t length = min(value.length(), sizeof(message.text) - 1);
+    size_t length = value.length();
     memcpy(message.text, value.c_str(), length);
     message.text[length] = '\0';
     xQueueSend(bleQueue, &message, 0);  // drop the message if the queue is full
@@ -374,7 +380,42 @@ void showListening() {
   drawCentered(footer, 205, 2, C_GREY);
 }
 
-void showAlert(const char *eventName, float score) {
+void drawAlertDirection(const fortwatch::AlertMessage &message, const uint16_t *bg) {
+  // The exported alert images leave y153..185 empty, below title/hint and above
+  // the classifier confidence bar. This overlay does not change that score.
+  if (!fortwatch::hasUsableDirection(message)) {
+    if (bg) drawText(F_SMALL, bg, 54, 176, "Direction uncertain", 0.85f);
+    else drawCentered("Direction uncertain", 166, 2, C_WHITE);
+    return;
+  }
+
+  const int degrees = int(roundf(fabsf(message.angleDegrees)));
+  const char *side = degrees == 0 ? "AHEAD" : degrees == 180 ? "BEHIND" :
+                     message.angleDegrees < 0 ? "LEFT" : "RIGHT";
+  char label[32];
+  snprintf(label, sizeof(label), "%d deg %s", degrees, side);
+  if (bg) {
+    drawText(F_SMALL, bg, 54, 170, label);
+    drawText(F_TINY, bg, 54, 184, "dominant sound / phone", 0.75f);
+  } else {
+    drawCentered(label, 158, 2, C_WHITE);
+    drawCentered("dominant sound / phone", 179, 1, C_WHITE);
+  }
+
+  const float radians = message.angleDegrees * 0.01745329252f;
+  const float dx = sinf(radians), dy = -cosf(radians);
+  const int cx = 28, cy = 170;
+  const int tipX = cx + int(roundf(dx * 14)), tipY = cy + int(roundf(dy * 14));
+  const int baseX = cx + int(roundf(dx * 5)), baseY = cy + int(roundf(dy * 5));
+  gfx->drawLine(cx - int(roundf(dx * 8)), cy - int(roundf(dy * 8)), tipX, tipY, C_WHITE);
+  gfx->fillTriangle(tipX, tipY,
+                    baseX + int(roundf(-dy * 5)), baseY + int(roundf(dx * 5)),
+                    baseX - int(roundf(-dy * 5)), baseY - int(roundf(dx * 5)), C_WHITE);
+}
+
+void showAlert(const fortwatch::AlertMessage &message) {
+  const char *eventName = message.event;
+  const float score = message.score;
   const EventStyle *style = nullptr;
   for (const EventStyle &candidate : EVENT_STYLES) {
     if (strcmp(candidate.name, eventName) == 0) style = &candidate;
@@ -406,16 +447,18 @@ void showAlert(const char *eventName, float score) {
     // live confidence bar over the empty track from Figma (x85 y196, 219x6)
     int w = constrain(int(219 * score), 6, 219);
     gfx->fillRoundRect(85, 196, w, 6, 3, C_WHITE);
+    drawAlertDirection(message, img);
     vibrate(style->vibration);
     return;
   }
   gfx->fillScreen(style->colour);
   drawCentered(style->title, 60, 6, C_WHITE);
-  drawCentered(style->hint, 140, 2, C_WHITE);
+  drawCentered(style->hint, 125, 2, C_WHITE);
+  drawAlertDirection(message, nullptr);
   char detail[32];
   snprintf(detail, sizeof(detail), "confidence %d%%", (int)(score * 100));
-  drawCentered(detail, 175, 2, C_WHITE);
-  drawCentered("Press BOOT to dismiss", 215, 1, C_WHITE);
+  drawCentered(detail, 199, 2, C_WHITE);
+  drawCentered("Press BOOT to dismiss", 225, 1, C_WHITE);
   vibrate(style->vibration);
 }
 
@@ -441,14 +484,8 @@ void handleLine(char *text) {
     if (comma) strncpy(dateText, comma + 1, sizeof(dateText) - 1);
     if (changed && screen == Screen::Listening) drawClock();
   } else if (text[0] == 'E' && text[1] == ',') {
-    char *eventName = text + 2;
-    char *comma = strchr(eventName, ',');
-    float score = 0;
-    if (comma != nullptr) {
-      *comma = '\0';
-      score = atof(comma + 1);
-    }
-    showAlert(eventName, score);
+    fortwatch::AlertMessage message;
+    if (fortwatch::parseAlert(text, message)) showAlert(message);
   }
 }
 
@@ -458,15 +495,22 @@ void readSerial() {
     if (c == '\r') continue;
     if (c == '\n') {
       line[lineLength] = '\0';
-      if (lineLength > 0) {
+      if (!droppingSerialLine && lineLength > 0) {
         linkName = "USB";
         handleLine(line);
       }
       lineLength = 0;
+      droppingSerialLine = false;
+    } else if (droppingSerialLine) {
+      continue;
+    } else if (c == '\0') {
+      lineLength = 0;
+      droppingSerialLine = true;
     } else if (lineLength < sizeof(line) - 1) {
       line[lineLength++] = c;
     } else {
-      lineLength = 0;  // overlong garbage line: drop it
+      lineLength = 0;
+      droppingSerialLine = true;  // discard the entire overlong line, not just its prefix
     }
   }
 }
