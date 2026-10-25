@@ -16,7 +16,7 @@ Examples:
     .venv/bin/python live_demo/mac_listener.py --device iPhone  # use the iPhone mic
     .venv/bin/python live_demo/mac_listener.py --set KNOCK=0.25 --set SPEECH=0.6
 
-Optional analytics (see analytics/README.md): set FORTWATCH_ANALYTICS_URL and
+Optional analytics: set FORTWATCH_ANALYTICS_URL and
 FORTWATCH_ANALYTICS_KEY, or pass --analytics-url/--analytics-key. Only alert names,
 scores and the 0-100 level are uploaded, never audio.
 """
@@ -297,7 +297,7 @@ class NoLink:
 
 
 class Analytics:
-    """Uploads alerts and the live level to the FortWatch analytics server (analytics/).
+    """Uploads alerts and the live level to the FortWatch analytics endpoint.
 
     Runs on its own thread so a slow or missing network never delays an alert to the
     wristband. Alerts made while offline are kept (up to 500) and sent when it's back.

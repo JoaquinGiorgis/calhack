@@ -28,7 +28,6 @@ replace smoke alarms or other alerting systems.
 | 3D-printed case and strap | Designed and verified (`hardware/enclosure/`, `plate.stl`); not printed yet |
 | Vibration | Firmware done (pattern per alert priority, compiles); motor + PN2222 driver working on a breadboard |
 | Classification on the wristband itself | Not started (needs an I2S microphone) |
-| Analytics dashboard (`analytics/`, SpacetimeDB) | Working with simulated data; the listener's uploader is tested against the server, not yet during a live microphone run |
 
 ### What has been verified
 

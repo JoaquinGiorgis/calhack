@@ -53,7 +53,6 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | S6 | DOING | (Implementado, falta probar) Descartar alerta tocando la pantalla (touch CST816 en I2C SDA 48 / SCL 47) — dentro de la carcasa el BOOT queda en la ranura del USB | | S2 | Toque descarta |
 | S7 | DONE | Diseño Figma de las 13 pantallas + escenarios + prototipo ([docs/design](docs/design/README.md)) y **slider** en la pulsera (`live_demo/screen_preview`) para verlas en el display real | Joaquin | — | Slider corriendo en la placa |
 | S8 | DONE | Pantallas de Figma en el firmware real (`fortwatch_display`): imagen de cada alerta + barra de confianza real, ecualizador en vivo, nº de alertas | Joaquin | S7 | Alertas en vivo con el diseño nuevo |
-| S9 | DONE | Analytics en vivo con SpacetimeDB (`analytics/`): `mac_listener.py` sube cada alerta (nunca audio) y el dashboard muestra los últimos 3 min, gráficos por período y si la alerta llegó a la pulsera | Nico | S1 | Falta probar en una corrida real con micrófono |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
@@ -68,7 +67,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 |---|---|---|---|---|
 | V1 | TODO | Latencia sonido → alerta en la pulsera (video a 60 fps) | | Número en ms |
 | V2 | TODO | Falsas alertas: 5 min en zona tranquila + 5 min en zona ruidosa | | Tabla en PROJECT_STATUS |
-| V3 | DOING | Hablar con ≥1 persona sorda/hipoacúsica (o mentor de accesibilidad). ✅ Sierra (Sierra College): no le alcanza para un Apple Watch y espera compañía para salir sola ([docs/user-research](docs/user-research/README.md)) | Nico | 3 learnings |
+| V3 | DOING | Hablar con ≥1 persona sorda/hipoacúsica (o mentor de accesibilidad). ✅ Sofia (Sierra College): no le alcanza para un Apple Watch y espera compañía para salir sola ([docs/user-research](docs/user-research/README.md)) | Nico | 3 learnings |
 | V4 | TODO | Alcance Bluetooth en la venue llena | | Metros anotados |
 
 ## 🎤 5. Demo / Devpost
