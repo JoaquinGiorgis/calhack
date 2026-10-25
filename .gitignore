@@ -24,3 +24,5 @@ live_demo/docs/
 docs/hardware/waveshare-*.jpg
 # The old Grove-based spec is kept locally; PROJECT_STATUS.md is the source of truth.
 docs/SPEC.md
+# Local secrets for the analytics upload (live_demo/analytics.env.example shows the format)
+live_demo/analytics.env

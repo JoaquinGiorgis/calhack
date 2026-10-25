@@ -152,6 +152,15 @@ The terminal prints YAMNet's top three guesses with scores twice a second. To tu
 threshold, make the sound a few times, note its typical score, and set the threshold
 a bit below it.
 
+### Live analytics dashboard (optional)
+
+`mac_listener.py` can also upload every alert (name, score, level, whether the
+wristband got it; never audio) plus the live level to the team's analytics dashboard.
+Copy `live_demo/analytics.env.example` to `live_demo/analytics.env` and fill in the URL
+and device key (ask the team; the file is git-ignored so the secrets never get
+committed). On start the terminal says `Analytics: on, as <name>`. Without the file it
+stays off.
+
 ## Troubleshooting
 
 | Symptom | Fix |

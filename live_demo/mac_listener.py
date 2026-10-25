@@ -16,6 +16,11 @@ Examples:
     .venv/bin/python live_demo/mac_listener.py --no-serial      # test without the ESP32
     .venv/bin/python live_demo/mac_listener.py --device iPhone  # use the iPhone mic
     .venv/bin/python live_demo/mac_listener.py --set KNOCK=0.25 --set SPEECH=0.6
+
+Optional analytics: put FORTWATCH_ANALYTICS_URL=... and FORTWATCH_ANALYTICS_KEY=...
+in live_demo/analytics.env (git-ignored), or set them as environment variables, or pass
+--analytics-url/--analytics-key. Only alert names, scores and the 0-100 level are
+uploaded, never audio.
 """
 
 from __future__ import annotations
@@ -26,11 +31,15 @@ import argparse
 import asyncio
 import csv
 import glob
+import json
 import os
 import queue
+import socket
 import sys
 import threading
 import time
+import urllib.error
+import urllib.request
 from collections import deque
 from dataclasses import dataclass
 from math import gcd
@@ -100,7 +109,18 @@ EVENTS = {
 }
 
 
+def load_env_file(path: Path) -> None:
+    """Read KEY=VALUE lines (the analytics secrets) without overriding the real environment."""
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        key, sep, value = line.strip().partition("=")
+        if sep and not key.startswith("#"):
+            os.environ.setdefault(key.removeprefix("export ").strip(), value.strip().strip("'\""))
+
+
 def parse_args() -> argparse.Namespace:
+    load_env_file(Path(__file__).with_name("analytics.env"))
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--list-devices", action="store_true", help="list microphones and exit")
     parser.add_argument("--device", help="microphone index or part of its name (default: system input)")
@@ -121,6 +141,18 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--hop", type=float, default=0.5, help="seconds between classifications")
     parser.add_argument("--quiet", action="store_true", help="only print detected events")
+    parser.add_argument(
+        "--analytics-url", default=os.environ.get("FORTWATCH_ANALYTICS_URL"),
+        help="analytics ingest URL, ending in /route (default: $FORTWATCH_ANALYTICS_URL; off if unset)",
+    )
+    parser.add_argument(
+        "--analytics-key", default=os.environ.get("FORTWATCH_ANALYTICS_KEY"),
+        help="analytics device key (default: $FORTWATCH_ANALYTICS_KEY)",
+    )
+    parser.add_argument(
+        "--device-id", default=os.environ.get("FORTWATCH_DEVICE_ID") or socket.gethostname(),
+        help="name of this listener in the analytics dashboard (default: this Mac's hostname)",
+    )
     return parser.parse_args()
 
 
@@ -202,6 +234,10 @@ class SerialLink:
             print(f"  Can't open {ports[0]}: {error}")
             print("  Is the Arduino Serial Monitor open? Close it and this will retry.")
 
+    @property
+    def connected(self) -> bool:
+        return self.serial is not None
+
     def send(self, line: str) -> None:
         if self.serial is None:
             self._connect()
@@ -269,8 +305,97 @@ class BleLink:
 
 
 class NoLink:
+    connected = False
+
     def send(self, line: str) -> None:
         pass
+
+
+class Analytics:
+    """Uploads alerts and the live level to the FortWatch analytics endpoint.
+
+    Runs on its own thread so a slow or missing network never delays an alert to the
+    wristband. Alerts made while offline are kept (up to 500) and sent when it's back.
+    """
+
+    HEARTBEAT_SECONDS = 2.0
+    MAX_BUFFER = 500
+
+    def __init__(self, url: str, key: str, device_id: str, link_type: str):
+        self.url = url.rstrip("/")
+        self.key = key
+        self.device_id = device_id
+        self.link_type = link_type
+        self.level = 0
+        self.wristband_connected = False
+        self.pending: list[dict] = []
+        self.lock = threading.Lock()
+        self.wake = threading.Event()
+        self.last_warning = 0.0
+        threading.Thread(target=self._run, daemon=True).start()
+
+    def update(self, level: int, wristband_connected: bool) -> None:
+        self.level = level
+        self.wristband_connected = wristband_connected
+
+    def alert(self, event: str, score: float, level: int, delivered: bool) -> None:
+        with self.lock:
+            self.pending.append({
+                "event": event, "score": round(score, 3), "level": level,
+                "delivered": delivered, "atMs": int(time.time() * 1000),
+            })
+            del self.pending[:-self.MAX_BUFFER]
+        self.wake.set()
+
+    def _post(self, path: str, body: dict) -> None:
+        request = urllib.request.Request(
+            f"{self.url}/{path}", data=json.dumps(body).encode(), method="POST",
+            headers={"content-type": "application/json", "x-device-key": self.key},
+        )
+        with urllib.request.urlopen(request, timeout=5) as response:
+            response.read()
+
+    def _warn(self, message: str) -> None:
+        if time.monotonic() - self.last_warning > 30:
+            self.last_warning = time.monotonic()
+            print(f"  Analytics: {message}")
+
+    def _run(self) -> None:
+        next_heartbeat = 0.0
+        while True:
+            self.wake.wait(timeout=0.5)
+            self.wake.clear()
+            # Take the batch out of the queue while it's in flight, so alert() trimming
+            # the queue can't drop alerts that haven't been sent yet.
+            with self.lock:
+                batch, self.pending = self.pending[:200], self.pending[200:]
+            try:
+                if batch:
+                    self._post("alert", {"deviceId": self.device_id, "alerts": batch})
+                    batch = []
+                if time.monotonic() >= next_heartbeat:
+                    next_heartbeat = time.monotonic() + self.HEARTBEAT_SECONDS
+                    self._post("heartbeat", {
+                        "deviceId": self.device_id, "name": self.device_id, "level": self.level,
+                        "link": self.link_type, "wristbandConnected": self.wristband_connected,
+                    })
+            except urllib.error.HTTPError as error:
+                if error.code == 401:
+                    self._warn("server rejected the device key; check FORTWATCH_ANALYTICS_KEY"
+                               " (alerts are kept and retried)")
+                elif 400 <= error.code < 500 and error.code not in (408, 429):
+                    # The server will never accept this batch; retrying would block the queue.
+                    self._warn(f"server refused {len(batch)} alert(s) with error {error.code}; dropped")
+                    batch = []
+                else:
+                    self._warn(f"server error {error.code} (alerts are kept and retried)")
+                time.sleep(5)
+            except (urllib.error.URLError, OSError) as error:
+                self._warn(f"can't reach the server ({error}) (alerts are kept and retried)")
+                time.sleep(5)
+            if batch:
+                with self.lock:
+                    self.pending = (batch + self.pending)[-self.MAX_BUFFER:]
 
 
 def main() -> None:
@@ -290,6 +415,11 @@ def main() -> None:
     indices = event_indices(names)
     link_type = "none" if args.no_serial else args.link
     link = {"ble": BleLink, "usb": lambda: SerialLink(args.port), "none": NoLink}[link_type]()
+    analytics = None
+    if args.analytics_url:
+        if not args.analytics_key:
+            sys.exit("--analytics-url needs --analytics-key (or FORTWATCH_ANALYTICS_KEY)")
+        analytics = Analytics(args.analytics_url, args.analytics_key, args.device_id, link_type)
     history = {name: deque(maxlen=event.window) for name, event in EVENTS.items()}
     last_sent: dict[str, float] = {}
 
@@ -306,6 +436,7 @@ def main() -> None:
 
     print(f"Microphone: {info['name']} ({mic_rate} Hz, resampled to {MODEL_RATE} Hz)")
     print(f"ESP32 link: {link_type}")
+    print(f"Analytics: {'on, as ' + args.device_id if analytics else 'off'}")
     print("Alerts (threshold):")
     for name, event in EVENTS.items():
         sustain = f", needs {event.min_hits} of {event.window} hops" if event.min_hits > 1 else ""
@@ -327,6 +458,9 @@ def main() -> None:
             if time.monotonic() >= next_clock:
                 next_clock = time.monotonic() + 10
                 link.send("T," + datetime.now().strftime("%H:%M,%A, %b %-d"))
+            wristband_connected = bool(getattr(link, "connected", False))
+            if analytics:
+                analytics.update(level, wristband_connected)
 
             silent_hops = silent_hops + 1 if rms == 0.0 else 0
             if silent_hops == int(3 / args.hop):
@@ -348,6 +482,8 @@ def main() -> None:
                 _, _, name, score = max(candidates)
                 last_sent[name] = now
                 link.send(f"E,{name},{score:.2f}")
+                if analytics:
+                    analytics.alert(name, score, level, wristband_connected)
                 print(f">>> {name}  score={score:.2f}")
             elif not args.quiet:
                 top = np.argsort(scores)[-3:][::-1]
