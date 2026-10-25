@@ -40,7 +40,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | H4 | TODO | Probar power bank → USB-C de la placa 15 min (¿se apaga por bajo consumo?) | | — | Funciona 15 min seguidos |
 | H5 | CUT | ~~Recortar pines~~ → la carcasa deja lugar para jumpers Dupont | | — | — |
 | H6 | DONE | Motor en breadboard: GPIO17 → 1 kΩ → base PN2222, emisor a GND, motor entre **5V** y colector, **1N4007** en paralelo al motor (franja al 5V) | Joaquin | P1 | ✅ Probado 24/10: vibra (foto `docs/hardware/motor-breadboard-working.jpg`) |
-| H7 | TODO | Pasar el circuito del motor a formato "sin breadboard" (jumpers hembra + cinta, diodo en los terminales del motor) | | H6 | Entra en la carcasa |
+| H7 | DONE | Circuito del motor sin breadboard: jumpers hembra en "17"/"G"/"5V", 1 kΩ a la base, 2N2222A (E·B·C, cara plana al frente), diodo 1N4007 en los terminales del motor (franja al rojo), todo con cinta | Joaquin, Pedro | H6 | ✅ 24/10: vibra con el power bank y con alertas reales |
 
 ## 💾 2. Software (Mac + pulsera)
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
@@ -60,9 +60,9 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
 |---|---|---|---|---|---|
 | C1 | DONE | Carcasa paramétrica, encastre sin tornillos (reglas PLA), todo adentro, verificada con `check_stl.py` | Joaquin | — | `hardware/enclosure/stl/plate.stl` |
-| C2 | DOING | **Reenviar `plate.stl` (v3: sin Grove, repisa del power bank, STL binario limpio)** a la cola de impresión. v1/v2 dieron "file error" en la Adventurer 5M (form Cal Hacks, 2 h, settings en [README](hardware/enclosure/README.md)) | | — | Aparece en el spreadsheet de la cola |
+| C2 | DONE | `plate.stl` impreso (shell, tapa y 2 contrapesos). El agujero del contrapeso salió chico: se agrandó con un clip caliente | Joaquin | — | Piezas en mano |
 | C3 | DONE | Motor medido (130: 25 mm + eje) | Joaquin | — | — |
-| C5 | TODO | Montaje: vidrio → shell, motor + contrapeso en la cuna, transistor/cables en el compartimento, tapa a presión, velcro | | C2, H7 | Se usa en la muñeca 10 min sin moverse |
+| C5 | DOING | Montaje: vidrio → shell, motor + contrapeso en la cuna, transistor/cables bajo la placa, tapa a presión, velcro | Joaquin, Pedro | C2, H7 | Se usa en la muñeca 10 min sin moverse |
 
 ## 🧪 4. Validación (números reales para el pitch)
 | ID | Estado | Tarea | Owner | Done cuando |
