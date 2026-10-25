@@ -31,11 +31,14 @@ struct ListenerView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     header
+                    bluetoothPanel
                     DirectionPanel(angle: model.angle, capturing: model.capturing,
                                    calibrated: model.calibrated, calibrating: model.calibrating,
                                    calibrate: model.calibrate)
                     status
-                    ConnectionPanel(address: $model.address, token: $model.token, active: model.active)
+                    if let event = model.lastEvent {
+                        SoundAlertCard(event: event, sent: model.lastEventSent)
+                    }
                     if dynamicTypeSize.isAccessibilitySize { captureControl }
                     instructions
                 }
@@ -51,9 +54,7 @@ struct ListenerView: View {
             .toolbar(.hidden, for: .navigationBar)
             .preferredColorScheme(.dark)
             .onChange(of: scenePhase) {
-                if scenePhase == .background, model.active {
-                    model.stop(message: "Captura detenida al salir de la app. Volvé a iniciar y calibrar.")
-                }
+                if scenePhase == .background { model.suspend() }
             }
         }
     }
@@ -86,29 +87,56 @@ struct ListenerView: View {
                 .font(.subheadline)
                 .foregroundStyle(ListenerStyle.secondary)
                 .fixedSize(horizontal: false, vertical: true)
-            if model.microphoneDenied {
+            if model.microphoneDenied || model.bluetooth.settingsDenied {
                 Button("Abrir Configuración", systemImage: "gearshape") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                 }
                 .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.blue))
             }
-            Label(model.wristbandConnected ? "Pulsera conectada a la Mac" : "Pulsera sin confirmar",
-                  systemImage: model.wristbandConnected ? "checkmark.circle" : "questionmark.circle")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(model.wristbandConnected ? ListenerStyle.green : ListenerStyle.secondary)
-                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    private var bluetoothPanel: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Label(model.bluetooth.isConnected ? "Pulsera conectada" : "Conectá tu pulsera",
+                  systemImage: model.bluetooth.isConnected ? "checkmark.circle" : "applewatch")
+                .font(.headline)
+                .foregroundStyle(model.bluetooth.isConnected ? ListenerStyle.green : .white)
+                .accessibilityAddTraits(.isHeader)
+            Text(model.bluetooth.status)
+                .font(.subheadline)
+                .foregroundStyle(ListenerStyle.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            if model.bluetooth.isConnected {
+                Button("Probar vibración", systemImage: "waveform.path") { model.testWristband() }
+                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.blue))
+                    .disabled(model.active)
+                Button("Desconectar pulsera", systemImage: "xmark.circle") { model.disconnect() }
+                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.background))
+            } else if model.bluetooth.connecting {
+                Button("Cancelar búsqueda", systemImage: "xmark") { model.disconnect() }
+                    .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.background))
+            } else {
+                Button("Conectar pulsera", systemImage: "antenna.radiowaves.left.and.right") {
+                    model.bluetooth.connect()
+                }
+                .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.blue))
+            }
+        }
+        .padding(20)
+        .background(ListenerStyle.surface, in: .rect(cornerRadius: ListenerStyle.radius))
+        .overlay(RoundedRectangle(cornerRadius: ListenerStyle.radius).strokeBorder(.white.opacity(0.20)))
+    }
+
     private var instructions: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Label("El iPhone escucha. La Mac reconoce. La pulsera vibra.", systemImage: "waveform.path")
+            Label("El iPhone reconoce el sonido. La pulsera te avisa.", systemImage: "waveform.path")
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.white)
             Text("Dejá el iPhone vertical en un soporte, sin cubrir los micrófonos. Para calibrar, mantené una única fuente de sonido frente al teléfono durante un segundo. Si movés el soporte, calibrá otra vez.")
             Text("La vibración indica el tipo de alerta; la flecha, la dirección respecto del teléfono. Varias fuentes o eco pueden volverla incierta.")
-            Label("El audio va a la Mac por la red local y no se guarda en esta app. Al salir, se detiene la captura.", systemImage: "network")
+            Label("El audio se procesa en tu iPhone y no se guarda. Por Bluetooth solo viajan las alertas y el nivel de sonido. Al salir de la app se detiene la escucha.", systemImage: "iphone")
         }
         .font(.footnote)
         .foregroundStyle(ListenerStyle.secondary)
@@ -119,12 +147,12 @@ struct ListenerView: View {
     private var captureControl: some View {
         VStack(spacing: 8) {
             if model.active {
-                Button("Detener captura", systemImage: "stop.fill", role: .destructive) { model.stop() }
+                Button("Detener escucha", systemImage: "stop.fill", role: .destructive) { model.stop() }
                     .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.red))
             } else {
-                Button("Iniciar captura", systemImage: "mic.fill") { model.start() }
+                Button("Iniciar escucha", systemImage: "mic.fill") { model.start() }
                     .buttonStyle(ListenerButtonStyle(fill: ListenerStyle.blue))
-                    .disabled(model.address.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || model.token.isEmpty)
+                    .disabled(!model.bluetooth.isConnected)
             }
             Text("Mantené esta app abierta durante la escucha.")
                 .font(.caption)
@@ -207,7 +235,7 @@ private struct DirectionPanel: View {
             return "\(side)\nRespecto del frente calibrado."
         }
         if calibrating { return "Mantené un sonido frente al iPhone." }
-        if !capturing { return "Conectá la Mac para ubicar el sonido." }
+        if !capturing { return "Conectá la pulsera y empezá a escuchar." }
         if !calibrated { return "Calibrá con un sonido frente al iPhone." }
         return "Esperando una dirección clara."
     }
@@ -236,81 +264,45 @@ private struct DirectionDial: View {
     }
 }
 
-private struct ConnectionPanel: View {
-    @Binding var address: String
-    @Binding var token: String
-    let active: Bool
-    @FocusState private var focusedField: Field?
-    private enum Field { case address, token }
+private struct SoundAlertCard: View {
+    let event: String
+    let sent: Bool
+
+    private var appearance: (title: String, icon: String, color: Color) {
+        switch event {
+        case "ALARM": return ("ALARMA", "light.beacon.max", ListenerStyle.red)
+        case "CAR_HORN": return ("BOCINA", "car.side", Color(red: 0.55, green: 0.22, blue: 0.04))
+        case "GLASS": return ("VIDRIO", "wineglass", Color(red: 0.55, green: 0.10, blue: 0.28))
+        case "SHOUT": return ("GRITO", "megaphone", Color(red: 0.55, green: 0.10, blue: 0.33))
+        case "BABY": return ("BEBÉ", "figure.child", Color(red: 0.04, green: 0.35, blue: 0.33))
+        case "KNOCK": return ("GOLPES", "door.left.hand.closed", ListenerStyle.blue)
+        case "DOORBELL": return ("TIMBRE", "bell", Color(red: 0.34, green: 0.12, blue: 0.60))
+        case "PHONE": return ("TELÉFONO", "phone", Color(red: 0.27, green: 0.32, blue: 0.40))
+        case "DOG": return ("LADRIDO", "dog", Color(red: 0.40, green: 0.26, blue: 0.10))
+        default: return ("VOZ", "text.bubble", Color(red: 0.08, green: 0.36, blue: 0.19))
+        }
+    }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Label("Conectar a la Mac", systemImage: "laptopcomputer")
-                .font(.headline)
-                .accessibilityAddTraits(.isHeader)
-            VStack(alignment: .leading, spacing: 7) {
-                fieldLabel("DIRECCIÓN DE LA MAC")
-                TextField("IP o nombre .local", text: $address,
-                          prompt: Text("IP o nombre .local").foregroundStyle(ListenerStyle.secondary))
-                    .keyboardType(.URL)
-                    .submitLabel(.next)
-                    .focused($focusedField, equals: .address)
-                    .onSubmit { focusedField = .token }
-                    .accessibilityLabel("IP o nombre local de la Mac")
-                    .modifier(ConnectionFieldStyle(focused: focusedField == .address))
-            }
-            VStack(alignment: .leading, spacing: 7) {
-                fieldLabel("CÓDIGO DE CONEXIÓN")
-                SecureField("Pegá el código de la Mac", text: $token,
-                            prompt: Text("Pegá el código de la Mac").foregroundStyle(ListenerStyle.secondary))
-                    .submitLabel(.done)
-                    .focused($focusedField, equals: .token)
-                    .onSubmit { focusedField = nil }
-                    .accessibilityLabel("Código de conexión")
-                    .modifier(ConnectionFieldStyle(focused: focusedField == .token))
-            }
-            Text("Usá la dirección y el código del receptor. Ambos equipos deben estar en la misma red de confianza.")
-                .font(.footnote)
-                .foregroundStyle(ListenerStyle.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("ÚLTIMO SONIDO DETECTADO")
+                .font(.caption.monospaced().weight(.semibold))
+                .tracking(1)
+            Label(appearance.title, systemImage: appearance.icon)
+                .font(.title.weight(.bold))
+            Label(sent ? "Alerta enviada por Bluetooth" : "Detectado; no se pudo enviar a la pulsera",
+                  systemImage: sent ? "checkmark.circle" : "exclamationmark.circle")
+                .font(.subheadline)
         }
-        .disabled(active)
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(20)
         .foregroundStyle(.white)
-        .background(ListenerStyle.surface, in: .rect(cornerRadius: ListenerStyle.radius))
-        .overlay(RoundedRectangle(cornerRadius: ListenerStyle.radius).strokeBorder(.white.opacity(0.14)))
-        .toolbar {
-            ToolbarItemGroup(placement: .keyboard) {
-                Spacer()
-                Button("Listo") { focusedField = nil }
-            }
-        }
-        .onChange(of: active) { if active { focusedField = nil } }
-    }
-
-    private func fieldLabel(_ title: String) -> some View {
-        Text(title)
-            .font(.caption.monospaced().weight(.medium))
-            .tracking(0.8)
-            .foregroundStyle(ListenerStyle.secondary)
-            .accessibilityHidden(true)
-    }
-}
-
-private struct ConnectionFieldStyle: ViewModifier {
-    let focused: Bool
-
-    func body(content: Content) -> some View {
-        content
-            .font(.body)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .padding(.horizontal, 14)
-            .padding(.vertical, 13)
-            .frame(minHeight: 48)
-            .background(ListenerStyle.background, in: .rect(cornerRadius: 12))
-            .overlay(RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(focused ? .white : .white.opacity(0.38), lineWidth: focused ? 2 : 1))
+        .background(LinearGradient(colors: [appearance.color, appearance.color.opacity(0.6)],
+                                   startPoint: .topLeading, endPoint: .bottomTrailing),
+                    in: .rect(cornerRadius: ListenerStyle.radius))
+        .overlay(RoundedRectangle(cornerRadius: ListenerStyle.radius).strokeBorder(.white.opacity(0.28)))
+        .accessibilityElement(children: .combine)
     }
 }
 

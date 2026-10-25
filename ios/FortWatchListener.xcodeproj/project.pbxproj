@@ -7,11 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		69D735AB6B78CF43CD353D9E /* BridgeProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8961BE2B9E1FCAE3AC85B714 /* BridgeProtocol.swift */; };
+		607F8F680668A89FEDACEBA0 /* WristbandBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF8FB76E80A337969FC58559 /* WristbandBluetooth.swift */; };
+		69A9E7E836BEE4272DE4F6EC /* SpatialPCM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC919E602B5C1CE83392205 /* SpatialPCM.swift */; };
 		6A90B3B699D6AD2D5A8EBD4E /* ListenerModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76DDFEE03C4BF254149188E /* ListenerModel.swift */; };
+		7AF87E26553035B1F8591E2B /* WristbandProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B8DBF96216160D8BB68AAC /* WristbandProtocolTests.swift */; };
+		88FA673A93B127B0B7EE9C76 /* SpatialDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A254EC61992BFAFEA5A7027F /* SpatialDirection.swift */; };
+		9E4246BEFC34CCAE2A2B148B /* SoundEventsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E5A2EBA72A64ECA95DC2646 /* SoundEventsTests.swift */; };
+		A73649D9CD5DA342BD44A4AE /* SpatialPCMTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F91122FF50C471490BB797 /* SpatialPCMTests.swift */; };
 		AE005FCDF9BEA5F880193A3B /* FortWatchListenerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */; };
-		EA534C38FF2453624916B3DF /* BridgeProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A4545E43BBCB5E97DA9C87 /* BridgeProtocolTests.swift */; };
+		D77BDF6AA306670790B9162C /* SoundEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20293B3AA4FEDAACDEDBDA0 /* SoundEvents.swift */; };
 		EFF3B65DE5F56EE641C8BBC4 /* SpatialCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */; };
+		FBC141F6111AFBF7649E1A43 /* SpatialDirectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 998B1AF7CE5543DE5C2466DB /* SpatialDirectionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -26,13 +32,19 @@
 
 /* Begin PBXFileReference section */
 		007848FE177F9C4945A00E94 /* FortWatchListenerTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = FortWatchListenerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4808734C41A990345CD7D93A /* FortWatchListener.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FortWatchListener.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8961BE2B9E1FCAE3AC85B714 /* BridgeProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeProtocol.swift; sourceTree = "<group>"; };
+		3E5A2EBA72A64ECA95DC2646 /* SoundEventsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEventsTests.swift; sourceTree = "<group>"; };
+		4808734C41A990345CD7D93A /* FortWatchListener.app */ = {isa = PBXFileReference; includeInIndex = 0; explicitFileType = wrapper.application; path = FortWatchListener.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		66F91122FF50C471490BB797 /* SpatialPCMTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialPCMTests.swift; sourceTree = "<group>"; };
+		998B1AF7CE5543DE5C2466DB /* SpatialDirectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialDirectionTests.swift; sourceTree = "<group>"; };
+		9AC919E602B5C1CE83392205 /* SpatialPCM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialPCM.swift; sourceTree = "<group>"; };
+		A20293B3AA4FEDAACDEDBDA0 /* SoundEvents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEvents.swift; sourceTree = "<group>"; };
+		A254EC61992BFAFEA5A7027F /* SpatialDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialDirection.swift; sourceTree = "<group>"; };
+		A8B8DBF96216160D8BB68AAC /* WristbandProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WristbandProtocolTests.swift; sourceTree = "<group>"; };
 		AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FortWatchListenerApp.swift; sourceTree = "<group>"; };
 		B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpatialCapture.swift; sourceTree = "<group>"; };
+		BF8FB76E80A337969FC58559 /* WristbandBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WristbandBluetooth.swift; sourceTree = "<group>"; };
 		D76DDFEE03C4BF254149188E /* ListenerModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListenerModel.swift; sourceTree = "<group>"; };
 		E92B8B3995967D0D39982576 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		F8A4545E43BBCB5E97DA9C87 /* BridgeProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeProtocolTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -57,7 +69,10 @@
 		7340E68DFCA929448E28DAAC /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				F8A4545E43BBCB5E97DA9C87 /* BridgeProtocolTests.swift */,
+				3E5A2EBA72A64ECA95DC2646 /* SoundEventsTests.swift */,
+				998B1AF7CE5543DE5C2466DB /* SpatialDirectionTests.swift */,
+				66F91122FF50C471490BB797 /* SpatialPCMTests.swift */,
+				A8B8DBF96216160D8BB68AAC /* WristbandProtocolTests.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -65,11 +80,14 @@
 		DEB5FCCFE04B816D1704FA23 /* FortWatchListener */ = {
 			isa = PBXGroup;
 			children = (
-				8961BE2B9E1FCAE3AC85B714 /* BridgeProtocol.swift */,
 				AB4ACEB9B6BC04F369EBF7B1 /* FortWatchListenerApp.swift */,
 				E92B8B3995967D0D39982576 /* Info.plist */,
 				D76DDFEE03C4BF254149188E /* ListenerModel.swift */,
+				A20293B3AA4FEDAACDEDBDA0 /* SoundEvents.swift */,
 				B5E8F7685DCF16F299D3217C /* SpatialCapture.swift */,
+				A254EC61992BFAFEA5A7027F /* SpatialDirection.swift */,
+				9AC919E602B5C1CE83392205 /* SpatialPCM.swift */,
+				BF8FB76E80A337969FC58559 /* WristbandBluetooth.swift */,
 			);
 			path = FortWatchListener;
 			sourceTree = "<group>";
@@ -154,7 +172,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA534C38FF2453624916B3DF /* BridgeProtocolTests.swift in Sources */,
+				9E4246BEFC34CCAE2A2B148B /* SoundEventsTests.swift in Sources */,
+				FBC141F6111AFBF7649E1A43 /* SpatialDirectionTests.swift in Sources */,
+				A73649D9CD5DA342BD44A4AE /* SpatialPCMTests.swift in Sources */,
+				7AF87E26553035B1F8591E2B /* WristbandProtocolTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,10 +183,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				69D735AB6B78CF43CD353D9E /* BridgeProtocol.swift in Sources */,
 				AE005FCDF9BEA5F880193A3B /* FortWatchListenerApp.swift in Sources */,
 				6A90B3B699D6AD2D5A8EBD4E /* ListenerModel.swift in Sources */,
+				D77BDF6AA306670790B9162C /* SoundEvents.swift in Sources */,
 				EFF3B65DE5F56EE641C8BBC4 /* SpatialCapture.swift in Sources */,
+				88FA673A93B127B0B7EE9C76 /* SpatialDirection.swift in Sources */,
+				69A9E7E836BEE4272DE4F6EC /* SpatialPCM.swift in Sources */,
+				607F8F680668A89FEDACEBA0 /* WristbandBluetooth.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,8 +295,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FortWatchListener/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "FortWatch Listener";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "FortWatch envía el audio espacial a tu Mac en la misma red para generar las alertas de la pulsera.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch usa el sonido para identificar alertas y estimar su dirección. El audio se envía únicamente a la Mac que conectes.";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "FortWatch se conecta directamente a tu pulsera para mostrar alertas y hacerla vibrar.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch reconoce sonidos y calcula su dirección en este iPhone para avisarte con la pulsera. El audio no sale del teléfono.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -370,8 +394,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FortWatchListener/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "FortWatch Listener";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "FortWatch envía el audio espacial a tu Mac en la misma red para generar las alertas de la pulsera.";
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch usa el sonido para identificar alertas y estimar su dirección. El audio se envía únicamente a la Mac que conectes.";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "FortWatch se conecta directamente a tu pulsera para mostrar alertas y hacerla vibrar.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "FortWatch reconoce sonidos y calcula su dirección en este iPhone para avisarte con la pulsera. El audio no sale del teléfono.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

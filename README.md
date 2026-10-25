@@ -4,20 +4,20 @@ A wrist-worn display that turns important sounds into visual alerts for deaf and
 hard-of-hearing people. Built at Cal Hacks 13.0.
 
 ```
-Mac microphone ─► YAMNet sound classifier (on the Mac) ─► Bluetooth LE ─► ESP32-S3 wristband
-                                                                          full-screen alert
+iPhone microphones → Apple SoundAnalysis + direction (on iPhone) → Bluetooth LE → ESP32-S3 wristband
 ```
 
-The wristband is a Waveshare ESP32-S3-Touch-LCD-2 running on a USB power bank. The
-Mac listens, classifies each second of audio with Google's pretrained
-[YAMNet](https://www.kaggle.com/models/google/yamnet) model, and sends only short
-text messages (like `E,KNOCK,0.62`) to the wristband. The default microphone mode
-keeps audio on the Mac. Optional experimental spatial mode streams iPhone audio
-over the local network to the Mac; neither mode uploads audio to the cloud.
+The iPhone app now connects directly to the wristband. It recognizes sounds and
+estimates their dominant direction locally; it sends only alert, level and clock
+messages over Bluetooth. No Mac, server, Wi-Fi or account is required while using
+the app. Xcode on a Mac is used to build and install this prototype.
 
-> **Status:** hackathon prototype. Classification runs on the Mac, not on the
-> wristband. FortWatch is a complementary aid and **does not replace certified smoke
-> alarms or other safety devices.**
+The existing Mac/YAMNet demo remains available as a separate fallback. Its model,
+thresholds and ESC-50 results do not measure the new Apple classifier.
+
+> **Status:** direct iPhone software integration; real iPhone capture, angular
+> accuracy and physical BLE/motor validation still pending. FortWatch is a
+> complementary aid and does not replace certified safety devices.
 
 For where the project stands, why it is built this way, and what's next, see
 [PROJECT_STATUS.md](PROJECT_STATUS.md).
@@ -27,7 +27,7 @@ For where the project stands, why it is built this way, and what's next, see
 | Path | What it is |
 |---|---|
 | `live_demo/mac_listener.py` | Mac program: microphone → YAMNet → Bluetooth/USB → wristband |
-| `ios/` | Experimental native iPhone spatial-audio capture app |
+| `ios/` | Native iPhone recognition, spatial direction and direct Bluetooth to the wristband |
 | `live_demo/spatial_audio.py` | Spatial receiver, calibration and dominant-sound angle estimator |
 | `live_demo/fortwatch_display/` | Wristband firmware (Arduino sketch). Screens are the Figma designs in `screens.h` |
 | `live_demo/screen_preview/` | Slideshow firmware to preview every designed screen on the real display |
@@ -38,7 +38,17 @@ For where the project stands, why it is built this way, and what's next, see
 | `docs/hardware/` | Hardware inventory and parts photos |
 | `BOARD.md` · `dashboard.html` | Team task board and a local dashboard for it (Spanish) |
 
-## What it detects
+## Use the iPhone directly
+
+See [the iPhone setup](ios/README.md). Power the wristband, stop any running Mac
+receiver, then tap **Conectar pulsera → Probar vibración → Iniciar escucha**.
+Allow Bluetooth and microphone. Keep the app open and the iPhone upright on a
+fixed support; calibrate the front before testing direction.
+
+The ten alert types remain. The iPhone uses Apple's built-in classifier, with
+provisional thresholds documented in [ios/README.md](ios/README.md).
+
+## Mac fallback: detection and benchmark
 
 Twice a second, the Mac takes the last second of audio, and YAMNet scores it against
 521 sound types. Each FortWatch alert groups a few of those types; when the best
@@ -78,7 +88,7 @@ These are optimistic: clean recordings, with thresholds picked and measured on t
 same clips. ESC-50 has no shout, doorbell, phone or speech examples. A real room
 (distance, echo, crowd noise) will do worse, so tune live with `--set`.
 
-## Setup
+## Optional Mac demo setup
 
 ### What you need
 
@@ -156,14 +166,13 @@ The terminal prints YAMNet's top three guesses with scores twice a second. To tu
 threshold, make the sound a few times, note its typical score, and set the threshold
 a bit below it.
 
-### Experimental sound direction from iPhone
+### Sound direction on iPhone
 
-An optional iOS 26 app sends spatial audio to the Mac. The Mac uses the same audio
-window to classify the event and estimate the dominant sound's angle; the extended
-wristband firmware shows a direction arrow and keeps the existing vibration.
-This is an experimental, single-source demo; angular accuracy and physical
-end-to-end operation still require measurement. See
-[setup and limitations](docs/SPATIAL-DIRECTION.md) and [the iPhone app](ios/README.md).
+The native app calculates direction and classifies the same audio window on the
+phone, then sends the angle with the alert over Bluetooth. It no longer streams
+audio to the Mac. See [setup and limitations](docs/SPATIAL-DIRECTION.md).
+The older Python spatial receiver remains available for protocol research, but
+is not part of the current app's runtime.
 
 ### Live analytics dashboard (optional)
 
@@ -193,7 +202,7 @@ or the other, not both, or every alert is counted twice.
 | Too many false alerts | Raise thresholds, or `--disable SPEECH` in noisy rooms |
 | `Can't open /dev/cu.usbmodem…` (USB mode) | Close the Arduino Serial Monitor; only one program can use the port |
 
-## How the Mac talks to the wristband
+## How the listener talks to the wristband
 
 The same text messages go over Bluetooth LE or USB:
 
@@ -218,10 +227,12 @@ any new name automatically. For a custom colour and hint text, add it to
 
 - Run classification on the wristband with an I2S MEMS microphone (INMP441), so no
   Mac or phone is needed
-- iPhone app as the listener, so the phone stays in a pocket
+- Validate direct iPhone recognition, sound direction and BLE; add background/pocket use separately
 - Touch-to-dismiss and alert history (vibration patterns per priority are already in the firmware)
 
 ## Credits
+
+- [Apple SoundAnalysis](https://developer.apple.com/documentation/soundanalysis) for the native iPhone classifier
 
 - [YAMNet](https://github.com/tensorflow/models/tree/master/research/audioset/yamnet)
   by Google, Apache License 2.0

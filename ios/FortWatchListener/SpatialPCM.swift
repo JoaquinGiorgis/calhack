@@ -8,109 +8,9 @@ enum ListenerError: LocalizedError {
     }
 }
 
-struct BridgeConfiguration {
-    let endpoint: URL
-    let token: String
-
-    init(address: String, token: String) throws {
-        let address = address.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard var parts = URLComponents(string: address.contains("://") ? address : "http://" + address),
-              parts.scheme == "http" || parts.scheme == "https",
-              let host = parts.host?.lowercased(), Self.isLocalHost(host),
-              parts.user == nil, parts.password == nil, parts.query == nil, parts.fragment == nil,
-              parts.path.isEmpty || parts.path == "/",
-              parts.port == nil || (1...65535).contains(parts.port!) else {
-            throw ListenerError.message("Ingresá la IP privada o el nombre .local de tu Mac, por ejemplo 192.168.1.20:8766.")
-        }
-        let token = token.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !token.isEmpty, token.utf8.count <= 256,
-              token.utf8.allSatisfy({ $0 > 32 && $0 < 127 }) else {
-            throw ListenerError.message("Pegá el código de conexión que muestra la Mac.")
-        }
-        parts.port = parts.port ?? 8766
-        parts.path = "/audio"
-        guard let endpoint = parts.url else { throw ListenerError.message("La dirección de la Mac no es válida.") }
-        self.endpoint = endpoint
-        self.token = token
-    }
-
-    private static func isLocalHost(_ host: String) -> Bool {
-        if host.hasSuffix(".local"), host.count > 6 {
-            let labels = host.split(separator: ".", omittingEmptySubsequences: false)
-            return labels.allSatisfy { label in
-                !label.isEmpty && label.count <= 63 && label.first != "-" && label.last != "-" &&
-                label.utf8.allSatisfy { (97...122).contains($0) || (48...57).contains($0) || $0 == 45 }
-            }
-        }
-        let parts = host.split(separator: ".", omittingEmptySubsequences: false)
-        guard parts.count == 4 else { return false }
-        let numbers = parts.compactMap { part -> Int? in
-            guard !part.isEmpty, part.allSatisfy(\.isNumber), let value = Int(part),
-                  (0...255).contains(value), String(value) == part else { return nil }
-            return value
-        }
-        guard numbers.count == 4 else { return false }
-        return numbers[0] == 10 || (numbers[0] == 192 && numbers[1] == 168) ||
-            (numbers[0] == 172 && (16...31).contains(numbers[1]))
-    }
-}
-
-struct AudioPacket: Encodable {
-    static let sampleRates: Set<Int> = [16000, 24000, 32000, 44100, 48000, 96000]
-    let version = 1
-    let session: String
-    let sequence: Int
-    let sample_rate: Int
-    let frames: Int
-    let pts: Double
-    let layout = "ACN_SN3D"
-    let pcm_f32le: String
-    let calibrate_front: Bool
-
-    init(session: String, sequence: Int, sampleRate: Int, pts: Double,
-         samples: [Float], calibrate: Bool) throws {
-        guard UUID(uuidString: session) != nil, (0...9_007_199_254_740_991).contains(sequence),
-              pts.isFinite, (0...1e12).contains(pts), Self.sampleRates.contains(sampleRate),
-              !samples.isEmpty, samples.count.isMultiple(of: 4),
-              samples.count / 4 <= sampleRate / 4,
-              samples.allSatisfy({ $0.isFinite && abs($0) <= 8 }) else {
-            throw ListenerError.message("La captura produjo un bloque de audio inválido.")
-        }
-        self.session = session
-        self.sequence = sequence
-        self.sample_rate = sampleRate
-        self.frames = samples.count / 4
-        self.pts = pts
-        self.calibrate_front = calibrate
-        var bytes = Data(capacity: samples.count * MemoryLayout<UInt32>.size)
-        for sample in samples {
-            var bits = sample.bitPattern.littleEndian
-            withUnsafeBytes(of: &bits) { bytes.append(contentsOf: $0) }
-        }
-        self.pcm_f32le = bytes.base64EncodedString()
-    }
-}
-
-struct BridgeResponse: Decodable {
-    let accepted: Bool
-    let calibrated: Bool
-    let calibrating: Bool
-    let angle_deg: Double?
-    let direction_quality: Double?
-    let reason: String
-    let wristband_connected: Bool
-
-    var usableAngle: Double? {
-        guard accepted, calibrated, !calibrating,
-              let angle = angle_deg, angle.isFinite, (-180...180).contains(angle),
-              let quality = direction_quality, quality.isFinite, (0.60...1).contains(quality)
-        else { return nil }
-        return angle
-    }
-}
-
-/// Copies the native PCM layout without downmixing. The bridge requires ACN/SN3D W,Y,Z,X.
+/// Copies native ACN/SN3D W,Y,Z,X without downmixing the directional channels.
 enum SpatialPCM {
+    static let sampleRates: Set<Int> = [16000, 24000, 32000, 44100, 48000, 96000]
     static let layoutTag = kAudioChannelLayoutTag_HOA_ACN_SN3D | 4
 
     static func decode(_ sampleBuffer: CMSampleBuffer) throws -> (samples: [Float], rate: Int, pts: Double) {
@@ -138,7 +38,7 @@ enum SpatialPCM {
         let pts = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
         guard pts.isFinite, pts >= 0, format.sampleRate.isFinite,
               format.sampleRate.rounded() == format.sampleRate,
-              AudioPacket.sampleRates.contains(Int(format.sampleRate)),
+              Self.sampleRates.contains(Int(format.sampleRate)),
               Double(frameCount) <= format.sampleRate * 0.25 else {
             throw ListenerError.message("El tiempo o la frecuencia del audio no son válidos.")
         }

@@ -21,16 +21,14 @@ targets:
         TARGETED_DEVICE_FAMILY: '1'
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: FortWatch Listener
-        INFOPLIST_KEY_NSMicrophoneUsageDescription: FortWatch usa el sonido para identificar alertas y estimar su dirección. El audio se envía únicamente a la Mac que conectes.
-        INFOPLIST_KEY_NSLocalNetworkUsageDescription: FortWatch envía el audio espacial a tu Mac en la misma red para generar las alertas de la pulsera.
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: FortWatch reconoce sonidos y calcula su dirección en este iPhone para avisarte con la pulsera. El audio no sale del teléfono.
+        INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription: FortWatch se conecta directamente a tu pulsera para mostrar alertas y hacerla vibrar.
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
     info:
       path: FortWatchListener/Info.plist
-      properties:
-        NSAppTransportSecurity:
-          NSAllowsLocalNetworking: true
+      properties: {}
   FortWatchListenerTests:
     type: bundle.unit-test
     platform: iOS

@@ -60,7 +60,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
 |---|---|---|---|---|---|
-| S11 | DOING | Captura FOA iPhone → Mac → ángulo del sonido dominante y vibración existente. App/firmware compilan; 15 tests Python, 9 iOS, parser C++ y modelo YAMNet pasan. [Guía](docs/SPATIAL-DIRECTION.md) · [Validación](docs/SPATIAL-VALIDATION.md). Falta instalar y medir en hardware. | Codex | S1, S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
+| S11 | DOING | iPhone reconoce y calcula dirección localmente → Bluetooth directo → pulsera. Sin Mac/IP/código. Incluye prueba de vibración. [Guía](ios/README.md) · [Validación](docs/SPATIAL-VALIDATION.md). Pendiente comprobar captura, ángulos y motor en hardware. | Codex | S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
@@ -95,6 +95,6 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 4. **Nunca cortar:** pipeline Mac → pulsera + carcasa en la muñeca + video backup
 
 ## 🚫 Reglas de honestidad
-- La clasificación corre en la **Mac**, no en la pulsera: decirlo así en el pitch.
+- La app nueva clasifica en el **iPhone** (Apple); la demo anterior clasifica en la **Mac** (YAMNet). No atribuir las métricas YAMNet al modelo Apple ni decir que clasifica en la pulsera.
 - Los umbrales se midieron en grabaciones limpias (ESC-50); en una sala real rinde peor.
 - No es un dispositivo de emergencia certificado.

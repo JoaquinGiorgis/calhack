@@ -19,7 +19,8 @@ replace smoke alarms or other alerting systems.
 
 | Part | Status |
 |---|---|
-| Sound classification on the Mac (YAMNet) | Working |
+| Direct iPhone recognition + spatial direction + BLE | Implemented; physical validation pending |
+| Sound classification on the Mac (YAMNet fallback) | Working |
 | Wristband firmware: Figma-designed alert screens, live level meter, dismiss | Working; touch-to-dismiss added, needs a test on the board |
 | Bluetooth LE link, Mac → wristband (wristband on a power bank) | Working |
 | USB link (fallback) | Working |
@@ -49,21 +50,19 @@ replace smoke alarms or other alerting systems.
 
 ## How it works
 
-### Experimental spatial extension (2026-10-24)
+### Direct iPhone listener (2026-10-24)
 
-An opt-in iOS 26 FOA capture app and local Mac receiver add a calibrated angle of
-the dominant sound to the existing alert message. The wristband displays an arrow
-and preserves its vibration patterns. This is experimental software integration,
-not physically validated direction finding. It does not separate concurrent or
-successive sources within a one-second window. See [setup and test procedure](docs/SPATIAL-DIRECTION.md).
-Software validation: iOS and ESP32 builds pass, 15 Python tests and 9 iOS tests
-pass, the C++ protocol tests pass, and the actual YAMNet model loads and infers.
-Physical capture, angular accuracy and wrist vibration with this version remain
-unverified. See the [validation report](docs/SPATIAL-VALIDATION.md).
-The original mono capture path remains the default. Spatial mode moves temporary
-audio from iPhone to Mac over the local network; no audio is uploaded to analytics.
+The native app now uses Apple SoundAnalysis and FOA direction estimation on the
+iPhone, then connects directly to the existing ESP32 BLE service. No Mac, HTTP,
+pairing token or Wi-Fi is required at runtime. There is a manual vibration test,
+explicit Bluetooth connection and foreground-only capture. See [iOS setup](ios/README.md).
 
-### Default microphone path
+The Apple model replaces YAMNet for this path. Its provisional thresholds have
+not been validated with ESC-50 or live sound tests. The Mac/YAMNet benchmark below
+applies only to the older Mac demo. Physical angular accuracy, Bluetooth delivery
+and vibration with the new iPhone build remain to be tested.
+
+### Existing Mac fallback path
 
 ```
 Mac microphone ─► YAMNet (on the Mac) ─► Bluetooth LE ─► ESP32-S3 wristband
@@ -82,7 +81,7 @@ Mac microphone ─► YAMNet (on the Mac) ─► Bluetooth LE ─► ESP32-S3 wr
 
 - **Wristband:** Waveshare ESP32-S3-Touch-LCD-2 (ESP32-S3R8, 8 MB PSRAM, 16 MB flash,
   2" 240×320 touchscreen), powered by a USB-C power bank.
-- **Listener:** a Mac. Its built-in mic or an iPhone (via Continuity) works.
+- **Listener:** the native iPhone app; the existing Mac/YAMNet demo is an optional fallback.
 - **Vibration:** 130 DC motor with a printed eccentric weight, switched by a PN2222
   from GPIO17 (1 kΩ to the base, motor on 5 V, 1N4007 across the motor).
 - **Case:** parametric OpenSCAD model with a snap-fit back (no screws), sized for the
@@ -92,7 +91,7 @@ Mac microphone ─► YAMNet (on the Mac) ─► Bluetooth LE ─► ESP32-S3 wr
 
 ## Key decisions and why
 
-**Classification runs on the Mac, not the wristband.** The board has no microphone
+**Classification runs on the listener, not the wristband.** The current iPhone app uses Apple SoundAnalysis; the original demo used YAMNet on the Mac. The board has no microphone
 suitable for classification. The team's Grove Sound Sensor is built for loudness:
 its fixed high-gain amplifier clips on loud sounds such as alarms and horns, so it
 cannot feed a classifier. An I2S MEMS microphone (e.g. INMP441) is needed for
@@ -125,7 +124,7 @@ only "Bark" because the broader "Dog" class fired on pigs and toothbrushes.
 
 ## Known limitations
 
-- Needs the Mac nearby (Bluetooth range roughly 5–10 m indoors).
+- The iPhone must remain within Bluetooth range, upright and fixed for direction, with this app open. Background listening and physical range are not verified.
 - Thresholds were tuned on clean recordings; real rooms with distance, echo and
   crowd noise will perform worse.
 - YAMNet can tell that speech is happening, not who is speaking or whether someone
@@ -144,8 +143,7 @@ only "Bark" because the broader "Dog" class fired on pigs and toothbrushes.
 3. Record a backup demo video.
 
 **Product:**
-1. **iPhone app as the listener**, using Apple's on-device sound classifier and
-   sending the same Bluetooth messages, so the phone stays in a pocket.
+1. **Validate the direct iPhone app** with real sounds, BLE and the motor. Pocket/background use still needs separate work; the spatial version requires a fixed phone.
 2. **Vibration:** patterns per priority are in the firmware (safety: 3 long, attention:
    2 short, low: 1 short). Next: test them on the wrist and swap the DC motor for a
    coin vibration motor. For deaf users, feeling an alert matters more than seeing it.

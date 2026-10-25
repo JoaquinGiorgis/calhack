@@ -1,49 +1,37 @@
-# Dirección del sonido: iPhone → Mac → pulsera
+# Dirección del sonido: iPhone → Bluetooth → pulsera
 
-La demo mono existente sigue disponible. La ruta espacial es opcional y conserva
-YAMNet, sus umbrales, Bluetooth/USB y el motor actual.
+La ruta actual funciona directamente desde el iPhone. La Mac se usa para compilar
+e instalar la app; no participa durante la escucha.
 
 ```text
-iPhone FOA → red local → Mac (YAMNet + ángulo) → BLE → alerta, flecha y vibración
+iPhone FOA → SoundAnalysis + ángulo en el iPhone → BLE → alerta, flecha y vibración
 ```
 
-El ángulo corresponde al **sonido dominante respecto del teléfono**. YAMNet no
-separa fuentes: una conversación fuerte puede dominar la dirección aunque detecte
-un golpe breve en otro lado. Esto también ocurre con sonidos sucesivos dentro
-del mismo segundo. La demo inicial debe usar una sola fuente.
+El ángulo corresponde al **sonido dominante respecto del teléfono**. El sistema
+no separa fuentes: una conversación fuerte puede dominar la dirección aunque se
+reconozca un golpe breve en otro lado. Esto también ocurre con sonidos sucesivos
+dentro del mismo segundo. La primera prueba debe usar una sola fuente.
 
 ## Primera prueba
 
-1. Instalar la [app iPhone](../ios/README.md) en un dispositivo compatible con FOA e
-   iOS 26+. La app comprueba soporte y cuatro canales. Requiere conectar el teléfono
-   y seleccionar el equipo de firma en Xcode; aún falta la prueba física.
-2. Conectar iPhone y Mac a la misma red local de confianza. Este prototipo usa HTTP
-   **sin cifrar**: el código autentica al emisor, no cifra el audio. No exponer el
-   puerto a Internet. No se graba audio ni se sube a servicios externos.
-3. Preparar las dependencias del README y ejecutar desde la raíz:
+1. Instalar la [app iPhone](../ios/README.md), seleccionar el equipo de firma propio
+   y ejecutar en un iPhone con FOA e iOS 26+. La app verifica el soporte real.
+2. Encender la pulsera. Cerrar el receptor anterior de la Mac para liberar BLE.
+   No hace falta que los dispositivos compartan Wi-Fi.
+3. Tocar **Conectar pulsera** dentro de la app y permitir Bluetooth. Cuando figure
+   conectada, tocar **Probar vibración**: KNOCK y dos pulsos cortos. Confirmar en la
+   pulsera; la app no tiene confirmación física del motor.
+4. Tocar **Iniciar escucha**, permitir micrófono y mantener la app abierta. Dejar
+   el iPhone vertical en un soporte fijo con los micrófonos descubiertos.
+5. Tocar **Calibrar frente** y producir un sonido claro y estable desde el frente
+   elegido durante al menos un segundo. Silencio/ruido difuso no fijan un cero.
+6. Probar alertas desde izquierda, frente, derecha y atrás. Verificar nombre,
+   flecha y vibración. Si se mueve el soporte, volver a calibrar.
 
-   ```bash
-   .venv/bin/python live_demo/mac_listener.py --spatial-listen 0.0.0.0:8766 --analytics-url ''
-   ```
-
-   En la app introducir IP privada de la Mac y puerto `8766` (o nombre `.local`)
-   y el código que imprime el programa. Para probar sin pulsera añadir
-   `--no-serial`. Para usar cable añadir `--link usb --port /dev/cu.<puerto-real>`.
-4. La pulsera requiere el firmware extendido para mostrar ángulos. El firmware
-   antiguo sigue mostrando/vibrando pero ignora esos campos. Este cambio no
-   instala ni flashea automáticamente los dispositivos.
-5. Poner el iPhone **vertical en soporte fijo**, micrófonos descubiertos. Iniciar
-   captura, permitir micrófono y red local, mantener app en primer plano.
-6. Calibrar el frente produciendo un sonido continuo desde el frente elegido
-   durante al menos un segundo. Necesita sonido claro y estable; silencio o ruido
-   difuso no fijan un cero. Si cambia la orientación, volver a calibrar.
-7. Probar una alerta reconocida desde izquierda, frente, derecha y atrás. Verificar
-   nombre, flecha y vibración. Si el signo o plano son incorrectos, revisar primero
-   la orientación física; un medidor que se mueve no valida el ángulo.
-
-Interrupciones, gaps y nuevas sesiones borran calibración. No se acumula audio
-para enviarlo después. No hay seguimiento de la orientación del teléfono respecto
-del cuerpo o la muñeca.
+El firmware extendido muestra ángulos; el anterior puede mostrar alertas y vibrar
+sin flecha. No se flashea automáticamente. Interrupciones, gaps y sesiones nuevas
+borran calibración. Una desconexión detiene escucha y no reenvía alertas antiguas.
+No hay seguimiento del teléfono respecto del cuerpo ni escucha en segundo plano.
 
 ## Vibración y protocolo
 
@@ -61,19 +49,19 @@ reutiliza la dirección anterior. En pantalla se indica que es del sonido domina
 ## Captura y cálculo
 
 FOA son componentes procesadas ACN/SN3D **W,Y,Z,X**, no cuatro cápsulas crudas.
-W alimenta YAMNet como mono a 16 kHz. Productos W×X/Y/Z forman el vector de
+W alimenta SoundAnalysis como mono. Productos W×X/Y/Z forman el vector de
 intensidad; `atan2` da el azimut relativo al cero calibrado. Nivel, coherencia,
 componente horizontal y estabilidad determinan cuándo devolver incertidumbre.
-Clasificación y dirección comparten una ventana de un segundo. Los resultados
-vencidos se descartan incluso después de esperar en la cola BLE: presupuesto de
-0.75 s desde el final estimado de captura para red, inferencia y envío.
 
-`POST /audio`, JSON, `Authorization: Bearer <código>`. Campos: `version:1`,
-`session` (UUID), `sequence` (desde 0), `sample_rate`, `frames`, `pts` (tiempo
-monotónico del audio), `layout:"ACN_SN3D"`, `pcm_f32le` (base64 Float32 LE
-entrelazado W,Y,Z,X), `calibrate_front` (booleano). Bloques ~100 ms, máximo 250 ms,
-un envío en curso. Respuesta: `accepted`, `calibrated`, `calibrating`, `angle_deg`,
-`direction_quality`, `reason`, `wristband_connected`. Un ángulo null es desconocido.
+El ángulo enviado con cada alerta usa exactamente la ventana temporal devuelta
+por el clasificador (un segundo, solapamiento 50%). La flecha de escucha puede
+actualizarse con bloques más recientes y no se reutiliza como ángulo de una alerta
+vieja. El límite de 0.75 s parte del final de captura y vuelve a comprobarse antes
+del envío BLE. La memoria se limita a cuatro segundos FOA y un lote pendiente de
+hasta 500 ms; el audio no se escribe a disco ni se transmite fuera del teléfono.
+
+Los umbrales Apple son provisionales y están en `SoundEvents.swift`. Las métricas
+anteriores ESC-50 corresponden a YAMNet en la Mac, no al nuevo clasificador.
 
 ## Validación física pendiente
 

@@ -1,87 +1,100 @@
-# FortWatch Listener para iPhone
+# FortWatch para iPhone — conexión directa a la pulsera
 
-Captura audio espacial real en el iPhone y lo transmite por la red local al
-receptor de la Mac. La Mac conserva YAMNet, calcula dirección sobre el mismo audio
-y manda las alertas a la pulsera. La vibración existente sigue indicando la
-prioridad; la pantalla de la pulsera añade una flecha y un ángulo relativo al
-teléfono cuando la dirección es suficientemente coherente.
+```text
+Micrófonos iPhone → reconocimiento y dirección en el iPhone → Bluetooth LE → pulsera
+```
 
-Esta app requiere iOS 26 y un dispositivo que declare soporte para First Order
-Ambisonics (FOA), como iPhone 16 Pro o posterior. El simulador sirve para verificar
-software e interfaz, **no** para probar los micrófonos ni la precisión angular.
+La app funciona sin Mac, servidor, Wi-Fi ni cuenta durante la escucha. El iPhone
+reconoce sonidos con el clasificador integrado de Apple SoundAnalysis y calcula
+el ángulo del sonido dominante con audio espacial FOA. Solo manda pequeños
+mensajes de evento, nivel y hora a la pulsera; el audio no sale del iPhone ni se
+guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototipo.
 
-## Ejecutar en el iPhone
+## Usarla
 
-1. Abrir `FortWatchListener.xcodeproj` en Xcode. El proyecto también se puede
-   regenerar con `xcodegen generate` desde esta carpeta.
-2. En Signing & Capabilities, elegir el equipo de desarrollo del usuario. No hay
-   un equipo ni credenciales incorporados en el proyecto.
-3. Conectar y desbloquear el iPhone, elegirlo como destino y ejecutar. El modo
-   desarrollador y la autorización de confianza de Xcode deben estar habilitados.
-4. En la Mac, desde la raíz del repositorio y con las dependencias instaladas:
+1. Abrir `FortWatchListener.xcodeproj`, elegir el equipo propio en **Signing &
+   Capabilities**, seleccionar el iPhone conectado y tocar **Run**. Requiere iOS 26
+   y captura FOA compatible, por ejemplo iPhone 16 Pro o posterior. La app verifica
+   el soporte real y los cuatro canales antes de escuchar.
+2. Encender la pulsera con el firmware FortWatch. Cerrar el receptor anterior
+   `mac_listener.py` para que no ocupe la conexión Bluetooth.
+3. En la app tocar **Conectar pulsera** y permitir Bluetooth. La conexión se hace
+   desde la app; no requiere emparejar un dispositivo de audio en Ajustes.
+4. Tocar **Probar vibración**. Envía una alerta de prueba `KNOCK` sin dirección:
+   la pulsera debería mostrar KNOCK y hacer dos pulsos cortos. Esto permite
+   comprobar el enlace y el motor antes de probar reconocimiento.
+5. Tocar **Iniciar escucha** y permitir micrófono. Mantener el iPhone vertical en
+   un soporte, con micrófonos libres y la app abierta.
+6. Tocar **Calibrar frente** y mantener una única fuente de sonido frente al
+   teléfono durante un segundo. Si se mueve el soporte, volver a calibrar.
+7. Probar sonidos desde izquierda, frente y derecha; confirmar evento, ángulo y
+   vibración. La precisión física y los umbrales deben medirse en el aparato.
 
-   ```sh
-   .venv/bin/python live_demo/mac_listener.py --spatial-listen 0.0.0.0:8766 --link ble
-   ```
+Si Bluetooth se apaga o la pulsera se desconecta, la captura se detiene. Reconectar
+no reenvía alertas anteriores ni reinicia el micrófono solo. Si falta un permiso,
+la app muestra el estado y acceso a Configuración. Al salir de la app también se
+detiene; todavía no es escucha en segundo plano ni orientación desde el bolsillo.
 
-5. Usar la dirección privada de la Mac (por ejemplo `192.168.1.20:8766`) o su
-   nombre `.local` y copiar el código que imprime el receptor. Ambos equipos deben
-   compartir una red de confianza que permita tráfico entre ellos; algunas redes
-   públicas de eventos aíslan los dispositivos.
-6. Tocar **Iniciar captura** y permitir micrófono y red local. Mantener el iPhone
-   vertical en un soporte fijo, sin cubrir sus micrófonos.
-7. Colocar una única fuente de sonido frente al teléfono, tocar **Calibrar frente**
-   y sostener ese sonido durante un segundo. Repetir si la app lo pide.
-8. Probar sonidos a izquierda, frente y derecha. Confirmar la orientación real y
-   medir el error antes de usar la dirección en la demo. Si se mueve el soporte,
-   hay que volver a calibrar.
+## Reconocimiento local
 
-La app funciona en primer plano y se detiene al pasar a segundo plano, cambiar de
-micrófono o recibir una interrupción. No es un modo de escucha desde el bolsillo.
+Usa `SNClassifySoundRequest(classifierIdentifier: .version1)`, ventana de un segundo,
+50% de solapamiento y únicamente el canal omnidireccional **W**. Los canales X/Y/Z
+se usan para dirección, no se mezclan con W para clasificar. Se comprueba que el
+modelo del sistema incluya los identificadores requeridos.
 
-## Estados y límites
+| Alerta | Identificadores de Apple | Umbral provisional |
+|---|---|---|
+| ALARM | alarm_clock, smoke_detector, siren y sirenas específicas | 0.65 |
+| CAR_HORN | car_horn, air_horn | 0.65 |
+| GLASS | glass_breaking | 0.65 |
+| SHOUT | shout, yell, children_shouting, screaming | 0.70 |
+| BABY | baby_crying | 0.65 |
+| KNOCK | knock | 0.65 |
+| DOORBELL | door_bell | 0.65 |
+| PHONE | telephone_bell_ringing, ringtone | 0.65 |
+| DOG | dog_bark, dog_bow_wow | 0.65 |
+| SPEECH | speech; tres aciertos de cuatro, pausa de 15 s entre alertas | 0.75 |
 
-- **Dirección incierta:** no se usa `0°` para disimular silencio, falta de
-  calibración, baja calidad o datos vencidos.
-- La flecha del iPhone corresponde al sonido dominante recibido por la Mac, no a
-  un detector que separe fuentes simultáneas. Con conversación y alarma a la vez,
-  debe validarse qué fuente domina antes de confiar en una dirección.
-- La calibración fija el frente; no verifica por sí sola que los ejes físicos y
-  el signo izquierda/derecha sean correctos. Esa comprobación requiere sonidos
-  desde posiciones conocidas en el dispositivo real.
-- La calidad de dirección es una medida heurística de coherencia. No es una
-  probabilidad ni una garantía de precisión en grados.
-- El audio no se guarda en esta app. Se transmite a la Mac por HTTP local con un
-  token temporal; HTTP no cifra el audio. Usar una red de confianza. Se rechazan
-  destinos públicos, URLs con credenciales y redirecciones.
-- Si la red se retrasa, se descarta audio en lugar de acumularlo; la Mac invalida
-  la continuidad y puede exigir recalibrar. Cada solicitud tiene un límite
-  absoluto de 0,75 s desde su envío para mostrar una dirección. Recibir la
-  respuesta no reinicia ese plazo; la interfaz revisa su caducidad cada 100 ms.
-- La pulsera necesita el firmware extendido para mostrar ángulos; el firmware
-  anterior puede seguir mostrando las alertas y vibrando.
+Se priorizan seguridad, atención y luego sonidos de baja prioridad. La pausa
+habitual entre alertas iguales es de dos segundos. Estos umbrales son iniciales:
+**los resultados ESC-50 de YAMNet no validan este clasificador de Apple**.
 
-## Contrato y archivos
+## Dirección y límites
 
-- `SpatialCapture.swift`: captura `AVCaptureAudioDataOutput` en modo
-  `.firstOrderAmbisonics`, exige cuatro canales ACN/SN3D, agrupa bloques de 100 ms
-  y permite solo una solicitud de red pendiente.
-- `BridgeProtocol.swift`: copia PCM planar o intercalado sin mezclar canales,
-  convierte a Float32 little-endian y valida direcciones de red y respuestas.
-- `ListenerModel.swift`: estados, calibración y caducidad de la dirección.
-- `FortWatchListenerApp.swift`: controles accesibles y texto de estado; nunca
-  muestra resultados sintéticos como audio en vivo.
+- La flecha indica el sonido dominante respecto del frente calibrado del iPhone.
+  No separa fuentes simultáneas ni identifica qué persona habla.
+- Silencio, baja coherencia, sonido vertical/difuso o datos vencidos dan dirección
+  incierta. No se muestran como `0°`.
+- El ángulo enviado con una alerta se calcula sobre la misma ventana temporal del
+  clasificador. Una fuente distinta puede dominar esa ventana; probar con una sola.
+- Calibrar fija un cero; no valida los ejes físicos ni el signo izquierda/derecha.
+- La vibración indica prioridad. Un único motor no vibra de un lado u otro.
+- La app no mantiene cola BLE: si el enlace está ocupado o el resultado caducó,
+  descarta el envío. “Enviada” indica aceptación por CoreBluetooth; este firmware
+  no confirma que el motor haya vibrado físicamente.
+- El firmware con ángulo muestra flecha; versiones anteriores conservan las
+  alertas y vibración pero ignoran la dirección. No se flashea desde esta app.
 
-Cada `POST /audio` lleva `Authorization: Bearer <código>` y un JSON con
-`version`, `session`, `sequence`, `sample_rate`, `frames`, `pts`, `layout`,
-`pcm_f32le` y `calibrate_front`. El orden de canales es **W,Y,Z,X**; `pts` es el
-tiempo de presentación de la captura. La secuencia avanza también en bloques
-descartados para que el receptor detecte huecos. Una sesión nueva empieza en cero.
+## Código
+
+| Archivo | Responsabilidad |
+|---|---|
+| `SpatialCapture.swift` | FOA, SoundAnalysis local, continuidad, tiempo y memoria acotada |
+| `SpatialPCM.swift` | Lectura PCM preservando W,Y,Z,X |
+| `SpatialDirection.swift` | Ángulo, calidad y calibración |
+| `SoundEvents.swift` | Mapeo Apple → eventos, prioridad y ventanas alineadas |
+| `WristbandBluetooth.swift` | Servicio BLE existente, conexión, frescura y mensajes |
+| `ListenerModel.swift` | Permisos, estados, parada, prueba de vibración y envío |
+| `FortWatchListenerApp.swift` | Interfaz oscura con el estilo de la pulsera |
+
+UUID servicio: `6b1a0001-5d1e-4c3b-9a7e-50554e445345`.
+UUID escritura: `6b1a0002-5d1e-4c3b-9a7e-50554e445345`.
+Se conserva `E,<evento>,<score>[,<ángulo>,<calidad>]`, `L,<nivel>` y
+`T,<hora>,<fecha>`, con máximo 63 bytes por escritura.
 
 ## Verificar software
 
 ```sh
-xcodegen generate
 xcodebuild -project FortWatchListener.xcodeproj -scheme FortWatchListener \
   -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO build
 xcodebuild -project FortWatchListener.xcodeproj -scheme FortWatchListener \
@@ -89,9 +102,10 @@ xcodebuild -project FortWatchListener.xcodeproj -scheme FortWatchListener \
   CODE_SIGNING_ALLOWED=NO test
 ```
 
-Los tests usan buffers **sintéticos** para verificar orden de canales, PCM,
-timestamp, contrato JSON, restricciones de conexión y rechazo de ángulos
-inválidos. No prueban la precisión del hardware ni el enlace físico a la pulsera.
+El proyecto se genera desde `project.yml` con XcodeGen. Si se regenera, conservar o
+volver a seleccionar el equipo de firma personal. Los tests usan audio sintético:
+no prueban precisión acústica, alcance BLE ni funcionamiento físico del motor.
 
-Fuentes de API: [captura espacial de Apple](https://developer.apple.com/documentation/avfoundation/capturing-spatial-audio-in-your-ios-app),
-[layout espacial de la salida](https://developer.apple.com/documentation/avfoundation/avcaptureaudiodataoutput/spatialaudiochannellayouttag).
+Fuentes: [Apple SoundAnalysis](https://developer.apple.com/documentation/soundanalysis/snclassifysoundrequest),
+[captura espacial](https://developer.apple.com/documentation/avfoundation/capturing-spatial-audio-in-your-ios-app),
+[CoreBluetooth](https://developer.apple.com/documentation/corebluetooth/transferring-data-between-bluetooth-low-energy-devices).
