@@ -1,5 +1,9 @@
 # Full YAMNet sound catalog — 25 October 2026
 
+> Historical integration record. The catalog and firmware compatibility remain
+> in the repository, but the current iPhone selector and visible sound library
+> intentionally expose only the same ten alerts as the Mac listener.
+
 The iPhone path now runs the bundled Google YAMNet model through Core ML. It no
 longer uses Apple's 303-label SoundAnalysis model in production. All 521 original
 YAMNet classes have stable IDs, exact names, display titles, styles, family rhythms

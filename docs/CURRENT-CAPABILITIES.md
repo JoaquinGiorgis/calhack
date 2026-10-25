@@ -1,5 +1,9 @@
 # FortWatch: capacidades tras actualizar desde main
 
+> Registro histórico de la auditoría inicial. La app actual usa YAMNet en el
+> iPhone y limita la selección y la biblioteca visible a las mismas diez alertas
+> de la Mac.
+
 Fecha: 25 de octubre de 2026, America/Los_Angeles.
 
 Se integraron los ocho commits de `origin/main` hasta `88aebcb` sobre
@@ -33,7 +37,7 @@ realizadas de nuevo durante esta revisión.
 | Parte | Implementado en el código actual | Límite o comprobación pendiente |
 |---|---|---|
 | Demo Mac | YAMNet, 10 alertas, prioridades, BLE/USB, reconexión | Pruebas reales por categoría incompletas; métricas anteriores no validan el nuevo veto |
-| App iPhone local | Apple SoundAnalysis en el teléfono, BLE directo, prueba de vibración, hora/nivel/eventos | Captura FOA probada en el iPhone; usuario confirma prueba BLE/KNOCK/motor. Precisión angular pendiente |
+| App iPhone local | YAMNet en el teléfono, 10 alertas, BLE directo, prueba de vibración, hora/nivel/eventos | Captura FOA probada en el iPhone; usuario confirma prueba BLE/KNOCK/motor. Precisión angular pendiente |
 | Dirección | Un ángulo dominante de la misma ventana del evento; calibración móvil de un segundo; arco en app y firmware | Calibración física aún no validada; últimos intentos ambientales rechazados. No localiza cada fuente por separado |
 | Pulsera | Pantallas de alerta, motor por prioridad, touch/BOOT, SPEECH On/Off persistente | Un solo motor; no produce vibración física izquierda/derecha ni reconoce audio por sí misma |
 | Analytics | Subida opcional de metadatos desde la pulsera por Wi-Fi | Requiere configuración privada, red y servicio externo; no garantiza guardar cada alerta |
@@ -60,9 +64,8 @@ app nativa autónoma. En ese modo, YAMNet sigue corriendo en la Mac.
 
 ## Hallazgos que siguen abiertos
 
-- **La heurística Mac no se trasladó al iPhone.** Swift mantiene `knock` y
-  `glass_breaking` a 0.65 con políticas propias. Copiar nombres de YAMNet al
-  clasificador Apple no sería una integración válida.
+- **Resuelto después de esta auditoría:** el iPhone usa los mismos grupos YAMNet,
+  umbrales y veto KNOCK/GLASS que la Mac.
 - **SPEECH apagado no se comunica al iPhone.** La pulsera descarta el evento antes
   de mostrarlo, vibrar o subirlo. “Enviada” en la app solo indica aceptación del
   envío por CoreBluetooth, no aceptación del filtro ni vibración física.

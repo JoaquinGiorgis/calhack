@@ -4,7 +4,7 @@ A wrist-worn display that turns important sounds into visual alerts for deaf and
 hard-of-hearing people. Built at Cal Hacks 13.0.
 
 ```
-iPhone microphones → YAMNet (521 classes) + direction (on iPhone) → Bluetooth LE → ESP32-S3 wristband
+iPhone microphones → YAMNet → 10 important alerts + direction (on iPhone) → Bluetooth LE → ESP32-S3 wristband
 ```
 
 The iPhone app now connects directly to the wristband. It recognizes sounds and
@@ -12,10 +12,10 @@ estimates their dominant direction locally; it sends only alert, level and clock
 messages over Bluetooth. No Mac, server, Wi-Fi or account is required while using
 the app. Xcode on a Mac is used to build and install this prototype.
 
-The iPhone bundles a converted copy of Google YAMNet and exposes its full 521-class
-vocabulary. Specific names appear on both screens; related classes share learned
-rhythms. The Mac demo remains a separate ten-alert fallback. Its older benchmark
-does not establish accuracy for the expanded iPhone selector.
+The iPhone bundles a converted copy of Google YAMNet. The model still produces
+521 scores, but the app maps 36 relevant source classes to the same ten actionable
+alerts as the Mac demo. Both paths therefore use the same names, priorities,
+thresholds and vibration rhythms.
 
 See [the 521-class integration and verification](docs/SOUND-CATALOG-521.md).
 The [25 October release notes](docs/RELEASE-2026-10-25.md) summarize the changes,
@@ -53,9 +53,8 @@ receiver, then tap **Connect → Sound library → Test**, then **Start listenin
 Allow Bluetooth and microphone. Keep the app open and the iPhone upright on a
 fixed support; calibrate the front before testing direction.
 
-The searchable library contains all 521 model classes, with eight family filters.
-Silence is visible in the catalog but does not trigger an automatic alert. Legacy
-alert messages and their ten rhythms remain supported.
+The searchable library contains the ten supported alerts: alarm, car horn, glass,
+shout, baby, knock, doorbell, phone, dog and speech.
 
 ## Mac fallback: detection and benchmark
 

@@ -1,36 +1,73 @@
 import Foundation
 
-/// Full model vocabulary. Scores are model outputs, not calibrated probabilities.
-/// The old ten alerts retain their rhythm; all other labels use their family.
+/// Maps the complete YAMNet score vector to the same ten user-facing alerts as
+/// the Mac listener. The model still returns 521 scores; only these validated
+/// groups are eligible to reach the UI, Bluetooth link and wristband.
 struct YAMNetEventSelector {
     struct Policy {
+        let event: String
+        let classNames: Set<String>
         let threshold: Double
         let priority: Int
         let requiredHits: Int
+        let historyLength: Int
         let cooldown: TimeInterval
+        let vetoClassNames: Set<String>
     }
 
-    private var history: [Int: [Bool]] = [:]
+    private static let knockClasses: Set<String> = [
+        "Knock", "Door", "Wood", "Chop", "Hammer", "Whack, thwack", "Tap"
+    ]
+
+    static let policies: [Policy] = [
+        Policy(event: "ALARM", classNames: [
+            "Alarm", "Alarm clock", "Smoke detector, smoke alarm", "Fire alarm", "Car alarm",
+            "Buzzer", "Siren", "Civil defense siren", "Police car (siren)",
+            "Ambulance (siren)", "Fire engine, fire truck (siren)"
+        ], threshold: 0.50, priority: 3, requiredHits: 1, historyLength: 1,
+               cooldown: 2, vetoClassNames: []),
+        Policy(event: "CAR_HORN", classNames: [
+            "Vehicle horn, car horn, honking", "Air horn, truck horn"
+        ], threshold: 0.30, priority: 3, requiredHits: 1, historyLength: 1,
+               cooldown: 2, vetoClassNames: []),
+        Policy(event: "GLASS", classNames: ["Glass", "Shatter", "Breaking", "Smash, crash"],
+               threshold: 0.50, priority: 3, requiredHits: 1, historyLength: 1,
+               cooldown: 2, vetoClassNames: knockClasses),
+        Policy(event: "SHOUT", classNames: ["Shout", "Yell", "Screaming", "Children shouting"],
+               threshold: 0.40, priority: 3, requiredHits: 1, historyLength: 1,
+               cooldown: 2, vetoClassNames: []),
+        Policy(event: "BABY", classNames: ["Baby cry, infant cry"], threshold: 0.50,
+               priority: 2, requiredHits: 1, historyLength: 1, cooldown: 2,
+               vetoClassNames: []),
+        Policy(event: "KNOCK", classNames: knockClasses, threshold: 0.30,
+               priority: 2, requiredHits: 1, historyLength: 1, cooldown: 2,
+               vetoClassNames: []),
+        Policy(event: "DOORBELL", classNames: ["Doorbell", "Ding-dong"], threshold: 0.30,
+               priority: 2, requiredHits: 1, historyLength: 1, cooldown: 2,
+               vetoClassNames: []),
+        Policy(event: "PHONE", classNames: ["Telephone", "Telephone bell ringing", "Ringtone"],
+               threshold: 0.50, priority: 2, requiredHits: 1, historyLength: 1,
+               cooldown: 2, vetoClassNames: []),
+        Policy(event: "DOG", classNames: ["Bark"], threshold: 0.30,
+               priority: 1, requiredHits: 1, historyLength: 1, cooldown: 2,
+               vetoClassNames: []),
+        Policy(event: "SPEECH", classNames: ["Speech"], threshold: 0.50,
+               priority: 0, requiredHits: 3, historyLength: 4, cooldown: 15,
+               vetoClassNames: [])
+    ]
+
+    private static let indexByName = Dictionary(
+        uniqueKeysWithValues: SoundCatalog.all.map { ($0.name, $0.index) }
+    )
+
+    static var missingClassNames: [String] {
+        let configured = policies.flatMap { $0.classNames.union($0.vetoClassNames) }
+        return Set(configured).subtracting(indexByName.keys).sorted()
+    }
+
+    private var history: [String: [Bool]] = [:]
     private var lastNotified: [String: TimeInterval] = [:]
     private var lastWindow: TimeInterval?
-
-    static func policy(for entry: SoundCatalog.Entry) -> Policy {
-        // Specialized rhythms reuse the Mac/YAMNet starting thresholds; new
-        // descendant classes are not validated by that earlier benchmark. Broad
-        // classes use provisional 0.60 and 2 of 3 windows for notification.
-        switch entry.hapticEvent {
-        case "ALARM": return Policy(threshold: 0.50, priority: 3, requiredHits: 1, cooldown: 2)
-        case "CAR_HORN": return Policy(threshold: 0.30, priority: 3, requiredHits: 1, cooldown: 2)
-        case "GLASS": return Policy(threshold: 0.50, priority: 3, requiredHits: 1, cooldown: 2)
-        case "SHOUT": return Policy(threshold: 0.40, priority: 3, requiredHits: 1, cooldown: 2)
-        case "BABY": return Policy(threshold: 0.50, priority: 2, requiredHits: 1, cooldown: 2)
-        case "KNOCK", "DOORBELL": return Policy(threshold: 0.30, priority: 2, requiredHits: 1, cooldown: 2)
-        case "PHONE": return Policy(threshold: 0.50, priority: 2, requiredHits: 1, cooldown: 2)
-        case "DOG": return Policy(threshold: 0.30, priority: 1, requiredHits: 1, cooldown: 2)
-        case "SPEECH": return Policy(threshold: 0.50, priority: 0, requiredHits: 3, cooldown: 15)
-        default: return Policy(threshold: 0.60, priority: 1, requiredHits: 2, cooldown: 4)
-        }
-    }
 
     mutating func reset() {
         history.removeAll(keepingCapacity: true)
@@ -42,39 +79,42 @@ struct YAMNetEventSelector {
         guard time.isFinite, time >= 0, lastWindow.map({ time > $0 }) ?? true,
               scores.count == SoundCatalog.all.count,
               scores.allSatisfy({ $0.isFinite && (0...1).contains($0) }) else { return nil }
-        // Skipped audio windows do not count as sustained recognition.
         if let lastWindow, time - lastWindow > 0.75 { history.removeAll(keepingCapacity: true) }
         lastWindow = time
-        var eligible: [SoundCatalog.Entry] = []
-        for entry in SoundCatalog.all {
-            let policy = Self.policy(for: entry)
-            let hit = !entry.isQuiet && scores[entry.index] >= policy.threshold
-            var hits = history[entry.index, default: []]
+
+        var candidates: [(policy: Policy, score: Double, sustained: Bool, cooled: Bool)] = []
+        for policy in Self.policies {
+            var score = Self.score(for: policy.classNames, in: scores)
+            if !policy.vetoClassNames.isEmpty,
+               Self.score(for: policy.vetoClassNames, in: scores) >= score {
+                score = 0
+            }
+            let hit = score >= policy.threshold
+            var hits = history[policy.event, default: []]
             hits.append(hit)
-            let historyLength = policy.requiredHits == 3 ? 4 : 3
-            if hits.count > historyLength { hits.removeFirst(hits.count - historyLength) }
-            history[entry.index] = hits
-            if hit { eligible.append(entry) }
+            if hits.count > policy.historyLength { hits.removeFirst(hits.count - policy.historyLength) }
+            history[policy.event] = hits
+            guard hit else { continue }
+            candidates.append((policy, score,
+                               hits.filter { $0 }.count >= policy.requiredHits,
+                               lastNotified[policy.event].map { time - $0 >= policy.cooldown } ?? true))
         }
-        // A specific eligible child replaces its generic ancestors (Meow, not
-        // three separate cards for Meow/Cat/Animal). This is not source separation.
-        let parents = Set(eligible.flatMap(\.parentIndices))
-        eligible.removeAll { parents.contains($0.index) }
-        let winner = eligible.sorted { left, right in
-            let a = Self.policy(for: left), b = Self.policy(for: right)
-            if a.priority != b.priority { return a.priority > b.priority }
-            if scores[left.index] != scores[right.index] { return scores[left.index] > scores[right.index] }
-            return left.index < right.index
+
+        let winner = candidates.sorted {
+            if $0.policy.priority != $1.policy.priority { return $0.policy.priority > $1.policy.priority }
+            let left = $0.score / $0.policy.threshold
+            let right = $1.score / $1.policy.threshold
+            if left != right { return left > right }
+            return $0.policy.event < $1.policy.event
         }.first
         guard let winner else { return nil }
-        let policy = Self.policy(for: winner)
-        // The screen follows every fresh classified window. Notification timing
-        // is separate: waiting for sustained evidence or a cooldown must not
-        // freeze a less specific name or erase its new direction.
-        let sustained = history[winner.index, default: []].filter { $0 }.count >= policy.requiredHits
-        let cooled = lastNotified[winner.hapticEvent].map { time - $0 >= policy.cooldown } ?? true
-        let shouldNotify = sustained && cooled
-        if shouldNotify { lastNotified[winner.hapticEvent] = time }
-        return SoundEventCandidate(event: winner.event, score: scores[winner.index], shouldNotify: shouldNotify)
+        let shouldNotify = winner.sustained && winner.cooled
+        if shouldNotify { lastNotified[winner.policy.event] = time }
+        return SoundEventCandidate(event: winner.policy.event, score: winner.score,
+                                   shouldNotify: shouldNotify)
+    }
+
+    private static func score(for names: Set<String>, in scores: [Double]) -> Double {
+        names.compactMap { indexByName[$0].map { scores[$0] } }.max() ?? 0
     }
 }

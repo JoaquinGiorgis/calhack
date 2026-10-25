@@ -208,10 +208,14 @@ final class SoundEventsTests: XCTestCase {
         let rate = 16_000
         func plane(_ angle: Double) -> [Float] {
             let radians = -angle * .pi / 180
-            return (0..<1_600).flatMap { frame -> [Float] in
+            var samples: [Float] = []
+            samples.reserveCapacity(1_600 * 4)
+            for frame in 0..<1_600 {
                 let w = 0.1 * sin(2 * .pi * 431 * Double(frame) / Double(rate))
-                return [Float(w), Float(w * sin(radians)), 0, Float(w * cos(radians))]
+                samples.append(contentsOf: [Float(w), Float(w * sin(radians)),
+                                            0, Float(w * cos(radians))])
             }
+            return samples
         }
         var ring = SpatialSampleRing()
         for index in 0..<10 {

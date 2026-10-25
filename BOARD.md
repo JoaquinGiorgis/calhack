@@ -11,8 +11,8 @@ Mic de la Mac / iPhone ─► YAMNet en la Mac (10 alertas) ─► Bluetooth LE 
 El Grove Sound Sensor **ya no se usa** (su amplificador satura con alarmas/bocinas y no sirve para clasificar). Ver "Key decisions" en PROJECT_STATUS.
 
 La demo anterior usa la Mac. Esta rama también incluye la app nativa
-`iPhone → Apple SoundAnalysis + dirección → BLE → pulsera`, implementada pero con
-validación física pendiente. `origin/main` en `88aebcb` todavía no contiene `ios/`.
+`iPhone → YAMNet (10 alertas) + dirección → BLE → pulsera`, implementada pero con
+validación física pendiente.
 Ver [auditoría del pull y capacidades actuales](docs/CURRENT-CAPABILITIES.md).
 
 ## 🎯 Definición de "terminado" para la demo
@@ -66,7 +66,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
 |---|---|---|---|---|---|
-| S12 | DOING | iPhone reconoce y calcula dirección localmente → Bluetooth directo → pulsera. Sin Mac/IP/código. Diseño circular, interfaz en inglés y Listen & calibrate. FOA probado en iPhone; usuario confirma KNOCK por BLE y vibración. [Guía](ios/README.md) · [Actualización](docs/DIRECTION-DESIGN-UPDATE.md). Pendiente validar ángulos físicos. | Codex | S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
+| S12 | DOING | iPhone reconoce las mismas 10 alertas del Mac y calcula dirección localmente → Bluetooth directo → pulsera. Sin Mac/IP/código. Diseño circular, interfaz en inglés y Listen & calibrate. FOA probado en iPhone; usuario confirma KNOCK por BLE y vibración. [Guía](ios/README.md) · [Actualización](docs/DIRECTION-DESIGN-UPDATE.md). Pendiente validar ángulos físicos. | Codex | S2, H6 | Prueba física con ángulos conocidos, BLE y motor |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |
@@ -101,6 +101,6 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 4. **Nunca cortar:** pipeline Mac → pulsera + carcasa en la muñeca + video backup
 
 ## 🚫 Reglas de honestidad
-- La app nueva clasifica en el **iPhone** (Apple); la demo anterior clasifica en la **Mac** (YAMNet). No atribuir las métricas YAMNet al modelo Apple ni decir que clasifica en la pulsera.
+- La app nueva y la demo de Mac usan **YAMNet** y las mismas 10 alertas. No decir que la clasificación ocurre en la pulsera.
 - Los umbrales se midieron en grabaciones limpias (ESC-50); en una sala real rinde peor.
 - No es un dispositivo de emergencia certificado.

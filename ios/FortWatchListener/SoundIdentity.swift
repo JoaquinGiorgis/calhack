@@ -40,9 +40,10 @@ struct SoundIdentity: Identifiable {
              "Someone speaking", "Sustained speech. Words and speakers are not identified.", 10)
     ]
 
-    /// Complete model vocabulary; legacy IDs remain supported separately.
+    /// Complete model vocabulary remains available internally for score mapping.
     static let all: [Self] = SoundCatalog.all.map { Self(event: $0.event) }
-    static var library: [Self] { all }
+    /// The product exposes the same ten actionable alerts as the Mac listener.
+    static var library: [Self] { legacy }
 
     init(event: String) {
         if let entry = SoundCatalog.forEvent(event) {

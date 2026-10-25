@@ -1,8 +1,8 @@
 # FortWatch — project status and context
 
-> **Latest iPhone revision (25 October):** the app now bundles YAMNet and the full
-> 521-class catalog. See [current integration evidence](docs/SOUND-CATALOG-521.md).
-> Apple SoundAnalysis and ten-category iPhone notes below describe the earlier revision.
+> **Latest iPhone revision (25 October):** the app bundles YAMNet but exposes the
+> same ten actionable alerts as the Mac listener. The model's full 521-class
+> catalog remains internal for score lookup and compatibility.
 > The [Orbit screen redesign](docs/design/ORBIT-REDESIGN.md) now matches the website
 > across native iPhone and firmware alerts. Builds and software checks pass;
 > revision `1e782dc` is installed on both devices. Physical direction validation remains pending.
@@ -67,7 +67,8 @@ iPhone, then connects directly to the existing ESP32 BLE service. No Mac, HTTP,
 pairing token or Wi-Fi is required at runtime. There is a manual vibration test,
 explicit Bluetooth connection and foreground-only capture. See [iOS setup](ios/README.md).
 
-YAMNet replaces the earlier Apple classifier and exposes all 521 class names.
+YAMNet replaces the earlier Apple classifier. It produces all 521 model scores,
+then the iPhone maps the same 36 source classes as the Mac into ten alerts.
 Model conversion and on-device synthetic inference checks passed; a small public
 audio replay is documented in `docs/validation/yamnet/`. This does not establish
 general accuracy. The Mac benchmark below applies only to the older Mac demo.
@@ -134,8 +135,8 @@ thresholds were measured on ESC-50. KNOCK was initially raised to 0.35, then cha
 to 0.30 with broader wood-impact classes in the 25/10 update. That update also vetoes
 GLASS when those classes score as highly; the old benchmark has not been rerun for
 this configuration. DOG uses only "Bark" because the broader "Dog" class fired on
-pigs and toothbrushes. The iPhone's expanded selector exposes all classes with
-hierarchy suppression and provisional thresholds; physical accuracy remains unverified.
+pigs and toothbrushes. The iPhone selector now uses the Mac's ten groups and
+thresholds; physical accuracy remains unverified.
 
 ## Known limitations
 

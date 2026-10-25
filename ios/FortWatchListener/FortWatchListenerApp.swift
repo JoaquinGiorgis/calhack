@@ -202,7 +202,7 @@ struct ListenerView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Sound library")
                         .font(ListenerStyle.display(21, relativeTo: .headline))
-                    Text("\(SoundCatalog.all.count) sound classes · \(SoundCatalog.families.count) families")
+                    Text("\(SoundIdentity.library.count) important sound alerts")
                         .font(ListenerStyle.body(14, relativeTo: .footnote))
                         .foregroundStyle(ListenerStyle.secondary)
                 }
@@ -218,7 +218,7 @@ struct ListenerView: View {
             .modifier(FrostedSurface(radius: 22))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Sound library. Explore \(SoundCatalog.all.count) sound classes and their family rhythms.")
+        .accessibilityLabel("Sound library. Explore \(SoundIdentity.library.count) important sound alerts.")
     }
 
     private func openSettings() {
@@ -717,11 +717,17 @@ private struct SoundLibrary: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-    private var filteredEntries: [SoundCatalog.Entry] {
-        SoundCatalog.all.filter { entry in
-            (selectedFamily.isEmpty || entry.family == selectedFamily) &&
-            (search.isEmpty || entry.name.localizedStandardContains(search) ||
-             entry.title.localizedStandardContains(search) || entry.familyTitle.localizedStandardContains(search))
+    private var categories: [String] {
+        Array(Set(SoundIdentity.library.map(\.category))).sorted()
+    }
+
+    private var filteredEntries: [SoundIdentity] {
+        SoundIdentity.library.filter { identity in
+            (selectedFamily.isEmpty || identity.category == selectedFamily) &&
+            (search.isEmpty || identity.title.localizedStandardContains(search) ||
+             identity.summary.localizedStandardContains(search) ||
+             identity.examples.localizedStandardContains(search) ||
+             identity.category.localizedStandardContains(search))
         }
     }
 
@@ -732,10 +738,10 @@ private struct SoundLibrary: View {
                 ListeningBackdrop()
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 16) {
-                        Text("\(SoundCatalog.all.count) sound classes")
+                        Text("\(SoundIdentity.library.count) important sound alerts")
                             .font(ListenerStyle.display(28, relativeTo: .title))
                             .accessibilityAddTraits(.isHeader)
-                        Text("Explore the full model vocabulary. Related sounds share colors and rhythms. Each class keeps its own name.")
+                        Text("Explore the alerts FortWatch can recognize and send to your wristband.")
                             .font(ListenerStyle.body())
                         Text(canTest ? "Choose Test to play a pattern on your wristband." : disabledReason)
                             .font(ListenerStyle.body(14, relativeTo: .footnote))
@@ -751,26 +757,25 @@ private struct SoundLibrary: View {
                             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 8))
                             : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 12))
                         filterLayout {
-                            Picker("Sound family", selection: $selectedFamily) {
-                                Text("All families").tag("")
-                                ForEach(SoundCatalog.families, id: \.self) { family in
-                                    Text(SoundCatalog.familyTitle(for: family)).tag(family)
+                            Picker("Alert category", selection: $selectedFamily) {
+                                Text("All categories").tag("")
+                                ForEach(categories, id: \.self) { category in
+                                    Text(category.capitalized).tag(category)
                                 }
                             }
                             .pickerStyle(.menu)
                             .tint(ListenerStyle.lime)
                             .frame(minHeight: 44)
                             if !dynamicTypeSize.isAccessibilitySize { Spacer(minLength: 8) }
-                            Text("\(entries.count) classes")
+                            Text("\(entries.count) alerts")
                                 .font(ListenerStyle.body(14, relativeTo: .footnote))
                                 .foregroundStyle(ListenerStyle.secondary)
                         }
                         if entries.isEmpty {
                             ContentUnavailableView("No matching sounds", systemImage: "magnifyingglass",
-                                                   description: Text("Try another name or choose All families."))
+                                                   description: Text("Try another name or choose All categories."))
                         }
-                        ForEach(entries) { entry in
-                            let identity = SoundIdentity(event: entry.event)
+                        ForEach(entries) { identity in
                             SoundLibraryRow(identity: identity, canTest: canTest,
                                             selected: lastTestedEvent == identity.event) {
                                 lastTestedEvent = identity.event
@@ -793,7 +798,7 @@ private struct SoundLibrary: View {
             }
             .navigationTitle("Sound library")
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $search, prompt: "Search sound classes")
+            .searchable(text: $search, prompt: "Search sound alerts")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
         .preferredColorScheme(.dark)

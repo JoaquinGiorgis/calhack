@@ -5,7 +5,7 @@ Micrófonos iPhone → reconocimiento y dirección en el iPhone → Bluetooth LE
 ```
 
 La app funciona sin Mac, servidor, Wi-Fi ni cuenta durante la escucha. El iPhone
-reconoce sonidos con YAMNet incluido (521 clases, ejecución Core ML) y calcula
+reconoce diez alertas importantes con YAMNet incluido (ejecución Core ML) y calcula
 el ángulo del sonido dominante con audio espacial FOA. Solo manda pequeños
 mensajes de evento, nivel y hora a la pulsera; el audio no sale del iPhone ni se
 guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototipo.
@@ -20,8 +20,7 @@ guarda en esta app. La Mac con Xcode se usa para compilar e instalar el prototip
    `mac_listener.py` para que no ocupe la conexión Bluetooth.
 3. En la app tocar **Connect** y permitir Bluetooth. La conexión se hace
    desde la app; no requiere emparejar un dispositivo de audio en Ajustes.
-4. Abrir **Sound library**, buscar un sonido o filtrar por familia y tocar **Test**.
-   Incluye las 521 clases originales; Silence no vibra.
+4. Abrir **Sound library**, buscar una de las diez alertas o filtrar por categoría y tocar **Test**.
    La pulsera muestra **TEST / PATTERN TEST** y reproduce su ritmo sin guardar una
    detección en el dashboard. **Test vibration** sigue probando KNOCK: dos pulsos
    cortos. Detener la escucha antes de probar; no hace falta calibrar para esto.
@@ -58,24 +57,18 @@ la dirección de un sonido posterior y se borra al iniciar una nueva escucha.
 
 Usa el modelo YAMNet completo convertido a Core ML, incluida su preparación de
 onda, espectrograma y bandas mel. Recibe 15.600 muestras mono a 16 kHz (975 ms),
-produce 521 scores y avanza cada 480 ms. Se remuestrea solamente **W**; los cuatro
+produce 521 scores y avanza cada 480 ms. La selección automática usa 36 clases
+fuente para formar las mismas diez alertas que la Mac. Se remuestrea solamente **W**; los cuatro
 canales originales se conservan para medir la dirección de esa misma ventana.
 La inferencia usa una sola tarea; si queda ocupada, se elige la última ventana
 completa en lugar de acumular audio retrasado. El límite de frescura sigue siendo
 750 ms desde el fin de la captura, sin renovarlo después de predecir.
 
-El catálogo conserva los nombres originales y los agrupa visualmente en People,
-Animals, Nature, Vehicles, Home, Music, Devices & machines y Other sounds. Cada
-clase mantiene su ID Y000…Y520 y nombre concreto. Una subclase que supera el filtro
-reemplaza a sus ancestros genéricos: Meow en lugar de Meow, Cat y Animal por separado.
-Esto no separa fuentes simultáneas. Silence no genera alerta automática.
-
-Las clases con equivalencia a los diez avisos anteriores conservan esos ritmos y
-umbrales de partida; las demás usan el ritmo de su familia, score mínimo 0.60 y
-al menos dos de tres ventanas para vibrar. La pantalla se actualiza con cada
-resultado actual aunque la vibración espere confirmación o esté en pausa. Las
-pausas se aplican después de elegir, para no promover una conjetura secundaria. Los nuevos
-umbrales son provisionales: vocabulario completo no significa precisión perfecta.
+La app expone únicamente ALARM, CAR HORN, GLASS, SHOUT, BABY, KNOCK, DOORBELL,
+PHONE, DOG y SPEECH. Conserva los grupos de clases, umbrales, prioridades y pausas
+del listener de Mac; KNOCK incluye golpes sobre madera y puede vetar GLASS. El
+catálogo completo permanece incluido solo para interpretar correctamente las 521
+salidas del modelo y mantener compatibilidad con el firmware.
 
 Ver [implementación, pruebas y límites de las 521 clases](../docs/SOUND-CATALOG-521.md).
 La auditoría anterior de Apple permanece como evidencia histórica; ya no describe
@@ -115,13 +108,13 @@ el clasificador de producción.
 |---|---|
 | `SpatialCapture.swift` | FOA, YAMNet local, continuidad, tiempo y memoria acotada |
 | `YAMNetClassifier.swift` | Modelo Core ML, remuestreo y ventanas 975/480 ms |
-| `YAMNetEventSelector.swift` | Selección entre 521 clases, ancestros, filtros y pausas |
-| `SoundCatalog.swift` | Catálogo generado: 521 nombres, familias y estilos |
+| `YAMNetEventSelector.swift` | Mapea 36 clases fuente a las 10 alertas, con umbrales, prioridad y pausas |
+| `SoundCatalog.swift` | Catálogo interno de 521 nombres para interpretar la salida del modelo |
 | `SpatialPCM.swift` | Lectura PCM preservando W,Y,Z,X |
 | `SpatialDirection.swift` | Ángulo, calidad y calibración |
 | `SoundEvents.swift` | Eventos, ventanas alineadas y selector Apple histórico para regresiones |
-| `SoundIdentity.swift` | Catálogo visual único: nombre, significado, símbolo y colores |
-| `SoundHaptics.swift` | Ritmos por familia, diez avisos heredados y contrato con firmware |
+| `SoundIdentity.swift` | Biblioteca visual de las 10 alertas: nombre, significado, símbolo y colores |
+| `SoundHaptics.swift` | Ritmos de las diez alertas y contrato con firmware |
 | `WristbandBluetooth.swift` | Servicio BLE existente, conexión, frescura y mensajes |
 | `ListenerModel.swift` | Permisos, estados, parada, prueba de vibración y envío |
 | `FortWatchListenerApp.swift` | Estilo fotográfico/glass de la marca y estados de escucha |

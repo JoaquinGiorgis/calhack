@@ -134,7 +134,6 @@ private final class SpatialBandProbe: NSObject, AVCaptureAudioDataOutputSampleBu
             throw ListenerError.message("The microphone does not support first-order Ambisonics.")
         }
         input.multichannelAudioMode = .firstOrderAmbisonics
-        if #available(iOS 26.4, *), input.isAudioZoomSupported { input.isAudioZoomEnabled = false }
         output.spatialAudioChannelLayoutTag = SpatialPCM.layoutTag
         guard session.canAddOutput(output) else { throw ListenerError.message("Cannot attach the FOA probe output.") }
         session.addOutput(output)

@@ -66,7 +66,8 @@ final class YAMNetCatalogTests: XCTestCase {
     func testEveryIdentityKeepsItsSpecificModelNameAndMetadata() throws {
         XCTAssertEqual(SoundIdentity.all.count, 521)
         XCTAssertEqual(Set(SoundIdentity.all.map(\.event)), Set(SoundCatalog.all.map(\.event)))
-        XCTAssertEqual(SoundIdentity.library.count, 521)
+        XCTAssertEqual(SoundIdentity.library.count, 10)
+        XCTAssertEqual(Set(SoundIdentity.library.map(\.event)), Set(SoundIdentity.legacy.map(\.event)))
         for identity in SoundIdentity.all {
             let entry = try XCTUnwrap(SoundCatalog.forEvent(identity.event))
             XCTAssertEqual(identity.index, entry.index)

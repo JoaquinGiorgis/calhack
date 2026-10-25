@@ -96,7 +96,6 @@ final class SpatialCapture: NSObject, AVCaptureAudioDataOutputSampleBufferDelega
             throw ListenerError.message("This device does not support spatial capture. Use an iPhone 16 Pro or later with iOS 26.")
         }
         input.multichannelAudioMode = .firstOrderAmbisonics
-        if #available(iOS 26.4, *), input.isAudioZoomSupported { input.isAudioZoomEnabled = false }
         let output = AVCaptureAudioDataOutput()
         output.spatialAudioChannelLayoutTag = SpatialPCM.layoutTag
         guard captureSession.canAddOutput(output) else {
