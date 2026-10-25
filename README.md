@@ -32,6 +32,7 @@ For where the project stands, why it is built this way, and what's next, see
 | `hardware/enclosure/` | 3D-printable wristband case (OpenSCAD source, STLs, 3D viewer) |
 | `hardware/tools/` | STL export and pre-print checks for the case |
 | `docs/hardware/` | Hardware inventory and parts photos |
+| `analytics/` | Live analytics dashboard of every alert, on SpacetimeDB ([analytics/README.md](analytics/README.md)) |
 | `BOARD.md` · `dashboard.html` | Team task board and a local dashboard for it (Spanish) |
 
 ## What it detects

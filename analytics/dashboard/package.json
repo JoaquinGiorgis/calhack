@@ -1,0 +1,13 @@
+{
+  "name": "fortwatch-analytics-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "generate": "spacetime generate --lang typescript --out-dir module_bindings --module-path ../spacetimedb",
+    "build": "esbuild app.jsx --bundle --format=esm --target=es2020 --external:react --external:react-dom/client --external:echarts --external:spacetimedb --outfile=app.js",
+    "serve": "python3 -m http.server 8766"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
