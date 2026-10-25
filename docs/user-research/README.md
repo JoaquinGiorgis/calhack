@@ -2,7 +2,7 @@
 
 ## Sofia, Sierra College
 
-Sofia is deaf and studies at Sierra College, a community college in Northern California. Nico met her before Cal Hacks 13.0. She agreed to us using her name,
+Sofia is deaf and studies at Sierra College's Nevada County campus in Grass Valley, California, a community college. Nico met her before Cal Hacks 13.0. She agreed to us using her name,
 quote and photo.
 
 - She can't afford an Apple Watch, the usual option for sound alerts on the wrist.
