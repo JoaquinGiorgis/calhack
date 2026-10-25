@@ -27,6 +27,7 @@ replace smoke alarms or other alerting systems.
 | Live test with real sounds, end to end | Partially done; needs a full pass per alert |
 | 3D-printed case and strap | Designed and verified (`hardware/enclosure/`, `plate.stl`); not printed yet |
 | Vibration | Firmware done (pattern per alert priority, compiles); motor + PN2222 driver working on a breadboard |
+| Live analytics: the wristband uploads every alert it shows to the team dashboard over Wi-Fi (`wifi_analytics.h`) | Working on a phone hotspot (24/10); the alert appears on the dashboard |
 | Classification on the wristband itself | Not started (needs an I2S microphone) |
 
 ### What has been verified
@@ -116,6 +117,7 @@ only "Bark" because the broader "Dog" class fired on pigs and toothbrushes.
 - Some car horns are labelled ALARM. Both still raise an alert.
 - Vibration uses a small DC motor with a printed eccentric weight, not a coin vibration motor, and has not been tested on the wrist yet.
 - Touch-to-dismiss reads the CST816 controller directly over I2C; if it doesn't respond, the BOOT button still works.
+- Wi-Fi upload needs a 2.4 GHz network without a login page: the ESP32-S3 can't use 5 GHz. The Cal Hacks Wi-Fi is 5/6 GHz only, so the demo uses a phone hotspot. Wi-Fi passwords and the dashboard key live in the git-ignored `secrets.h`; the dashboard URL's token expires around 24/11.
 
 ## Next steps
 

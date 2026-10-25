@@ -40,7 +40,8 @@ Si rechazan el archivo por tiempo, mandar `shell.stl` y `back.stl` por separado.
 | `fit_test.stl` | Solo el marco frontal (~15 min), si quieren probar el vidrio antes |
 
 ## Armado
-1. Enchufar los cables jumper hembra en los pines que usamos (3V3, GND, GPIO4, GPIO17). **No hace falta cortar ni soldar.**
+0. **Desconectar el power bank y el USB** antes de tocar cables.
+1. Enchufar los cables jumper hembra en los 3 pines que usa el motor, todos en la columna izquierda del header: **"17"** (señal, va a la resistencia de 1 kΩ → base del PN2222), **"5V"** (motor) y **"G"** (emisor del transistor). Mismo circuito que el de la breadboard (H6). **No hace falta cortar ni soldar.**
 2. El vidrio entra por atrás en el `shell` y apoya contra el marco.
 3. El transistor, la resistencia y el diodo van **debajo de la placa**, entre las dos filas de pines (hay 18 mm de alto libres), envueltos en cinta aislante.
 4. Motor acostado sobre su lado plano en la cuna, con el eje hacia el costado libre. Calzar el `weight` en el eje y verificar que gire sin tocar nada.
@@ -48,6 +49,16 @@ Si rechazan el archivo por tiempo, mandar `shell.stl` y `back.stl` por separado.
 6. Cerrar la tapa: entra derecha y hace **clic**. Los 4 pilares aprietan la placa contra el marco.
 7. Para abrirla, meter una uña o moneda en la muesca del extremo y hacer palanca.
 8. El velcro de 20 mm pasa por las ranuras de las orejas.
+
+## 🔋 Prueba antes de cerrar la tapa
+Con todo adentro pero la tapa abierta, enchufar el power bank y verificar:
+1. Al encender, el motor da **un pulso corto** (autotest) y la pantalla muestra *Waiting for Mac*.
+2. Con el hotspot del iPhone prendido ("Maximizar compatibilidad"), correr `mac_listener.py`: la pantalla pasa a la home y la Mac dice `Connected to FortWatch over Bluetooth`.
+3. Hablar unos segundos: aparece **SPEECH** (persona hablando), vibra 1 vez, y la alerta aparece en el dashboard de Mana. Si no aparece, conectar el USB y mirar el monitor serie (`Wi-Fi: ...` / `Analytics: ...`).
+4. Tocar la pantalla a través del vidrio descarta la alerta (si no, usar BOOT por la ranura del USB).
+5. Dejarlo 15 min con el power bank (tarea H4): que no se apague solo.
+
+Recién ahí cerrar la tapa (clic).
 
 ## ✅ Verificación automática (`hardware/tools/check_stl.py`)
 - Todas las piezas son cerradas (watertight), con normales correctas y un solo cuerpo.
