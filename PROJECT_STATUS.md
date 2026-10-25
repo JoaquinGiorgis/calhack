@@ -1,4 +1,4 @@
-# SoundSense — project status and context
+# FortWatch — project status and context
 
 *Last updated: 2026-10-24, during Cal Hacks 13.0 (Palace of Fine Arts, San Francisco).*
 
@@ -8,7 +8,7 @@ project stands, why it is built the way it is, and what comes next.
 ## The problem
 
 Deaf and hard-of-hearing people can miss sounds that matter: a knock at the door, a
-doorbell, a smoke alarm, a car horn, someone calling them. SoundSense is a wristband
+doorbell, a smoke alarm, a car horn, someone calling them. FortWatch is a wristband
 that shows those sounds as clear, full-screen visual alerts, so the person doesn't
 need to be looking at a phone.
 
@@ -35,7 +35,7 @@ replace smoke alarms or other alerting systems.
   results are in the README. A short live run on the MacBook mic raised no false
   alerts in a noisy hackathon hall.
 - **Firmware:** compiles for the ESP32-S3 and was flashed to the board.
-- **Bluetooth:** the board advertises as `SoundSense`; the Mac finds it, connects in
+- **Bluetooth:** the board advertises as `FortWatch`; the Mac finds it, connects in
   about 2.5 s, and the board acknowledges alert messages.
 - **Mac program options:** `--set`, `--disable`, `--link` and input validation.
 
@@ -54,7 +54,7 @@ Mac microphone ─► YAMNet (on the Mac) ─► Bluetooth LE ─► ESP32-S3 wr
 
 1. The Mac records audio and, twice a second, classifies the last second with YAMNet
    (521 sound types).
-2. Each SoundSense alert groups several YAMNet types and has its own threshold and
+2. Each FortWatch alert groups several YAMNet types and has its own threshold and
    priority. Speech must last ~1.5 s and alerts at most every 15 s.
 3. The Mac sends short text messages (`L,<level>`, `E,<EVENT>,<score>`) to the
    wristband. Audio never leaves the Mac.

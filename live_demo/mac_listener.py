@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""SoundSense live demo: listen on the Mac, classify with YAMNet, alert the ESP32.
+"""FortWatch live demo: listen on the Mac, classify with YAMNet, alert the ESP32.
 
     microphone -> YAMNet (on the Mac) -> Bluetooth LE or USB -> ESP32 screen
 
@@ -45,8 +45,8 @@ YAMNET_DIR = ROOT / "pretrained" / "yamnet"
 MODEL_RATE = 16_000
 WINDOW_SECONDS = 1.0  # YAMNet needs at least 0.975 s for one frame
 
-# Must match BLE_NAME / BLE_SERVICE_UUID / BLE_RX_UUID in soundsense_display.ino.
-BLE_NAME = "SoundSense"
+# Must match BLE_NAME / BLE_SERVICE_UUID / BLE_RX_UUID in fortwatch_display.ino.
+BLE_NAME = "FortWatch"
 BLE_SERVICE_UUID = "6b1a0001-5d1e-4c3b-9a7e-50554e445345"
 BLE_RX_UUID = "6b1a0002-5d1e-4c3b-9a7e-50554e445345"
 
@@ -228,7 +228,7 @@ class BleLink:
             pass
 
     @staticmethod
-    def _is_soundsense(device, advertisement) -> bool:
+    def _is_fortwatch(device, advertisement) -> bool:
         uuids = [uuid.lower() for uuid in advertisement.service_uuids]
         return BLE_SERVICE_UUID in uuids or device.name == BLE_NAME
 
@@ -236,15 +236,15 @@ class BleLink:
         from bleak import BleakClient, BleakScanner
 
         while True:
-            print("  Searching for SoundSense over Bluetooth...")
-            device = await BleakScanner.find_device_by_filter(self._is_soundsense, timeout=10.0)
+            print("  Searching for FortWatch over Bluetooth...")
+            device = await BleakScanner.find_device_by_filter(self._is_fortwatch, timeout=10.0)
             if device is None:
-                print("  SoundSense not found. Is the ESP32 powered on and nearby? Retrying...")
+                print("  FortWatch not found. Is the ESP32 powered on and nearby? Retrying...")
                 continue
             disconnected = asyncio.Event()
             try:
                 async with BleakClient(device, disconnected_callback=lambda _: disconnected.set()) as client:
-                    print("  Connected to SoundSense over Bluetooth")
+                    print("  Connected to FortWatch over Bluetooth")
                     self.connected = True
                     while not disconnected.is_set():
                         try:

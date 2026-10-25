@@ -1,6 +1,6 @@
-# Carcasa SoundSense
+# Carcasa FortWatch
 
-Modelo paramétrico en OpenSCAD: [soundsense_case.scad](soundsense_case.scad). Medidas de la placa del dibujo oficial de Waveshare (`docs/hardware/waveshare-size.jpg`).
+Modelo paramétrico en OpenSCAD: [fortwatch_case.scad](fortwatch_case.scad). Medidas de la placa del dibujo oficial de Waveshare (`docs/hardware/waveshare-size.jpg`).
 
 **Todo va adentro:** placa + pantalla, motor vibrador y driver (transistor, diodo, resistencia y jumpers).
 **Sin cables:** el power bank USB-C (tipo ARMADIN mini) se enchufa **de costado** directo en la placa, como en el banco de pruebas, y apoya sobre una **repisa** en la punta de la tapa.

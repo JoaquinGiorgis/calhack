@@ -18,7 +18,7 @@ middle.
 **Before anything goes public (Devpost, pitch slides, a public repo), get Sierra's OK
 to use her name, quote and photo.**
 
-## What this means for SoundSense
+## What this means for FortWatch
 
 - **Community:** deaf and hard-of-hearing community college students. Price is the
   barrier, so the pitch compares our parts cost with an Apple Watch.

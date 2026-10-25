@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SoundSense Case Viewer</title>
+<title>FortWatch Case Viewer</title>
 <style>
   :root { --bg:#f4f3f0; --fg:#1d1d1f; --muted:#6b6b70; --card:#fff; --line:#e2e0db; --accent:#3a5bd9; }
   @media (prefers-color-scheme: dark) { :root { --bg:#151517; --fg:#ececee; --muted:#9a9aa0; --card:#1f1f22; --line:#2e2e33; --accent:#7d97ff; } }
@@ -26,7 +26,7 @@
 </head>
 <body>
 <div id="ui">
-  <h1>SoundSense — carcasa</h1>
+  <h1>FortWatch — carcasa</h1>
   <div class="row">
     <button id="play" class="on">⏸ Pausar</button>
     <button id="xray">Ver por dentro</button>
@@ -39,7 +39,7 @@ import * as THREE from "https://esm.sh/three@0.160.0";
 import { OrbitControls } from "https://esm.sh/three@0.160.0/examples/jsm/controls/OrbitControls.js";
 import { STLLoader } from "https://esm.sh/three@0.160.0/examples/jsm/loaders/STLLoader.js";
 
-// ---- dimensions mirrored from soundsense_case.scad ----
+// ---- dimensions mirrored from fortwatch_case.scad ----
 const D = { backT: 2.5, zTop: 32.9, zGlass: 31.7, zPcb: 24.5, micYc: 41.8, postH: 18.7, motorYc: 46.1, mx0: -15.25 };
 const yMid = 24; // body centre along Y
 

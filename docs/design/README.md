@@ -1,4 +1,4 @@
-# Diseño — SoundSense Wristband UI
+# Diseño — FortWatch Wristband UI
 
 Archivo Figma: https://www.figma.com/design/cH0vUVYbWNC08hdZPzTIaw
 
@@ -8,7 +8,7 @@ Archivo Figma: https://www.figma.com/design/cH0vUVYbWNC08hdZPzTIaw
 | **Scenarios** | 5 escenas (puerta, alarma, bocina, bebé, vidrio): foto + texto "oye → muestra → vibra" + pulsera con la alerta correcta |
 | **Prototype** | Flujo navegable (▶ Present): Waiting → Listening → Hearing → KNOCK → ALARM, toque para descartar |
 | **Components** | `Alert screen` (10 variantes, 320×240), `System screen` (Waiting/Listening/Hearing), `Vibration pattern` (Safety/Attention/Low), `Wristband device` (mockup), íconos |
-| Variables `SoundSense` | Colores por alerta (contraste AA con texto blanco) |
+| Variables `SoundSense` (nombre viejo, sigue así en Figma) | Colores por alerta (contraste AA con texto blanco) |
 
 Fotos de referencia en esta carpeta: generadas con la IA de Figma (no son fotos reales del prototipo). `hero-v3-knock.png` es la portada actual (base: `hero-v3.png`). Las demás `hero-*` son versiones anteriores.
 

@@ -1,4 +1,4 @@
-// SoundSense — wrist enclosure for Waveshare ESP32-S3-Touch-LCD-2
+// FortWatch — wrist enclosure for Waveshare ESP32-S3-Touch-LCD-2
 // Parametric OpenSCAD model. Units: mm. No screws: snap-fit back plate.
 //
 // Coordinate system: X = across the wrist (strap direction),

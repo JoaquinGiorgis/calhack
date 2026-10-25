@@ -1,4 +1,4 @@
-# SoundSense — Feel What You Can't Hear
+# FortWatch — Feel What You Can't Hear
 
 A wrist-worn display that turns important sounds into visual alerts for deaf and
 hard-of-hearing people. Built at Cal Hacks 13.0.
@@ -14,7 +14,7 @@ Mac listens, classifies each second of audio with Google's pretrained
 text messages (like `E,KNOCK,0.62`) to the wristband. **Audio never leaves the Mac.**
 
 > **Status:** hackathon prototype. Classification runs on the Mac, not on the
-> wristband. SoundSense is a complementary aid and **does not replace certified smoke
+> wristband. FortWatch is a complementary aid and **does not replace certified smoke
 > alarms or other safety devices.**
 
 For where the project stands, why it is built this way, and what's next, see
@@ -25,7 +25,7 @@ For where the project stands, why it is built this way, and what's next, see
 | Path | What it is |
 |---|---|
 | `live_demo/mac_listener.py` | Mac program: microphone → YAMNet → Bluetooth/USB → wristband |
-| `live_demo/soundsense_display/` | Wristband firmware (Arduino sketch). Screens are the Figma designs in `screens.h` |
+| `live_demo/fortwatch_display/` | Wristband firmware (Arduino sketch). Screens are the Figma designs in `screens.h` |
 | `live_demo/screen_preview/` | Slideshow firmware to preview every designed screen on the real display |
 | `live_demo/requirements.txt` | Python packages for the Mac program |
 | `pretrained/yamnet/` | Google's YAMNet model (Apache 2.0), loaded by the Mac program |
@@ -37,7 +37,7 @@ For where the project stands, why it is built this way, and what's next, see
 ## What it detects
 
 Twice a second, the Mac takes the last second of audio, and YAMNet scores it against
-521 sound types. Each SoundSense alert groups a few of those types; when the best
+521 sound types. Each FortWatch alert groups a few of those types; when the best
 score in a group passes its threshold, the alert is sent. If several fire at once,
 the highest priority wins, and the same alert won't repeat within 2 seconds.
 
@@ -93,7 +93,7 @@ python3.11 -m venv .venv
 
 **Arduino IDE:** install the board package **esp32 by Espressif Systems** and the
 library **GFX Library for Arduino** (by Moon On Our Nation). Open
-`live_demo/soundsense_display/soundsense_display.ino` and set **Tools**:
+`live_demo/fortwatch_display/fortwatch_display.ino` and set **Tools**:
 
 | Setting | Value |
 |---|---|
@@ -107,15 +107,15 @@ Then click Upload.
 **Or with PlatformIO** (no Arduino IDE needed):
 
 ```bash
-cd live_demo/soundsense_display && pio run -t upload
+cd live_demo/fortwatch_display && pio run -t upload
 ```
 
 **Or with `arduino-cli`:**
 
 ```bash
 FQBN="esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=16M,PSRAM=opi,USBMode=hwcdc"
-arduino-cli compile -b "$FQBN" live_demo/soundsense_display
-arduino-cli upload  -b "$FQBN" -p /dev/cu.usbmodem1101 live_demo/soundsense_display
+arduino-cli compile -b "$FQBN" live_demo/fortwatch_display
+arduino-cli upload  -b "$FQBN" -p /dev/cu.usbmodem1101 live_demo/fortwatch_display
 ```
 
 Stop `mac_listener.py` before uploading. If the screen stays black afterwards, press
@@ -123,13 +123,13 @@ the board's RESET button.
 
 ### 3. Run
 
-Power the wristband. It shows *Waiting for Mac... Bluetooth: SoundSense*. Then:
+Power the wristband. It shows *Waiting for Mac... Bluetooth: FortWatch*. Then:
 
 ```bash
 .venv/bin/python live_demo/mac_listener.py
 ```
 
-Within a few seconds the terminal says `Connected to SoundSense over Bluetooth` and
+Within a few seconds the terminal says `Connected to FortWatch over Bluetooth` and
 the wristband switches to **LISTENING...** with a live level bar. Detected sounds
 fill the screen with the designed alert (icon, priority, live confidence bar) and
 vibrate with the alert's priority pattern; **tap the screen** or press **BOOT** to
@@ -156,7 +156,7 @@ a bit below it.
 
 | Symptom | Fix |
 |---|---|
-| Terminal keeps saying `SoundSense not found` | Check the wristband is powered and nearby; allow Bluetooth for Terminal |
+| Terminal keeps saying `FortWatch not found` | Check the wristband is powered and nearby; allow Bluetooth for Terminal |
 | Wristband stuck on *Waiting for Mac...* | The Mac program isn't running or isn't connected; check the terminal |
 | `Microphone is returning pure silence` | Allow microphone access for Terminal, then restart the program |
 | A sound shows a score but never alerts | Lower that alert's threshold with `--set` |
@@ -172,7 +172,7 @@ The same text messages go over Bluetooth LE or USB:
 | `L,<0-100>` | Sound level, every 0.5 s (drives the level bar) |
 | `E,<EVENT>,<score>` | Detected alert, e.g. `E,KNOCK,0.62`. Unknown names still display |
 
-- **Bluetooth:** the wristband advertises as `SoundSense` with service
+- **Bluetooth:** the wristband advertises as `FortWatch` with service
   `6b1a0001-5d1e-4c3b-9a7e-50554e445345`. Each write to characteristic
   `6b1a0002-5d1e-4c3b-9a7e-50554e445345` is one message.
 - **USB:** newline-terminated lines at 115200 baud.

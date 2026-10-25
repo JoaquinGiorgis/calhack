@@ -1,8 +1,8 @@
-// SoundSense screen preview: slideshow of the Figma designs on the real wristband.
+// FortWatch screen preview: slideshow of the Figma designs on the real wristband.
 //
 // Shows each 320x240 screen exported from Figma (docs/design/screens), so the team can
 // judge colours, legibility and contrast on the actual 2" display before the designs are
-// wired into the live firmware (live_demo/soundsense_display).
+// wired into the live firmware (live_demo/fortwatch_display).
 //
 //   - Auto-advances every SLIDE_MS.
 //   - BOOT button: next screen (pauses auto-advance for PAUSE_MS).
@@ -32,9 +32,9 @@ const uint32_t PAUSE_MS = 10000;
 Arduino_DataBus *bus = new Arduino_ESP32SPI(
     PIN_LCD_DC, PIN_LCD_CS, PIN_LCD_SCLK, PIN_LCD_MOSI, PIN_LCD_MISO);
 Arduino_GFX *gfx = new Arduino_ST7789(
-    bus, PIN_LCD_RST, 1 /* rotation: landscape, same as soundsense_display */, true /* IPS */, 240, 320);
+    bus, PIN_LCD_RST, 1 /* rotation: landscape, same as fortwatch_display */, true /* IPS */, 240, 320);
 
-// Same patterns as soundsense_display.ino (on/off ms, 0-terminated).
+// Same patterns as fortwatch_display.ino (on/off ms, 0-terminated).
 const uint16_t VIB_SAFETY[] = {400, 150, 400, 150, 400, 0};
 const uint16_t VIB_ATTENTION[] = {150, 120, 150, 0};
 const uint16_t VIB_LOW[] = {150, 0};

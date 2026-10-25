@@ -1,11 +1,11 @@
-# SoundSense — Cal Hacks 13.0
+# FortWatch — Cal Hacks 13.0
 
 Pulsera de accesibilidad para personas sordas/hipoacúsicas. **Arquitectura actual:** el micrófono de la Mac (o iPhone por Continuity) → YAMNet en la Mac clasifica 10 alertas → Bluetooth LE → pulsera Waveshare ESP32-S3-Touch-LCD-2 que muestra la alerta a pantalla completa y vibra.
 
 - Estado, decisiones y limitaciones (fuente de verdad técnica): [PROJECT_STATUS.md](PROJECT_STATUS.md)
 - Setup y uso: [README.md](README.md)
 - Tablero de tareas: [BOARD.md](BOARD.md) — mantenerlo actualizado al terminar cada tarea; se ve en `dashboard.html`
-- Firmware de la pulsera: `live_demo/soundsense_display/` (Arduino IDE, arduino-cli o `pio run -t upload` desde esa carpeta)
+- Firmware de la pulsera: `live_demo/fortwatch_display/` (Arduino IDE, arduino-cli o `pio run -t upload` desde esa carpeta)
 - Inventario de hardware: [docs/hardware/INVENTORY.md](docs/hardware/INVENTORY.md)
 - Carcasa 3D (OpenSCAD paramétrico, encastre sin tornillos): [hardware/enclosure/](hardware/enclosure/) — tras cambiar el `.scad`: `node hardware/tools/export-stl.mjs` y correr `hardware/tools/check_stl.py`
 

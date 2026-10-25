@@ -1,11 +1,11 @@
-# Inventario de hardware — SoundSense
+# Inventario de hardware — FortWatch
 
 > **Arquitectura actual (24/10):** el micrófono es el de la Mac/iPhone y YAMNet clasifica en la Mac (ver [PROJECT_STATUS](../../PROJECT_STATUS.md)).
 > En la pulsera solo van: la placa Waveshare, el **motor + PN2222 + 1N4007 + 1 kΩ**, y el power bank por USB-C.
 > Los sensores Grove y el KY-037 quedan **sin uso**.
 
 ## ✅ Lo que ya tenemos (kit del equipo)
-| Cant. | Componente | Uso en SoundSense |
+| Cant. | Componente | Uso en FortWatch |
 |---|---|---|
 | 1 | Waveshare **ESP32-S3-Touch-LCD-2** (pantalla 2" táctil, IMU QMI8658 incluida) | Cerebro + pantalla. Núcleo del proyecto |
 | 1 | Grove Sound Sensor | ~~Sensor V1~~ — sin uso: su amplificador satura con alarmas/bocinas |

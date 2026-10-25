@@ -1,7 +1,7 @@
-// SoundSense wristband display for the Waveshare ESP32-S3-Touch-LCD-2.
+// FortWatch wristband display for the Waveshare ESP32-S3-Touch-LCD-2.
 //
 // Receives text messages from live_demo/mac_listener.py over Bluetooth LE
-// (device name "SoundSense") or over the USB cable:
+// (device name "FortWatch") or over the USB cable:
 //   L,<0-100>            sound level -> live level bar
 //   E,<EVENT>,<score>    detected event -> full-screen alert
 //
@@ -48,7 +48,7 @@ const uint32_t ALERT_MS = 6000;      // how long an alert stays on screen
 const uint32_t LINK_TIMEOUT_MS = 3000;  // no data for this long -> "waiting for Mac"
 
 // Must match BLE_SERVICE_UUID / BLE_RX_UUID in mac_listener.py.
-const char *BLE_NAME = "SoundSense";
+const char *BLE_NAME = "FortWatch";
 const char *BLE_SERVICE_UUID = "6b1a0001-5d1e-4c3b-9a7e-50554e445345";
 const char *BLE_RX_UUID = "6b1a0002-5d1e-4c3b-9a7e-50554e445345";
 
@@ -261,9 +261,9 @@ void showWaiting() {
     return;
   }
   gfx->fillScreen(C_BLACK);
-  drawCentered("SoundSense", 50, 4, C_WHITE);
+  drawCentered("FortWatch", 50, 4, C_WHITE);
   drawCentered("Waiting for Mac...", 120, 2, C_GREY);
-  drawCentered("Bluetooth: SoundSense", 160, 2, C_GREY);
+  drawCentered("Bluetooth: FortWatch", 160, 2, C_GREY);
   drawCentered("or plug in USB", 190, 2, C_GREY);
 }
 

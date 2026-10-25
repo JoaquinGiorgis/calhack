@@ -1,4 +1,4 @@
-# SoundSense — Tablero de accionables (Cal Hacks 13.0)
+# FortWatch — Tablero de accionables (Cal Hacks 13.0)
 
 > Fuente de verdad del equipo. Mover tareas cambiando el estado: `TODO` → `DOING` → `DONE` (o `CUT`).
 > Contexto técnico y decisiones: [PROJECT_STATUS.md](PROJECT_STATUS.md) · Setup: [README.md](README.md) · Carcasa: [hardware/enclosure](hardware/enclosure/)
@@ -52,7 +52,7 @@ Pulsera en la muñeca (carcasa impresa + power bank) conectada por Bluetooth a l
 | S5 | TODO | Modo ensayo: pasar una grabación fija por el mismo pipeline (demo reproducible) | | S1 | Demo idéntica cada vez |
 | S6 | DOING | (Implementado, falta probar) Descartar alerta tocando la pantalla (touch CST816 en I2C SDA 48 / SCL 47) — dentro de la carcasa el BOOT queda en la ranura del USB | | S2 | Toque descarta |
 | S7 | DONE | Diseño Figma de las 13 pantallas + escenarios + prototipo ([docs/design](docs/design/README.md)) y **slider** en la pulsera (`live_demo/screen_preview`) para verlas en el display real | Joaquin | — | Slider corriendo en la placa |
-| S8 | DONE | Pantallas de Figma en el firmware real (`soundsense_display`): imagen de cada alerta + barra de confianza real, ecualizador en vivo, nº de alertas | Joaquin | S7 | Alertas en vivo con el diseño nuevo |
+| S8 | DONE | Pantallas de Figma en el firmware real (`fortwatch_display`): imagen de cada alerta + barra de confianza real, ecualizador en vivo, nº de alertas | Joaquin | S7 | Alertas en vivo con el diseño nuevo |
 
 ## 🧊 3. Carcasa 3D ([hardware/enclosure](hardware/enclosure/))
 | ID | Estado | Tarea | Owner | Depende | Done cuando |

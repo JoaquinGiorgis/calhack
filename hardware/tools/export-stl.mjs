@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const encDir = join(here, "..", "enclosure");
-const src = readFileSync(join(encDir, "soundsense_case.scad"), "utf8");
+const src = readFileSync(join(encDir, "fortwatch_case.scad"), "utf8");
 const parts = process.argv.length > 2 ? process.argv.slice(2) : ["fit_test", "shell", "back", "pod", "pod_lid", "assembly"];
 mkdirSync(join(encDir, "stl"), { recursive: true });
 

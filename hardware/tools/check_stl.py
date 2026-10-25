@@ -1,4 +1,4 @@
-"""Pre-print checks for the SoundSense STLs.
+"""Pre-print checks for the FortWatch STLs.
 
 Usage: python check_stl.py   (needs: pip install trimesh manifold3d numpy scipy)
 
@@ -57,7 +57,7 @@ v = 0 if inter.is_empty else inter.volume
 report("assembly", v < 1.0, f"overlap volume {v:.3f} mm³")
 
 # ---- component fit: do the real parts fit inside the assembled case? ----
-# Values mirror soundsense_case.scad (clr 0.4, side-plugged power bank, 130 motor).
+# Values mirror fortwatch_case.scad (clr 0.4, side-plugged power bank, 130 motor).
 print("\ncomponent fit (jumpers, USB plug, power bank, motor, spinning weight)")
 in_w, in_l, back_t = 37.9, 59.6, 2.5
 bay_y0 = in_l / 2 + 1.5
