@@ -1,29 +1,29 @@
 <!doctype html>
-<html lang="en">
+<html lang="es-AR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FortWatch · Your wrist hears for you</title>
-<meta name="description" content="FortWatch is a wristband for Deaf and hard-of-hearing people. It recognizes 10 important sounds, like a knock, a car horn or a baby crying, and alerts you with a full-screen message and a vibration. No internet needed, and audio never leaves your wrist.">
-<link rel="canonical" href="https://fortwatch.vercel.app/">
+<title>FortWatch · Tu muñeca escucha por vos</title>
+<meta name="description" content="FortWatch es una pulsera para personas sordas e hipoacúsicas. Reconoce 10 sonidos importantes, como un golpe en la puerta, una bocina o un bebé llorando, y te avisa con una alerta a pantalla completa y una vibración. Funciona sin internet y el audio no se graba.">
+<link rel="canonical" href="https://fort.watch/">
 <meta name="theme-color" content="#11160d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FortWatch">
-<meta property="og:url" content="https://fortwatch.vercel.app/">
-<meta property="og:title" content="FortWatch · Your wrist hears for you">
-<meta property="og:description" content="A wristband that hears a knock, a car horn or a baby crying and tells you with a big alert and a vibration. No internet. Audio never leaves your wrist.">
-<meta property="og:image" content="https://fortwatch.vercel.app/og.jpg">
+<meta property="og:url" content="https://fort.watch/">
+<meta property="og:title" content="FortWatch · Tu muñeca escucha por vos">
+<meta property="og:description" content="Una pulsera que escucha un golpe en la puerta, una bocina o a tu bebé llorando, y te avisa con una alerta grande y una vibración. Preventa abierta.">
+<meta property="og:image" content="https://fort.watch/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="A lime-green FortWatch wristband on a wrist showing a KNOCK alert, next to the words Your wrist hears for you.">
-<meta property="og:locale" content="en_US">
+<meta property="og:image:alt" content="Una pulsera FortWatch verde lima en la muñeca mostrando una alerta KNOCK, junto al texto Tu muñeca escucha por vos.">
+<meta property="og:locale" content="es_AR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FortWatch · Your wrist hears for you">
-<meta name="twitter:description" content="A wristband that hears a knock, a car horn or a baby crying and tells you with a big alert and a vibration. No internet.">
-<meta name="twitter:image" content="https://fortwatch.vercel.app/og.jpg">
-<meta name="twitter:image:alt" content="A lime-green FortWatch wristband on a wrist showing a KNOCK alert.">
+<meta name="twitter:title" content="FortWatch · Tu muñeca escucha por vos">
+<meta name="twitter:description" content="Una pulsera que escucha un golpe en la puerta, una bocina o a tu bebé llorando, y te avisa con una alerta grande y una vibración.">
+<meta name="twitter:image" content="https://fort.watch/og.jpg">
+<meta name="twitter:image:alt" content="Una pulsera FortWatch verde lima en la muñeca mostrando una alerta KNOCK.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&family=Gabarito:wght@700&family=JetBrains+Mono:wght@500&display=swap">
@@ -112,6 +112,23 @@ h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: c
 .alert span { font-size: 13px; opacity: .9; }
 @keyframes arrive { from { opacity: 0; transform: translateY(16px) scale(.97); } to { opacity: 1; transform: none; } }
 
+/* presale dialog (until the Mercado Pago link exists) */
+.presale {
+  width: min(440px, calc(100vw - 32px)); padding: 28px; border-radius: 28px; color: var(--white);
+  background: rgba(30, 33, 48, .72);
+}
+.presale::backdrop { background: rgba(var(--shade), .55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.presale form { display: grid; gap: 12px; margin: 0; }
+.presale .tag { margin: 0; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; color: var(--lime); }
+.presale h2 { margin: 0; font-family: var(--font-display); font-size: 32px; letter-spacing: -.02em; }
+.presale p { margin: 0; line-height: 1.5; opacity: .9; }
+.presale-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 8px; }
+.presale-close {
+  padding: 15px 22px; border-radius: 999px; border: 1px solid var(--glass-line); background: transparent;
+  color: inherit; font: inherit; font-weight: 700; cursor: pointer;
+}
+.presale-close:hover { background: rgba(255,255,255,.1); }
+
 :focus-visible { outline: 3px solid #9fb4ff; outline-offset: 3px; }
 
 @media (max-width: 1100px) { .links { display: none; } .alert { display: none; } }
@@ -128,39 +145,71 @@ h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: c
 <header class="hero">
   <img class="still" src="hero-poster.jpg" alt="">
   <video id="film" autoplay muted loop playsinline preload="auto" poster="hero-poster.jpg"
-    aria-label="A day with Maya, who is Deaf: her wristband tells her when someone knocks, when a car honks and when her baby wakes up.">
+    aria-label="Un día con Maya, que es sorda: su pulsera le avisa cuando tocan la puerta, cuando suena una bocina y cuando su bebé se despierta.">
     <source src="hero.mp4" type="video/mp4">
   </video>
 
-  <nav class="nav glass" aria-label="Main">
+  <nav class="nav glass" aria-label="Principal">
     <a class="logo" href="https://devpost.com/software/fortwatch"><i aria-hidden="true"></i>fortwatch</a>
     <ul class="links">
-      <li><a href="https://devpost.com/software/fortwatch">Home</a></li>
-      <li><a href="https://devpost.com/software/fortwatch">How it works</a></li>
-      <li><a href="https://devpost.com/software/fortwatch">Sounds</a></li>
-      <li><a href="https://devpost.com/software/fortwatch">Pricing</a></li>
-      <li><a href="https://devpost.com/software/fortwatch">FAQ</a></li>
+      <li><a href="https://devpost.com/software/fortwatch">Cómo funciona</a></li>
+      <li><a href="https://devpost.com/software/fortwatch">Sonidos</a></li>
+      <li><a href="#preventa" data-presale>Preventa</a></li>
+      <li><a href="/dashboard">Dashboard en vivo</a></li>
     </ul>
-    <a class="nav-cta" href="https://devpost.com/software/fortwatch">Reserve</a>
+    <a class="nav-cta" href="#preventa" data-presale>Preventa</a>
   </nav>
 
   <div class="content">
-    <h1>Your wrist hears for you</h1>
-    <p class="sub">It hears a knock, a car horn or your baby crying, and tells you with a big alert and a vibration. No internet.</p>
+    <h1>Tu muñeca escucha por vos</h1>
+    <p class="sub">Escucha un golpe en la puerta, una bocina o a tu bebé llorando, y te avisa con una alerta grande y una vibración.</p>
     <div class="cta-row">
-      <a class="cta" href="https://devpost.com/software/fortwatch">Reserve yours for $16.67</a>
+      <a class="cta" href="#preventa" data-presale>Reservá la tuya en preventa</a>
     </div>
     <ul class="trust">
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>10 everyday sounds</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Audio never leaves your wrist</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Screen and vibration</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>10 sonidos cotidianos</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Funciona sin internet</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Pantalla y vibración</li>
     </ul>
   </div>
 
-  <div class="alert glass" role="img" aria-label="Example alert: KNOCK, someone is at the door">
+  <div class="alert glass" role="img" aria-label="Alerta de ejemplo: KNOCK, tocan la puerta">
     <div class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.157a.5.5 0 0 1-.652.476l-4.696-1.565A2 2 0 0 1 6 17.733V5.562a2 2 0 0 1 1.515-1.94l4.243-1.06A1 1 0 0 1 13 3.56z"/></svg></div>
-    <div><div class="tag">ATTENTION · VIB ●●</div><b>KNOCK</b><span>Someone at the door · now</span></div>
+    <div><div class="tag">ATENCIÓN · VIB ●●</div><b>KNOCK</b><span>Tocan la puerta · ahora</span></div>
   </div>
 </header>
+
+<!-- Preventa: hasta que haya link de Mercado Pago, los botones abren este aviso. -->
+<dialog id="preventa" class="presale glass" aria-labelledby="preventa-titulo">
+  <form method="dialog">
+    <p class="tag">PREVENTA</p>
+    <h2 id="preventa-titulo">Muy pronto</h2>
+    <p>Estamos por abrir la preventa de FortWatch con Mercado Pago. Cuando esté lista, este botón te lleva directo al pago.</p>
+    <div class="presale-actions">
+      <a class="cta" href="/dashboard">Ver el dashboard en vivo</a>
+      <button class="presale-close" value="close">Cerrar</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  // Pegar acá el link de pago de Mercado Pago (ej. https://mpago.la/...) cuando esté listo.
+  // Mientras quede vacío, los botones de preventa muestran el aviso de "Muy pronto".
+  const PRESALE_URL = "";
+
+  const dialog = document.getElementById("preventa");
+  document.querySelectorAll("[data-presale]").forEach((el) => {
+    if (PRESALE_URL) {
+      el.href = PRESALE_URL;
+      return;
+    }
+    el.addEventListener("click", (event) => {
+      if (!dialog.showModal) return; // very old browsers: just follow the #preventa link
+      event.preventDefault();
+      dialog.showModal();
+    });
+  });
+  dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
+</script>
 </body>
 </html>
