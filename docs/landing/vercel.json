@@ -1,5 +1,9 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "redirects": [
+    { "source": "/", "has": [{ "type": "header", "key": "x-vercel-ip-country", "value": "AR" }], "destination": "/ar", "permanent": false },
+    { "source": "/", "destination": "/us", "permanent": false },
     { "source": "/dashboard", "destination": "https://mana.space/a/fortwatch", "permanent": false }
   ]
 }

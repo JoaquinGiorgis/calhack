@@ -1,2 +1,6 @@
 .vercel
 .env*
+# Agent skills installed by `vercel integration add` (local tooling, not part of the site)
+.agents/
+.claude/
+skills-lock.json
