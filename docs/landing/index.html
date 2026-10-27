@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>FortWatch · Tu muñeca escucha por vos</title>
-<meta name="description" content="FortWatch es una pulsera para personas sordas e hipoacúsicas. Reconoce 10 sonidos importantes, como un golpe en la puerta, una bocina o un bebé llorando, y te avisa con una alerta a pantalla completa y una vibración. Funciona sin internet y el audio no se graba.">
+<title>FortWatch · Tu celular escucha, tu muñeca te avisa</title>
+<meta name="description" content="FortWatch es una pulsera para personas sordas e hipoacúsicas. Tu celular escucha y, cuando reconoce un sonido importante (que tocan la puerta, una bocina, tu bebé llorando), la pulsera vibra y te muestra qué pasó. Un prototipo que armamos en Cal Hacks 13.0, por mucho menos de lo que cuesta un smartwatch.">
 <link rel="canonical" href="https://fort.watch/">
 <meta name="theme-color" content="#11160d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -12,16 +12,16 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="FortWatch">
 <meta property="og:url" content="https://fort.watch/">
-<meta property="og:title" content="FortWatch · Tu muñeca escucha por vos">
-<meta property="og:description" content="Una pulsera que escucha un golpe en la puerta, una bocina o a tu bebé llorando, y te avisa con una alerta grande y una vibración. Preventa abierta.">
+<meta property="og:title" content="FortWatch · Tu celular escucha, tu muñeca te avisa">
+<meta property="og:description" content="Si tocan la puerta, suena una bocina o llora tu bebé, la pulsera vibra y te muestra qué pasó. Pensada para personas sordas e hipoacúsicas.">
 <meta property="og:image" content="https://fort.watch/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Una pulsera FortWatch verde lima en la muñeca mostrando una alerta KNOCK, junto al texto Tu muñeca escucha por vos.">
+<meta property="og:image:alt" content="Una pulsera FortWatch verde lima en la muñeca mostrando una alerta KNOCK, junto al texto Tu celular escucha, tu muñeca te avisa.">
 <meta property="og:locale" content="es_AR">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="FortWatch · Tu muñeca escucha por vos">
-<meta name="twitter:description" content="Una pulsera que escucha un golpe en la puerta, una bocina o a tu bebé llorando, y te avisa con una alerta grande y una vibración.">
+<meta name="twitter:title" content="FortWatch · Tu celular escucha, tu muñeca te avisa">
+<meta name="twitter:description" content="Si tocan la puerta, suena una bocina o llora tu bebé, la pulsera vibra y te muestra qué pasó.">
 <meta name="twitter:image" content="https://fort.watch/og.jpg">
 <meta name="twitter:image:alt" content="Una pulsera FortWatch verde lima en la muñeca mostrando una alerta KNOCK.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -100,6 +100,8 @@ h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: c
 .trust { display: flex; flex-wrap: wrap; gap: 8px 24px; list-style: none; margin: 0; padding: 0; }
 .trust li { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 14px; opacity: .85; }
 .trust svg { flex: none; }
+.story { margin: 4px 0 0; max-width: 460px; font-size: 14px; line-height: 1.5; opacity: .78; }
+.story q { font-style: italic; }
 
 .alert {
   position: absolute; right: 64px; bottom: 64px;
@@ -155,27 +157,28 @@ h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: c
       <li><a href="https://devpost.com/software/fortwatch">Cómo funciona</a></li>
       <li><a href="https://devpost.com/software/fortwatch">Sonidos</a></li>
       <li><a href="#preventa" data-presale>Preventa</a></li>
-      <li><a href="/dashboard">Dashboard en vivo</a></li>
+      <li><a href="/dashboard">Alertas en vivo</a></li>
     </ul>
     <a class="nav-cta" href="#preventa" data-presale>Preventa</a>
   </nav>
 
   <div class="content">
-    <h1>Tu muñeca escucha por vos</h1>
-    <p class="sub">Escucha un golpe en la puerta, una bocina o a tu bebé llorando, y te avisa con una alerta grande y una vibración.</p>
+    <h1>Tu celular escucha. Tu muñeca te avisa.</h1>
+    <p class="sub">Si tocan la puerta, suena una bocina o llora tu bebé, la pulsera vibra y te muestra qué pasó. La hicimos para personas sordas e hipoacúsicas que no pueden pagar un smartwatch.</p>
     <div class="cta-row">
       <a class="cta" href="#preventa" data-presale>Reservá la tuya en preventa</a>
     </div>
     <ul class="trust">
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>10 sonidos cotidianos</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Funciona sin internet</li>
-      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Pantalla y vibración</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>10 sonidos que importan</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Vibra distinto si es urgente</li>
+      <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Sin internet, sin grabar audio</li>
     </ul>
+    <p class="story">Nació de una charla con Sofía, que es sorda y estudia en Sierra College: <q>Me encantaría tener un Apple Watch, pero está fuera de mi presupuesto.</q> La armamos en Cal Hacks 13.0.</p>
   </div>
 
   <div class="alert glass" role="img" aria-label="Alerta de ejemplo: KNOCK, tocan la puerta">
     <div class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 4h3a2 2 0 0 1 2 2v14"/><path d="M2 20h3"/><path d="M13 20h9"/><path d="M10 12v.01"/><path d="M13 4.56v16.157a.5.5 0 0 1-.652.476l-4.696-1.565A2 2 0 0 1 6 17.733V5.562a2 2 0 0 1 1.515-1.94l4.243-1.06A1 1 0 0 1 13 3.56z"/></svg></div>
-    <div><div class="tag">ATENCIÓN · VIB ●●</div><b>KNOCK</b><span>Tocan la puerta · ahora</span></div>
+    <div><div class="tag">ATENCIÓN · VIB ●●</div><b>KNOCK</b><span>Tocan la puerta · recién</span></div>
   </div>
 </header>
 
@@ -183,10 +186,10 @@ h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: c
 <dialog id="preventa" class="presale glass" aria-labelledby="preventa-titulo">
   <form method="dialog">
     <p class="tag">PREVENTA</p>
-    <h2 id="preventa-titulo">Muy pronto</h2>
-    <p>Estamos por abrir la preventa de FortWatch con Mercado Pago. Cuando esté lista, este botón te lleva directo al pago.</p>
+    <h2 id="preventa-titulo">Ya casi</h2>
+    <p>Hoy cada pulsera la armamos a mano. Estamos por abrir la preventa con Mercado Pago; cuando esté lista, este botón te lleva directo al pago.</p><p>Mientras tanto, podés ver en vivo las alertas que va detectando el prototipo.</p>
     <div class="presale-actions">
-      <a class="cta" href="/dashboard">Ver el dashboard en vivo</a>
+      <a class="cta" href="/dashboard">Ver las alertas en vivo</a>
       <button class="presale-close" value="close">Cerrar</button>
     </div>
   </form>
@@ -194,7 +197,7 @@ h1 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: c
 
 <script>
   // Pegar acá el link de pago de Mercado Pago (ej. https://mpago.la/...) cuando esté listo.
-  // Mientras quede vacío, los botones de preventa muestran el aviso de "Muy pronto".
+  // Mientras quede vacío, los botones de preventa muestran el aviso de "Ya casi".
   const PRESALE_URL = "";
 
   const dialog = document.getElementById("preventa");
