@@ -185,14 +185,17 @@ footer a { text-decoration: none; }
 .foot-links { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 footer a:hover { color: var(--ink); }
 
-/* presale dialog (until the Mercado Pago link exists) */
-.presale { width: min(440px, calc(100vw - 32px)); padding: 28px; border-radius: 28px; color: var(--ink); background: rgba(255,255,255,.85); }
-.presale::backdrop { background: rgba(18, 20, 31, .35); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-.presale form { display: grid; gap: 12px; margin: 0; }
-.presale h2 { font-size: 32px; }
-.presale p { line-height: 1.5; color: var(--muted); }
-.presale .eyebrow { color: var(--green-ink); }
-.presale-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+/* waitlist form */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.waitlist { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; max-width: 560px; }
+.waitlist input[type=email] { flex: 1 1 240px; min-width: 0; padding: 16px 22px; border-radius: 999px; border: 1.5px solid rgba(18,20,31,.18); background: rgba(255,255,255,.85); font: 500 18px/1.2 var(--font-body); color: var(--ink); }
+.waitlist input[type=email]:focus { outline: 3px solid var(--ink); outline-offset: 2px; }
+.waitlist button[disabled] { opacity: .6; cursor: wait; }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; opacity: 0; }
+.band .wl-note { margin-top: 12px; font-size: 15px; color: rgba(18,20,31,.72); }
+.band .wl-note.ok { color: var(--ink); font-weight: 700; }
+.band .wl-note.err { color: #8a1020; font-weight: 700; }
+@media (max-width: 480px) { .waitlist .btn { width: 100%; } }
 
 :focus-visible { outline: 3px solid var(--knock); outline-offset: 3px; }
 
@@ -249,7 +252,7 @@ footer a:hover { color: var(--ink); }
       <li><a href="#para-quien">Para tu familia</a></li>
       <li><a href="#tranquilidad">Privacidad</a></li>
     </ul>
-    <a class="btn btn-primary btn-sm" href="#preventa" data-presale>Preventa</a>
+    <a class="btn btn-primary btn-sm" href="#waitlist" data-waitlist>Sumate a la lista</a>
   </nav>
 </div>
 
@@ -264,7 +267,7 @@ footer a:hover { color: var(--ink); }
     <h1>Sentí lo que pasa a tu alrededor.</h1>
     <p class="lead">Cuando tocan la puerta, suena una alarma o llora el bebé, FortWatch vibra en la muñeca y te muestra qué pasó. Para vos, y para la familia que quiere estar tranquila.</p>
     <div class="cta-row">
-      <a class="btn btn-primary" href="#preventa" data-presale>Reservá la tuya en preventa</a>
+      <a class="btn btn-primary" href="#waitlist" data-waitlist>Sumate a la lista</a>
       <a class="btn btn-ghost" href="#como-funciona">Cómo funciona</a>
     </div>
   </div>
@@ -333,16 +336,20 @@ footer a:hover { color: var(--ink); }
   </div>
 </section>
 
-<section class="final" id="reservar">
+<section class="final" id="waitlist">
   <div class="wrap">
     <div class="band reveal">
       <div>
-        <p class="eyebrow">Preventa</p>
-        <h2>Reservá la tuya.</h2>
-        <p>Estamos armando las primeras pulseras a mano. Sumate a la preventa y sé de los primeros en tenerla, para vos o para alguien de tu familia.</p>
-        <div class="cta-row">
-          <a class="btn btn-dark" href="#preventa" data-presale>Reservá la tuya en preventa</a>
-        </div>
+        <p class="eyebrow">Lista de espera</p>
+        <h2>Sé de los primeros.</h2>
+        <p>Estamos armando las primeras pulseras a mano. Dejanos tu email y te avisamos cuando abra la preventa, para vos o para alguien de tu familia.</p>
+        <form class="waitlist" id="waitlist-form" novalidate>
+          <label class="sr-only" for="wl-email">Correo electrónico</label>
+          <input id="wl-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="vos@email.com" required maxlength="254">
+          <input class="hp" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="btn btn-dark" type="submit">Sumate a la lista</button>
+        </form>
+        <p class="wl-note" id="wl-status" role="status" aria-live="polite">Solo te vamos a escribir sobre FortWatch. Sin spam, te podés dar de baja cuando quieras.</p>
       </div>
       <div class="parallax" data-speed="0.06"><img src="/img/doorbell.jpg" width="1400" height="1045" loading="lazy" alt="Una mano abre la puerta mientras la pulsera muestra que tocaron el timbre."></div>
     </div>
@@ -357,33 +364,32 @@ footer a:hover { color: var(--ink); }
   </div>
 </footer>
 
-<!-- Preventa: hasta que haya link de Mercado Pago, los botones abren este aviso. -->
-<dialog id="preventa" class="presale glass" aria-labelledby="preventa-titulo">
-  <form method="dialog">
-    <p class="eyebrow">Preventa</p>
-    <h2 id="preventa-titulo">Ya casi</h2>
-    <p>Hoy cada pulsera la armamos a mano. Estamos por abrir la preventa con Mercado Pago; cuando esté lista, este botón te lleva directo al pago.</p>
-    <div class="presale-actions">
-      <button class="btn btn-primary" value="close">Entendido</button>
-    </div>
-  </form>
-</dialog>
-
 <script>
-  // Pegar acá el link de pago de Mercado Pago (ej. https://mpago.la/...) cuando esté listo.
-  // Mientras quede vacío, los botones de preventa muestran el aviso de "Ya casi".
-  const PRESALE_URL = "";
-
-  const dialog = document.getElementById("preventa");
-  document.querySelectorAll("[data-presale]").forEach((el) => {
-    if (PRESALE_URL) { el.href = PRESALE_URL; return; }
-    el.addEventListener("click", (event) => {
-      if (!dialog.showModal) return; // very old browsers: just follow the #preventa link
-      event.preventDefault();
-      dialog.showModal();
-    });
+  // Waitlist: CTAs scroll to the form and focus it; the form posts to /api/waitlist (Upstash Redis).
+  const form = document.getElementById("waitlist-form");
+  const emailInput = document.getElementById("wl-email");
+  const statusEl = document.getElementById("wl-status");
+  document.querySelectorAll("[data-waitlist]").forEach((el) => el.addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("waitlist").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    setTimeout(() => emailInput.focus({ preventScroll: true }), 600);
+  }));
+  const say = (msg, cls) => { statusEl.textContent = msg; statusEl.className = "wl-note" + (cls ? " " + cls : ""); };
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = emailInput.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { say("Ingresá un correo electrónico válido.", "err"); emailInput.focus(); return; }
+    const btn = form.querySelector("button");
+    btn.disabled = true; say("Te estamos sumando…");
+    try {
+      const res = await fetch("/api/waitlist", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, company: form.company.value, locale: "es-AR" }) });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) { say(data.already ? "Ya estás en la lista. ¡Te vamos a avisar!" : "¡Ya estás en la lista! Te avisamos por email cuando abra la preventa.", "ok"); form.reset(); }
+      else say(res.status === 429 ? "Demasiados intentos. Esperá un rato y volvé a intentar." : "No pudimos guardar tu email. Volvé a intentar.", "err");
+    } catch { say("No pudimos conectarnos. Volvé a intentar.", "err"); }
+    finally { btn.disabled = false; }
   });
-  dialog.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
 
   // Nav: clear glass over the hero film, white glass once the light sections scroll under it.
   const hero = document.getElementById("inicio");
