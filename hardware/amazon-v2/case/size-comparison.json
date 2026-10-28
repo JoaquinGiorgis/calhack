@@ -1,0 +1,29 @@
+{
+  "original_source": "hardware/enclosure/stl/shell.stl + back.stl; print flip undone at z=32.9 mm",
+  "original_printed_assembly_mm": [
+    77.80000305175781,
+    135.3000030517578,
+    32.899999618530266
+  ],
+  "original_body_mm": [
+    41.900001525878906,
+    92.30000114440918,
+    32.9
+  ],
+  "v2_printed_assembly_mm": [
+    52.0,
+    67.0,
+    24.0
+  ],
+  "v2_body_mm": [
+    52,
+    50,
+    24
+  ],
+  "limits": [
+    "Printed-envelope bounds, not material volume or weight.",
+    "Original power bank shown as an approximate 74x38x25 mm box from the old viewer.",
+    "The stored original STL differs from some current SCAD parameters; render uses the stored STL.",
+    "V2 physical fit and comfort remain unverified."
+  ]
+}

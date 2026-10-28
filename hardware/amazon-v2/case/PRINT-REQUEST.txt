@@ -1,0 +1,34 @@
+Fortwatch V2 — first-fit printing request
+
+This is a development enclosure, not a physically verified final case.
+Assembled body: 52 x 50 x 24 mm; 52 x 67 x 24 mm with strap ears.
+All files use millimetres. Print at 100% scale.
+
+PLEASE PRINT FIRST
+- fit_test.stl: board mounting-hole coupon
+- lid.stl: display-window check
+We should check these against the actual electronics before printing the rest.
+If we choose to print everything before parts arrive, expect possible reprints.
+
+AFTER FIT CHECKS
+- base.stl, tray.stl, button.stl, and lid.stl
+- plate.stl contains all five parts already oriented; do not print this AND
+  the individual files unless extra copies are wanted. Plate is 112 x 105 mm.
+
+STARTING SETTINGS
+Available PLA or PETG; 0.2 mm layers; 3–4 walls. Base opening up; lid and tray
+flat; button flange on bed. Check slicer preview for local supports at USB roof,
+mic-channel lips and switch shelf. Avoid trapped supports in nut pockets.
+Please smooth wrist-facing edges and preserve access to microphone openings.
+Printer-specific tolerances may require edits to the supplied OpenSCAD source.
+
+OPEN FIT CHECKS
+Actual battery/wrap, switch, connector polarity/housing, USB position, microphone
+rails, display alignment, wiring space and screw thread depth must be checked.
+The model has mesh and nominal-envelope checks, but no physical fit test yet.
+Do not force the cell into its pocket or compress it with the lid.
+
+Included README.md has dimensions, sources and more detailed instructions.
+Printing help alone does not cover electronic assembly: the selected board also
+needs charger resistor rework and measured charging verification before using
+its 500 mAh battery. We can do initial USB testing with the battery disconnected.

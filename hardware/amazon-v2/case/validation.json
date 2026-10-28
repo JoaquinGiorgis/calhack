@@ -1,0 +1,185 @@
+{
+  "limits": [
+    "Nominal dimensions only; no physical fit or printed part tested.",
+    "Generic breakout, switch, USB and microphone alignment require received-part checks.",
+    "No acoustics, battery power, thermal or firmware validation."
+  ],
+  "parts": {
+    "base": {
+      "watertight": true,
+      "consistent_winding": true,
+      "bodies": 1,
+      "volume_mm3": 17419.26563227513,
+      "bounds_mm": [
+        [
+          -26.0,
+          -33.5,
+          0.0
+        ],
+        [
+          26.0,
+          33.5,
+          22.0
+        ]
+      ],
+      "dimensions_mm": [
+        52.0,
+        67.0,
+        22.0
+      ]
+    },
+    "lid": {
+      "watertight": true,
+      "consistent_winding": true,
+      "bodies": 1,
+      "volume_mm3": 3930.6918104811193,
+      "bounds_mm": [
+        [
+          -26.0,
+          -25.0,
+          0.0
+        ],
+        [
+          26.0,
+          25.0,
+          2.0
+        ]
+      ],
+      "dimensions_mm": [
+        52.0,
+        50.0,
+        2.0
+      ]
+    },
+    "tray": {
+      "watertight": true,
+      "consistent_winding": true,
+      "bodies": 1,
+      "volume_mm3": 2701.670952177105,
+      "bounds_mm": [
+        [
+          -23.599998474121094,
+          -17.5,
+          0.0
+        ],
+        [
+          23.599998474121094,
+          17.5,
+          8.399999618530273
+        ]
+      ],
+      "dimensions_mm": [
+        47.19999694824219,
+        35.0,
+        8.399999618530273
+      ]
+    },
+    "button": {
+      "watertight": true,
+      "consistent_winding": true,
+      "bodies": 1,
+      "volume_mm3": 36.60563080508782,
+      "bounds_mm": [
+        [
+          -3.0,
+          -3.0,
+          0.0
+        ],
+        [
+          3.0,
+          3.0,
+          3.3999996185302734
+        ]
+      ],
+      "dimensions_mm": [
+        6.0,
+        6.0,
+        3.3999996185302734
+      ]
+    },
+    "fit_test": {
+      "watertight": true,
+      "consistent_winding": true,
+      "bodies": 1,
+      "volume_mm3": 1296.5832506238376,
+      "bounds_mm": [
+        [
+          -16.5,
+          -17.5,
+          0.0
+        ],
+        [
+          16.5,
+          17.5,
+          1.5999994277954102
+        ]
+      ],
+      "dimensions_mm": [
+        33.0,
+        35.0,
+        1.5999994277954102
+      ]
+    },
+    "plate": {
+      "watertight": true,
+      "consistent_winding": true,
+      "bodies": 5,
+      "volume_mm3": 25384.817143967917,
+      "bounds_mm": [
+        [
+          -56.0,
+          -33.5,
+          0.0
+        ],
+        [
+          56.0,
+          71.5,
+          22.0
+        ]
+      ],
+      "dimensions_mm": [
+        112.0,
+        105.0,
+        22.0
+      ]
+    }
+  },
+  "nominal_clearance_intersections_mm3": {
+    "battery/base": 0.0,
+    "battery/tray": 0.0,
+    "battery/lid": 0.0,
+    "module_upper/base": 0.0,
+    "module_upper/tray": 0.0,
+    "module_upper/lid": 0.0,
+    "haptic_with_wiring/base": 0.0,
+    "haptic_with_wiring/tray": 0.0,
+    "haptic_with_wiring/lid": 0.0,
+    "mic/base": 0.0,
+    "mic/tray": 0.0,
+    "mic/lid": 0.0,
+    "tactile/base": 0.0,
+    "tactile/tray": 0.0,
+    "tactile/lid": 0.0,
+    "switch_body/base": 0.0,
+    "switch_body/tray": 0.0,
+    "switch_body/lid": 0.0,
+    "usb_plug_access/base": 0.0,
+    "usb_plug_access/tray": 0.0,
+    "usb_plug_access/lid": 0.0,
+    "motor/base": 0.0,
+    "motor/tray": 0.0,
+    "motor/lid": 0.0,
+    "standoff_-1_-1/base": 0.0,
+    "standoff_-1_-1/tray": 0.0,
+    "standoff_-1_-1/lid": 0.0,
+    "standoff_-1_1/base": 0.0,
+    "standoff_-1_1/tray": 0.0,
+    "standoff_-1_1/lid": 0.0,
+    "standoff_1_-1/base": 0.0,
+    "standoff_1_-1/tray": 0.0,
+    "standoff_1_-1/lid": 0.0,
+    "standoff_1_1/base": 0.0,
+    "standoff_1_1/tray": 0.0,
+    "standoff_1_1/lid": 0.0
+  }
+}
